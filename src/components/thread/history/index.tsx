@@ -90,10 +90,10 @@ export default function ThreadHistory() {
 
   return (
     <>
-      <div className="hidden lg:flex flex-col border-r-[1px] border-slate-300 items-start justify-start gap-6 h-screen w-[300px] shrink-0 shadow-inner-right">
+      <div className="hidden lg:flex flex-col border-r-[1px] border-border bg-background items-start justify-start gap-6 h-screen w-[300px] shrink-0 shadow-inner-right">
         <div className="flex items-center justify-between w-full pt-1.5 px-4">
           <Button
-            className="hover:bg-gray-100"
+            className="hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-zinc-100"
             variant="ghost"
             onClick={() => setChatHistoryOpen((p) => !p)}
           >
@@ -103,8 +103,8 @@ export default function ThreadHistory() {
               <PanelRightClose className="size-5" />
             )}
           </Button>
-          <h1 className="text-xl font-semibold tracking-tight">
-            Thread History
+          <h1 className="text-xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100">
+            Lịch sử chat
           </h1>
         </div>
         {threadsLoading ? (

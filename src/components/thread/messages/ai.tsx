@@ -13,6 +13,7 @@ import { isAgentInboxInterruptSchema } from "@/lib/agent-inbox-interrupt";
 import { ThreadView } from "../agent-inbox";
 import { useQueryState, parseAsBoolean } from "nuqs";
 import { GenericInterruptView } from "./generic-interrupt";
+import { GeminiSparkleSVG } from "../../icons/gemini-sparkle";
 
 function CustomComponent({
   message,
@@ -113,13 +114,16 @@ export function AssistantMessage({
   }
 
   return (
-    <div className="flex items-start mr-auto gap-2 group">
+    <div className="flex items-start mr-auto gap-4 group w-full max-w-4xl">
+      <div className="flex-shrink-0 mt-1">
+        <GeminiSparkleSVG width={24} height={24} className="text-orange-500 drop-shadow-[0_0_8px_rgba(249,115,22,0.8)]" />
+      </div>
       {isToolResult ? (
         <ToolResult message={message} />
       ) : (
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-2 w-full">
           {contentString.length > 0 && (
-            <div className="py-1">
+            <div className="py-1 text-zinc-800 dark:text-zinc-200">
               <MarkdownText>{contentString}</MarkdownText>
             </div>
           )}
@@ -173,11 +177,9 @@ export function AssistantMessage({
 
 export function AssistantMessageLoading() {
   return (
-    <div className="flex items-start mr-auto gap-2">
-      <div className="flex items-center gap-1 rounded-2xl bg-muted px-4 py-2 h-8">
-        <div className="w-1.5 h-1.5 rounded-full bg-foreground/50 animate-[pulse_1.5s_ease-in-out_infinite]"></div>
-        <div className="w-1.5 h-1.5 rounded-full bg-foreground/50 animate-[pulse_1.5s_ease-in-out_0.5s_infinite]"></div>
-        <div className="w-1.5 h-1.5 rounded-full bg-foreground/50 animate-[pulse_1.5s_ease-in-out_1s_infinite]"></div>
+    <div className="flex items-start mr-auto gap-4">
+      <div className="flex-shrink-0 mt-1 animate-pulse">
+        <GeminiSparkleSVG width={24} height={24} className="text-orange-500 drop-shadow-[0_0_8px_rgba(249,115,22,0.8)]" />
       </div>
     </div>
   );
