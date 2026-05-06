@@ -1,0 +1,15 @@
+import FoodSearchUI from "@/components/foods/FoodSearchUI";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Tra cứu món ăn | Chatbot Ẩm Thực Đà Nẵng",
+  description: "Tìm kiếm và xem thông tin chi tiết các món ăn đặc sản Đà Nẵng",
+};
+
+export default function SearchPage() {
+  return (
+    <div className="min-h-screen bg-background">
+      <FoodSearchUI />
+    </div>
+  );
+}
