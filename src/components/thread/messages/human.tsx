@@ -72,8 +72,8 @@ export function HumanMessage({
   return (
     <div
       className={cn(
-        "flex items-center ml-auto gap-2 group",
-        isEditing && "w-full max-w-xl",
+        "flex items-center ml-auto gap-2 group w-fit max-w-2xl",
+        isEditing && "w-full",
       )}
     >
       <div className={cn("flex flex-col gap-2", isEditing && "w-full")}>
@@ -84,9 +84,11 @@ export function HumanMessage({
             onSubmit={handleSubmitEdit}
           />
         ) : (
-          <p className="px-4 py-2 rounded-3xl bg-muted w-fit ml-auto whitespace-pre-wrap">
-            {contentString}
-          </p>
+          <div className="animate-in fade-in-50 slide-in-from-bottom-2 duration-300">
+            <p className="px-4 py-3 rounded-2xl bg-gradient-to-r from-orange-500 to-orange-600 text-white w-fit ml-auto whitespace-pre-wrap text-sm shadow-sm">
+              {contentString}
+            </p>
+          </div>
         )}
 
         <div

@@ -22,6 +22,7 @@ import { PasswordInput } from "@/components/ui/password-input";
 import { getApiKey } from "@/lib/api-key";
 import { useThreads } from "./Thread";
 import { toast } from "sonner";
+import { MOCK_MESSAGES } from "@/lib/mock-messages";
 
 export type StateType = { messages: Message[]; ui?: UIMessage[] };
 
@@ -66,57 +67,44 @@ async function checkGraphStatus(
 export const StreamProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
-  const [messages, setMessages] = useState<Message[]>([
-    { id: "1", type: "ai", content: "Hello! I am a mock AI. How can I help you? I can mock responses for you to test the UI." as string }
-  ]);
+  const [messages, setMessages] = useState<Message[]>(MOCK_MESSAGES);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
   const submit = async (data: any, options?: any) => {
-    if (data?.messages) {
-      setMessages(data.messages);
+    // Add user message
+    if (data?.messages && Array.isArray(data.messages)) {
+      const lastMessage = data.messages[data.messages.length - 1];
+      if (lastMessage?.type === "human") {
+        setMessages(prev => [...prev, lastMessage]);
+      }
     }
+
     setIsLoading(true);
-    
+
     try {
-      const lastMsg = data?.messages?.[data.messages.length - 1]?.content || "";
-      if (!lastMsg) {
-        setIsLoading(false);
-        return;
-      }
-      
-      const response = await fetch(`http://localhost:3006/foods/search?q=${encodeURIComponent(lastMsg)}`);
-      if (!response.ok) {
-        throw new Error(`Lỗi HTTP! status: ${response.status}`);
-      }
-      
-      const result = await response.json();
-      
-      // Xử lý dữ liệu trả về thành chuỗi markdown để hiển thị
-      let formattedContent = "";
-      if (Array.isArray(result)) {
-         formattedContent = result.length === 0 
-           ? "Không tìm thấy kết quả nào." 
-           : result.map((item: any) => {
-               const name = item.name || item.title || item.foodName || 'Món ăn';
-               const desc = item.description || item.price || item.detail || '';
-               return `- **${name}**${desc ? `: ${desc}` : ''}`;
-             }).join('\n');
-      } else {
-         // Nếu kết quả trả về là text hoặc object
-         formattedContent = typeof result === 'string' ? result : "```json\n" + JSON.stringify(result, null, 2) + "\n```";
-      }
+      // Simulate API delay
+      await new Promise(resolve => setTimeout(resolve, 800));
+
+      // Generate simple mock response
+      const mockResponses = [
+        "Đây là một câu trả lời tự động! Tôi đang ở chế độ demo. Bạn có thể thay đổi mock messages trong `src/lib/mock-messages.ts` để test các scenario khác nhau.",
+        "Tôi đồng ý với bạn! Đây là một UI test đơn giản để kiểm tra giao diện chat. Hãy thử gửi thêm nhiều tin nhắn nữa.",
+        "Cảm ơn câu hỏi của bạn! Trong chế độ demo này, tôi sẽ trả lời với những câu mẫu. Khi bạn kết nối API thực, tôi sẽ trả lời từ server.",
+      ];
+
+      const randomResponse = mockResponses[Math.floor(Math.random() * mockResponses.length)];
 
       setMessages(prev => [
-        ...prev, 
-        { id: Math.random().toString(), type: "ai", content: formattedContent }
+        ...prev,
+        {
+          id: `ai-${Date.now()}`,
+          type: "ai",
+          content: randomResponse
+        }
       ]);
-    } catch (e: any) {
-       console.error("Lỗi khi fetch BE:", e);
-       setMessages(prev => [
-         ...prev, 
-         { id: Math.random().toString(), type: "ai", content: "❌ Không thể kết nối tới Backend (localhost:3006). Lỗi: " + e.message + "\n\n*(Lưu ý: Hãy chắc chắn BE của bạn đang chạy và đã bật CORS)*" }
-       ]);
+    } catch (e) {
+      console.error("Error:", e);
     } finally {
       setIsLoading(false);
     }
@@ -136,7 +124,7 @@ export const StreamProvider: React.FC<{ children: ReactNode }> = ({
       branchOptions: ["main"],
       firstSeenState: { parent_checkpoint: null }
     }),
-    setBranch: (branch: string) => {},
+    setBranch: (branch: string) => { },
     interrupt: null,
     values: { ui: [] },
   } as any;

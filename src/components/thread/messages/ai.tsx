@@ -114,16 +114,16 @@ export function AssistantMessage({
   }
 
   return (
-    <div className="flex items-start mr-auto gap-4 group w-full max-w-4xl">
+    <div className="flex items-start mr-auto gap-3 group w-full max-w-4xl animate-in fade-in-50 slide-in-from-bottom-2 duration-300">
       <div className="flex-shrink-0 mt-1">
         <GeminiSparkleSVG width={24} height={24} className="text-orange-500 drop-shadow-[0_0_8px_rgba(249,115,22,0.8)]" />
       </div>
       {isToolResult ? (
         <ToolResult message={message} />
       ) : (
-        <div className="flex flex-col gap-2 w-full">
+        <div className="flex flex-col gap-3 w-full">
           {contentString.length > 0 && (
-            <div className="py-1 text-zinc-800 dark:text-zinc-200">
+            <div className="py-2 text-zinc-800 dark:text-zinc-200 text-sm leading-relaxed">
               <MarkdownText>{contentString}</MarkdownText>
             </div>
           )}
@@ -146,8 +146,8 @@ export function AssistantMessage({
               <ThreadView interrupt={threadInterrupt.value} />
             )}
           {threadInterrupt?.value &&
-          !isAgentInboxInterruptSchema(threadInterrupt.value) &&
-          isLastMessage ? (
+            !isAgentInboxInterruptSchema(threadInterrupt.value) &&
+            isLastMessage ? (
             <GenericInterruptView interrupt={threadInterrupt.value} />
           ) : null}
           <div
