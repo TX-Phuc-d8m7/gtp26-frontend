@@ -1,4 +1,4 @@
-import FoodSearchUI from "@/components/foods/FoodSearchUI";
+import { FoodSearchUI } from "@/features/foods";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {

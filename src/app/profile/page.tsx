@@ -1,4 +1,4 @@
-import ProfileForm from "@/components/profile/ProfileForm";
+import { ProfileForm } from "@/features/profile";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {

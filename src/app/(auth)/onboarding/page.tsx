@@ -1,4 +1,4 @@
-import OnboardingForm from "@/components/auth/OnboardingForm";
+import { OnboardingForm } from "@/features/auth";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
