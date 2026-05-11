@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { cn } from "@/shared/lib/utils";
 import { useStreamContext } from "@/features/chat/providers/stream-provider";
 import { useState, FormEvent } from "react";
-import { Button } from "@/shared/components/ui/button";
+import { Button } from "@/shared/components/ui/button/index";
 import { Checkpoint } from "@langchain/langgraph-sdk";
 import { AssistantMessage, AssistantMessageLoading } from "./messages/ai";
 import { HumanMessage } from "./messages/human";

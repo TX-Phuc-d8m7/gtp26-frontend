@@ -11,7 +11,7 @@ import { cn } from "@/shared/lib/utils";
 import { BaseMessage } from "@langchain/core/messages";
 import { ToolCall } from "@langchain/core/messages/tool";
 import { ToolCallTable } from "./tool-call-table";
-import { Button } from "@/shared/components/ui/button";
+import { Button } from "@/shared/components/ui/button/index";
 import { MarkdownText } from "../../markdown-text";
 
 interface StateViewRecursiveProps {

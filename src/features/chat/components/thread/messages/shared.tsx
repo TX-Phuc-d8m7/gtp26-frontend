@@ -11,7 +11,7 @@ import {
 import { TooltipIconButton } from "../tooltip-icon-button";
 import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
-import { Button } from "@/shared/components/ui/button";
+import { Button } from "@/shared/components/ui/button/index";
 
 function ContentCopyable({
   content,

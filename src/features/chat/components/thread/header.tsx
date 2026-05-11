@@ -1,5 +1,4 @@
-import { useState, useRef, useEffect } from "react";
-import { Button } from "@/shared/components/ui/button";
+import { Button } from "@/shared/components/ui/button/index";
 import {
   Menu,
   SquarePen,
@@ -18,20 +17,13 @@ import {
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@/shared/components/ui/tooltip";
+} from "@/shared/components/ui/tooltip/index";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import toast from "react-hot-toast";
-import FoodSearchUI from "@/features/foods/components/FoodSearchUI";
+import { FoodSearchUI } from "@/features/foods/search";
 
-interface HeaderProps {
-  chatHistoryOpen: boolean;
-  onToggleChatHistory: () => void;
-  onNewThread: () => void;
-  chatStarted: boolean;
-  isLargeScreen: boolean;
-}
+import { HeaderProps } from "./_interface";
+import { useHeader } from "./_use-header";
 
 export function Header({
   chatHistoryOpen,
@@ -40,31 +32,20 @@ export function Header({
   chatStarted,
   isLargeScreen,
 }: HeaderProps) {
-  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const [isModelMenuOpen, setIsModelMenuOpen] = useState(false);
-  const [selectedModel, setSelectedModel] = useState("Cân bằng");
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const router = useRouter();
-  const menuRef = useRef<HTMLDivElement>(null);
-  const modelOptions = ["Cân bằng", "Nhanh", "Chính xác", "Sáng tạo"];
-
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-        setIsUserMenuOpen(false);
-      }
-    }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
-  const handleLogout = () => {
-    setIsLoggedIn(false);
-    setIsUserMenuOpen(false);
-    toast.success("Đã đăng xuất thành công!");
-    router.push("/login");
-  };
+  const {
+    handleLogout,
+    isLoggedIn,
+    isModelMenuOpen,
+    isSearchOpen,
+    isUserMenuOpen,
+    menuRef,
+    modelOptions,
+    selectedModel,
+    setIsModelMenuOpen,
+    setIsSearchOpen,
+    setIsUserMenuOpen,
+    setSelectedModel,
+  } = useHeader();
 
   return (
     <>

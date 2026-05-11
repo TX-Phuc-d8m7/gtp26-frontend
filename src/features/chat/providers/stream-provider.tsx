@@ -7,12 +7,12 @@ import {
   type RemoveUIMessage,
 } from "@langchain/langgraph-sdk/react-ui";
 import { useQueryState } from "nuqs";
-import { Input } from "@/shared/components/ui/input";
-import { Button } from "@/shared/components/ui/button";
+import { Input } from "@/shared/components/ui/input/index";
+import { Button } from "@/shared/components/ui/button/index";
 import { LangGraphLogoSVG } from "@/shared/components/icons/langgraph";
-import { Label } from "@/shared/components/ui/label";
+import { Label } from "@/shared/components/ui/label/index";
 import { ArrowRight } from "lucide-react";
-import { PasswordInput } from "@/shared/components/ui/password-input";
+import { PasswordInput } from "@/shared/components/ui/password-input/index";
 import { getApiKey } from "@/features/chat/lib/api-key";
 import { useThreads } from "./thread-provider";
 import { toast } from "sonner";

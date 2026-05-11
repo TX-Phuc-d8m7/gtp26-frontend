@@ -1,6 +1,6 @@
-import { Button } from "@/shared/components/ui/button";
-import { Label } from "@/shared/components/ui/label";
-import { Switch } from "@/shared/components/ui/switch";
+import { Button } from "@/shared/components/ui/button/index";
+import { Label } from "@/shared/components/ui/label/index";
+import { Switch } from "@/shared/components/ui/switch/index";
 import {
   ArrowUp,
   FileText,

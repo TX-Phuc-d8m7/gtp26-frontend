@@ -1,4 +1,4 @@
-import { Button } from "@/shared/components/ui/button";
+import { Button } from "@/shared/components/ui/button/index";
 import { useThreads } from "@/features/chat/providers/thread-provider";
 import { Thread } from "@langchain/langgraph-sdk";
 import { useEffect } from "react";
@@ -10,8 +10,8 @@ import {
   SheetContent,
   SheetHeader,
   SheetTitle,
-} from "@/shared/components/ui/sheet";
-import { Skeleton } from "@/shared/components/ui/skeleton";
+} from "@/shared/components/ui/sheet/index";
+import { Skeleton } from "@/shared/components/ui/skeleton/index";
 import { PanelRightOpen, PanelRightClose } from "lucide-react";
 import { useMediaQuery } from "@/shared/hooks/use-media-query";
 

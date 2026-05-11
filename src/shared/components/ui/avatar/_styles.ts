@@ -1,10 +1,14 @@
+/*
+ * Copyright (c) 2026 GTP26
+ * All rights reserved.
+ */
 import { Theme } from "@mui/material/styles";
 
 export const avatarStyles = (theme: Theme) => ({
   position: "relative",
   display: "flex",
-  height: 32, // size-8
-  width: 32, // size-8
+  height: 32,
+  width: 32,
   flexShrink: 0,
   overflow: "hidden",
   borderRadius: "50%",
@@ -25,3 +29,9 @@ export const avatarFallbackStyles = (theme: Theme) => ({
   borderRadius: "50%",
   backgroundColor: "muted.main",
 });
+
+export const styles = {
+  avatarStyles,
+  avatarImageStyles,
+  avatarFallbackStyles,
+} as const;

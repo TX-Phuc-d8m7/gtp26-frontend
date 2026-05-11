@@ -3,7 +3,7 @@ import { Message } from "@langchain/langgraph-sdk";
 import { useState } from "react";
 import { getContentString } from "../utils";
 import { cn } from "@/shared/lib/utils";
-import { Textarea } from "@/shared/components/ui/textarea";
+import { Textarea } from "@/shared/components/ui/textarea/index";
 import { BranchSwitcher, CommandBar } from "./shared";
 
 function EditableContent({
