@@ -525,7 +525,7 @@ export function Thread() {
           {!chatStarted && (
             <div className="flex-1 flex flex-col items-center justify-center px-4">
               <div className="text-center mb-8">
-                <h1 className="text-4xl font-bold tracking-tight mb-4 bg-gradient-to-r from-orange-500 to-rose-500 text-transparent bg-clip-text">
+                <h1 className="text-4xl font-bold tracking-tight mb-4 bg-gradient-to-r from-orange-500 to-rose-500 text-transparent bg-clip-text mt-8">
                   # Hôm nay bạn ăn gì?
                 </h1>
                 <p className="text-gray-600 dark:text-gray-400 text-base">
@@ -537,10 +537,10 @@ export function Thread() {
                   <button
                     key={prompt}
                     type="button"
-                    className="group flex min-h-20 items-start gap-3 rounded-2xl border border-border bg-card/70 p-4 text-left shadow-sm transition hover:border-orange-500/50 hover:bg-orange-500/5"
+                    className="group flex min-h-20 items-center gap-3 rounded-2xl border border-border bg-card/70 p-4 text-left shadow-sm transition hover:border-orange-500/50 hover:bg-orange-500/5"
                     onClick={() => setInput(prompt)}
                   >
-                    <span className="mt-0.5 rounded-full bg-orange-500/10 p-2 text-orange-600 dark:text-orange-400">
+                    <span className="rounded-full bg-orange-500/10 p-2 text-orange-600 dark:text-orange-400">
                       <Sparkles className="size-4" />
                     </span>
                     <span className="text-sm font-medium leading-6 text-foreground group-hover:text-orange-600 dark:group-hover:text-orange-400">
