@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
-import "@/app/globals.css";
-import React from "react";
+import "./globals.css";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { ThemeProvider } from "@/shared/components/theme-provider";
 
@@ -19,7 +18,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className="antialiased">
+      <body>
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"

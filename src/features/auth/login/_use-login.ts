@@ -12,6 +12,8 @@ import toast from "react-hot-toast";
 
 import { loginSchema, LoginFormData } from ".";
 
+const AUTH_STORAGE_KEY = "food-recommendation:isLoggedIn";
+
 export function useLogin() {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
@@ -25,6 +27,7 @@ export function useLogin() {
     try {
       await new Promise((resolve) => setTimeout(resolve, 2000));
       console.log("Login Data:", data);
+      window.localStorage.setItem(AUTH_STORAGE_KEY, "true");
 
       toast.success("Đăng nhập thành công!");
       router.push("/");

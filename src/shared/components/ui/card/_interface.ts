@@ -3,10 +3,15 @@
  * All rights reserved.
  */
 import type * as React from "react";
+import type { SxProps, Theme } from "@mui/material/styles";
 
-export type CardProps = React.ComponentProps<"div">;
-export type CardHeaderProps = React.ComponentProps<"div">;
-export type CardTitleProps = React.ComponentProps<"div">;
-export type CardDescriptionProps = React.ComponentProps<"div">;
-export type CardContentProps = React.ComponentProps<"div">;
-export type CardFooterProps = React.ComponentProps<"div">;
+type WithSx<T> = T & {
+  sx?: SxProps<Theme>;
+};
+
+export type CardProps = WithSx<React.ComponentProps<"div">>;
+export type CardHeaderProps = WithSx<React.ComponentProps<"div">>;
+export type CardTitleProps = WithSx<React.ComponentProps<"div">>;
+export type CardDescriptionProps = WithSx<React.ComponentProps<"div">>;
+export type CardContentProps = WithSx<React.ComponentProps<"div">>;
+export type CardFooterProps = WithSx<React.ComponentProps<"div">>;

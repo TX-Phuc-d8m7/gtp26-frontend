@@ -12,6 +12,8 @@ import toast from "react-hot-toast";
 
 import { onboardingSchema, OnboardingFormData } from ".";
 
+const AUTH_STORAGE_KEY = "food-recommendation:isLoggedIn";
+
 export function useOnboarding() {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
@@ -29,6 +31,7 @@ export function useOnboarding() {
     try {
       await new Promise((resolve) => setTimeout(resolve, 1500));
       console.log("Onboarding Data:", data);
+      window.localStorage.setItem(AUTH_STORAGE_KEY, "true");
 
       toast.success("Đã lưu thông tin sở thích!");
       router.push("/");
@@ -39,7 +42,10 @@ export function useOnboarding() {
     }
   };
 
-  const handleSkip = () => router.push("/");
+  const handleSkip = () => {
+    window.localStorage.setItem(AUTH_STORAGE_KEY, "true");
+    router.push("/");
+  };
 
   return {
     control: form.control,

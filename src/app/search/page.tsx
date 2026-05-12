@@ -7,9 +7,5 @@ export const metadata: Metadata = {
 };
 
 export default function SearchPage() {
-  return (
-    <div className="min-h-screen bg-background">
-      <Foods />
-    </div>
-  );
+  return <Foods />;
 }

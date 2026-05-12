@@ -6,23 +6,25 @@
 
 import * as React from "react";
 import { EyeIcon, EyeOffIcon } from "lucide-react";
+import { Box as MuiBox } from "@mui/material";
 
 import { PasswordInputProps, styles } from ".";
 import { Button } from "../button/index";
 import { Input } from "../input/index";
-import { cn } from "@/shared/lib/utils";
+import { mergeSx } from "@/shared/shared.styles";
 
 export const PasswordInput = React.forwardRef<
   HTMLInputElement,
   PasswordInputProps
->(({ className, ...props }, ref) => {
+>(({ className, sx, ...props }, ref) => {
   const [showPassword, setShowPassword] = React.useState(false);
 
   return (
-    <div className={styles.passwordInputWrapperClassName}>
+    <MuiBox sx={styles.passwordInputWrapperStyles}>
       <Input
         type={showPassword ? "text" : "password"}
-        className={cn(styles.passwordInputClassName, className)}
+        className={className}
+        sx={mergeSx(styles.passwordInputStyles, sx)}
         ref={ref}
         {...props}
       />
@@ -30,28 +32,22 @@ export const PasswordInput = React.forwardRef<
         type="button"
         variant="ghost"
         size="sm"
-        className={styles.passwordInputToggleClassName}
+        sx={styles.passwordInputToggleStyles}
         onClick={() => setShowPassword((prev) => !prev)}
       >
         {showPassword ? (
-          <EyeIcon
-            className={styles.passwordInputIconClassName}
-            aria-hidden="true"
-          />
+          <EyeIcon aria-hidden="true" />
         ) : (
-          <EyeOffIcon
-            className={styles.passwordInputIconClassName}
-            aria-hidden="true"
-          />
+          <EyeOffIcon aria-hidden="true" />
         )}
-        <span className="sr-only">
+        <MuiBox component="span" sx={styles.screenReaderOnlyStyles}>
           {showPassword ? "Hide password" : "Show password"}
-        </span>
+        </MuiBox>
       </Button>
 
       {/* hides browsers password toggles */}
       <style>{styles.passwordInputBrowserToggleStyles}</style>
-    </div>
+    </MuiBox>
   );
 });
 

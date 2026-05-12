@@ -5,6 +5,9 @@ import { cn } from "@/shared/lib/utils";
 import { useStreamContext } from "@/features/chat/providers/stream-provider";
 import { useState, FormEvent } from "react";
 import { Button } from "@/shared/components/ui/button/index";
+import { Box } from "@mui/material";
+import { Typography } from "@/shared/components/ui/typography/index";
+import type { SxProps, Theme } from "@mui/material/styles";
 import { Checkpoint } from "@langchain/langgraph-sdk";
 import { AssistantMessage, AssistantMessageLoading } from "./messages/ai";
 import { HumanMessage } from "./messages/human";
@@ -26,6 +29,7 @@ import { toast } from "sonner";
 import { useMediaQuery } from "@/shared/hooks/use-media-query";
 import { Header } from "./header";
 import { ComposerAttachment, InputArea } from "./input-area";
+import { styles } from "../../_styles";
 
 interface BackendFoodResult {
   id: string;
@@ -91,12 +95,12 @@ function LocalMessageActions({
   };
 
   return (
-    <div className="flex items-center gap-1 opacity-0 transition-opacity group-focus-within:opacity-100 group-hover:opacity-100">
+    <Box sx={styles.messageActionsStyles}>
       <Button
         type="button"
         variant="ghost"
         size="icon"
-        className="size-7 rounded-full text-muted-foreground"
+        sx={{ width: 30, height: 30, borderRadius: "999px" }}
         onClick={handleCopy}
         disabled={isLoading}
         aria-label="Sao chép tin nhắn"
@@ -113,11 +117,17 @@ function LocalMessageActions({
             type="button"
             variant="ghost"
             size="icon"
-            className={cn(
-              "size-7 rounded-full text-muted-foreground",
-              feedback === "like" &&
-                "bg-green-500/10 text-green-600 dark:text-green-400",
-            )}
+            sx={{
+              width: 30,
+              height: 30,
+              borderRadius: "999px",
+              ...(feedback === "like"
+                ? {
+                    backgroundColor: "rgba(47, 143, 70, 0.12)",
+                    color: "var(--success)",
+                  }
+                : {}),
+            }}
             onClick={() => onFeedback?.("like")}
             disabled={isLoading}
             aria-label="Câu trả lời hữu ích"
@@ -128,11 +138,17 @@ function LocalMessageActions({
             type="button"
             variant="ghost"
             size="icon"
-            className={cn(
-              "size-7 rounded-full text-muted-foreground",
-              feedback === "dislike" &&
-                "bg-red-500/10 text-red-600 dark:text-red-400",
-            )}
+            sx={{
+              width: 30,
+              height: 30,
+              borderRadius: "999px",
+              ...(feedback === "dislike"
+                ? {
+                    backgroundColor: "rgba(255, 68, 68, 0.12)",
+                    color: "var(--destructive)",
+                  }
+                : {}),
+            }}
             onClick={() => onFeedback?.("dislike")}
             disabled={isLoading}
             aria-label="Câu trả lời chưa phù hợp"
@@ -144,7 +160,7 @@ function LocalMessageActions({
               type="button"
               variant="ghost"
               size="icon"
-              className="size-7 rounded-full text-muted-foreground"
+              sx={{ width: 30, height: 30, borderRadius: "999px" }}
               onClick={onRetry}
               disabled={isLoading}
               aria-label="Tạo lại câu trả lời"
@@ -154,7 +170,7 @@ function LocalMessageActions({
           )}
         </>
       )}
-    </div>
+    </Box>
   );
 }
 
@@ -162,18 +178,15 @@ function StickyToBottomContent(props: {
   content: ReactNode;
   className?: string;
   contentClassName?: string;
+  sx?: SxProps<Theme>;
 }) {
   const context = useStickToBottomContext();
   return (
-    <div
-      ref={context.scrollRef}
-      style={{ width: "100%", height: "100%" }}
-      className={props.className}
-    >
+    <Box ref={context.scrollRef} className={props.className} sx={props.sx}>
       <div ref={context.contentRef} className={props.contentClassName}>
         {props.content}
       </div>
-    </div>
+    </Box>
   );
 }
 
@@ -185,11 +198,12 @@ function ScrollToBottom(props: { className?: string }) {
     <Button
       variant="outline"
       size="sm"
-      className={cn("rounded-full", props.className)}
+      className={props.className}
+      sx={styles.scrollToBottomButtonStyles}
       onClick={() => scrollToBottom()}
     >
       <ArrowDown className="w-4 h-4" />
-      <span>Scroll to bottom</span>
+      <span>Xuống cuối</span>
     </Button>
   );
 }
@@ -471,8 +485,7 @@ export function Thread() {
     !!threadId || !!messages.length || localMessages.length > 0;
 
   return (
-    <div className="flex w-full h-screen flex-col overflow-hidden bg-background">
-      {/* Header */}
+    <Box sx={styles.appShellStyles}>
       <Header
         chatHistoryOpen={chatHistoryOpen}
         onToggleChatHistory={() => setChatHistoryOpen((p) => !p)}
@@ -481,12 +494,11 @@ export function Thread() {
         isLargeScreen={isLargeScreen}
       />
 
-      {/* Main Content */}
-      <div className="flex flex-1 overflow-hidden">
-        {/* Sidebar */}
-        <div className="relative lg:flex hidden">
-          <motion.div
-            className="absolute h-full border-r border-border bg-background overflow-hidden z-20"
+      <Box sx={styles.mainContentStyles}>
+        <Box sx={styles.desktopSidebarContainerStyles}>
+          <Box
+            component={motion.div}
+            sx={styles.desktopSidebarMotionStyles}
             style={{ width: 300 }}
             animate={{
               x: chatHistoryOpen ? 0 : -300,
@@ -498,15 +510,15 @@ export function Thread() {
               damping: 30,
             }}
           >
-            <div className="relative h-full" style={{ width: 300 }}>
+            <Box sx={{ position: "relative", height: "100%", width: 300 }}>
               <ThreadHistory />
-            </div>
-          </motion.div>
-        </div>
+            </Box>
+          </Box>
+        </Box>
 
-        {/* Chat Area */}
-        <motion.div
-          className="flex-1 flex flex-col min-w-0 overflow-hidden relative"
+        <Box
+          component={motion.div}
+          sx={styles.chatAreaStyles}
           animate={{
             marginLeft: chatHistoryOpen ? (isLargeScreen ? 300 : 0) : 0,
             width: chatHistoryOpen
@@ -521,119 +533,178 @@ export function Thread() {
             damping: 30,
           }}
         >
-          {/* Empty State */}
           {!chatStarted && (
-            <div className="flex-1 flex flex-col items-center justify-center px-4">
-              <div className="text-center mb-8">
-                <h1 className="text-4xl font-bold tracking-tight mb-4 bg-gradient-to-r from-orange-500 to-rose-500 text-transparent bg-clip-text mt-8">
+            <Box sx={styles.emptyStateStyles}>
+              <Box sx={styles.emptyHeroPanelStyles}>
+                <Typography as="span" sx={styles.emptyEyebrowStyles}>
+                  <Sparkles className="size-4" />
+                  Food assistant cho Đà Nẵng
+                </Typography>
+                <Typography as="h1" sx={styles.emptyTitleStyles}>
                   # Hôm nay bạn ăn gì?
-                </h1>
-                <p className="text-gray-600 dark:text-gray-400 text-base">
-                  Chọn một gợi ý hoặc nhập nhu cầu ăn uống của bạn.
-                </p>
-              </div>
-              <div className="grid w-full max-w-3xl grid-cols-1 gap-3 sm:grid-cols-2">
-                {EMPTY_STATE_PROMPTS.map((prompt) => (
-                  <button
-                    key={prompt}
-                    type="button"
-                    className="group flex min-h-20 items-center gap-3 rounded-2xl border border-border bg-card/70 p-4 text-left shadow-sm transition hover:border-orange-500/50 hover:bg-orange-500/5"
-                    onClick={() => setInput(prompt)}
-                  >
-                    <span className="rounded-full bg-orange-500/10 p-2 text-orange-600 dark:text-orange-400">
-                      <Sparkles className="size-4" />
-                    </span>
-                    <span className="text-sm font-medium leading-6 text-foreground group-hover:text-orange-600 dark:group-hover:text-orange-400">
-                      {prompt}
-                    </span>
-                  </button>
-                ))}
-              </div>
-            </div>
+                </Typography>
+                <Typography as="p" sx={styles.emptyDescriptionStyles}>
+                  Nói khẩu vị, nguyên liệu, sức khỏe hoặc ngân sách. Mình sẽ gợi
+                  ý món phù hợp và giữ câu trả lời ngắn gọn như một người bạn
+                  rành đồ ăn địa phương.
+                </Typography>
+                <Box sx={styles.promptGridStyles}>
+                  {EMPTY_STATE_PROMPTS.map((prompt) => (
+                    <Box
+                      key={prompt}
+                      component="button"
+                      type="button"
+                      sx={styles.promptCardStyles}
+                      onClick={() => setInput(prompt)}
+                    >
+                      <Box sx={styles.promptIconStyles}>
+                        <Sparkles className="size-4" />
+                      </Box>
+                      <Typography as="span" sx={styles.promptTextStyles}>
+                        {prompt}
+                      </Typography>
+                    </Box>
+                  ))}
+                </Box>
+              </Box>
+            </Box>
           )}
 
-          {/* Messages Area */}
           <StickToBottom className="relative flex-1 overflow-hidden">
             <StickyToBottomContent
-              className={cn(
-                "absolute px-4 inset-0 overflow-y-scroll [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-300 dark:[&::-webkit-scrollbar-thumb]:bg-gray-700 [&::-webkit-scrollbar-track]:bg-transparent",
-                !chatStarted && "flex flex-col items-stretch justify-center",
-              )}
-              contentClassName="py-8 px-4 max-w-3xl mx-auto flex flex-col gap-4 w-full"
+              className={cn(!chatStarted && "empty-chat-scroll")}
+              contentClassName="chat-message-content"
+              sx={styles.messageScrollStyles(chatStarted)}
               content={
-                <>
+                <Box sx={styles.messageContentStyles}>
                   {localMessages.map((message) =>
                     message.type === "human" ? (
-                      <div
+                      <Box
                         key={message.id}
-                        className="group ml-auto flex max-w-[85%] flex-col items-end gap-1"
+                        className="group"
+                        sx={styles.localHumanGroupStyles}
                       >
-                        <div className="rounded-2xl bg-gradient-to-r from-orange-500 to-orange-600 px-4 py-3 text-sm text-white shadow-sm">
-                          <p className="whitespace-pre-wrap">
+                        <Box sx={styles.localHumanBubbleStyles}>
+                          <Typography as="p" sx={{ whiteSpace: "pre-wrap" }}>
                             {message.content}
-                          </p>
+                          </Typography>
                           {message.attachments &&
                             message.attachments.length > 0 && (
-                              <div className="mt-3 flex flex-wrap gap-2">
+                              <Box
+                                sx={{
+                                  mt: 1.5,
+                                  display: "flex",
+                                  flexWrap: "wrap",
+                                  gap: 1,
+                                }}
+                              >
                                 {message.attachments.map((attachment) => (
-                                  <span
+                                  <Box
                                     key={attachment.id}
-                                    className="inline-flex max-w-full items-center gap-1.5 rounded-full bg-white/15 px-2.5 py-1 text-xs text-white/95"
+                                    sx={{
+                                      display: "inline-flex",
+                                      maxWidth: "100%",
+                                      alignItems: "center",
+                                      gap: 0.75,
+                                      borderRadius: "999px",
+                                      backgroundColor: "rgba(255,255,255,0.16)",
+                                      px: 1.25,
+                                      py: 0.5,
+                                      color: "rgba(255,255,255,0.95)",
+                                      fontSize: "0.75rem",
+                                    }}
                                   >
                                     <Paperclip className="size-3.5" />
-                                    <span className="max-w-[12rem] truncate">
+                                    <Typography
+                                      as="span"
+                                      sx={{
+                                        maxWidth: "12rem",
+                                        overflow: "hidden",
+                                        textOverflow: "ellipsis",
+                                        whiteSpace: "nowrap",
+                                      }}
+                                    >
                                       {attachment.name}
-                                    </span>
-                                  </span>
+                                    </Typography>
+                                  </Box>
                                 ))}
-                              </div>
+                              </Box>
                             )}
-                        </div>
+                        </Box>
                         <LocalMessageActions
                           content={message.content}
                           isLoading={isLoading}
                         />
-                      </div>
+                      </Box>
                     ) : (
-                      <div
+                      <Box
                         key={message.id}
-                        className="group mr-auto flex max-w-[90%] gap-3"
+                        className="group"
+                        sx={styles.localAssistantGroupStyles}
                       >
-                        <div className="mt-1 flex size-7 shrink-0 items-center justify-center rounded-full bg-orange-500/10 text-orange-600 dark:text-orange-400">
+                        <Box sx={styles.assistantAvatarStyles}>
                           <Sparkles className="size-4" />
-                        </div>
-                        <div className="flex min-w-0 flex-col gap-1">
-                          <div className="rounded-2xl border border-border bg-card px-4 py-3 text-sm text-foreground/90 shadow-sm">
-                            <p className="whitespace-pre-wrap">
+                        </Box>
+                        <Box
+                          sx={{
+                            display: "flex",
+                            minWidth: 0,
+                            flexDirection: "column",
+                            gap: 0.75,
+                          }}
+                        >
+                          <Box sx={styles.localAssistantBubbleStyles}>
+                            <Typography as="p" sx={{ whiteSpace: "pre-wrap" }}>
                               {renderHighlightedText(
                                 message.content,
                                 message.foods,
                               )}
-                            </p>
+                            </Typography>
 
                             {message.foods && message.foods.length > 0 && (
-                              <div className="mt-4 grid grid-cols-1 gap-3">
+                              <Box
+                                sx={{
+                                  display: "grid",
+                                  gridTemplateColumns: "1fr",
+                                  gap: 1.2,
+                                  mt: 2,
+                                }}
+                              >
                                 {message.foods.map((food) => (
-                                  <div
+                                  <Box
                                     key={food.id}
-                                    className="rounded-xl border border-border/70 bg-background/70 p-3"
+                                    sx={styles.foodResultCardStyles}
                                   >
-                                    <div className="flex items-start justify-between gap-3">
-                                      <h4 className="font-semibold text-orange-600 dark:text-orange-400">
+                                    <Box sx={styles.foodResultHeaderStyles}>
+                                      <Typography
+                                        as="h4"
+                                        sx={styles.foodResultTitleStyles}
+                                      >
                                         {food.name}
-                                      </h4>
-                                      <span className="text-xs font-medium rounded-full bg-secondary px-2 py-1 whitespace-nowrap">
+                                      </Typography>
+                                      <Typography
+                                        as="span"
+                                        sx={styles.scorePillStyles}
+                                      >
                                         {food.matchScore.toFixed(1)}%
-                                      </span>
-                                    </div>
-                                    <p className="mt-2 text-xs text-muted-foreground">
+                                      </Typography>
+                                    </Box>
+                                    <Typography
+                                      as="p"
+                                      sx={{
+                                        mt: 1,
+                                        color: "var(--muted-foreground)",
+                                        fontSize: "0.78rem",
+                                        lineHeight: 1.6,
+                                      }}
+                                    >
                                       {food.description}
-                                    </p>
-                                  </div>
+                                    </Typography>
+                                  </Box>
                                 ))}
-                              </div>
+                              </Box>
                             )}
-                          </div>
+                          </Box>
                           <LocalMessageActions
                             content={message.content}
                             feedback={message.feedback}
@@ -648,8 +719,8 @@ export function Thread() {
                                 : undefined
                             }
                           />
-                        </div>
-                      </div>
+                        </Box>
+                      </Box>
                     ),
                   )}
                   {messages
@@ -673,17 +744,15 @@ export function Thread() {
                   {isLoading && !firstTokenReceived && (
                     <AssistantMessageLoading />
                   )}
-                </>
+                </Box>
               }
             />
 
-            {/* Scroll to Bottom Button */}
-            <div className="absolute bottom-32 left-1/2 -translate-x-1/2 z-10">
+            <Box sx={styles.scrollToBottomWrapStyles}>
               <ScrollToBottom />
-            </div>
+            </Box>
           </StickToBottom>
 
-          {/* Input Area */}
           <InputArea
             input={input}
             onInputChange={setInput}
@@ -696,8 +765,8 @@ export function Thread() {
             onAttachmentsChange={setAttachments}
             onPromptSelect={setInput}
           />
-        </motion.div>
-      </div>
-    </div>
+        </Box>
+      </Box>
+    </Box>
   );
 }

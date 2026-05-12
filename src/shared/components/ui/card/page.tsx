@@ -2,6 +2,8 @@
  * Copyright (c) 2026 GTP26
  * All rights reserved.
  */
+import { Box as MuiBox } from "@mui/material";
+
 import {
   CardContentProps,
   CardDescriptionProps,
@@ -11,63 +13,70 @@ import {
   CardTitleProps,
   styles,
 } from ".";
+import { mergeSx } from "@/shared/shared.styles";
 import { cn } from "@/shared/lib/utils";
 
-function Card({ className, ...props }: CardProps) {
+function Card({ className, sx, ...props }: CardProps) {
   return (
-    <div
+    <MuiBox
       data-slot="card"
-      className={cn(styles.cardClassName, className)}
+      className={cn(className)}
+      sx={mergeSx(styles.cardStyles, sx)}
       {...props}
     />
   );
 }
 
-function CardHeader({ className, ...props }: CardHeaderProps) {
+function CardHeader({ className, sx, ...props }: CardHeaderProps) {
   return (
-    <div
+    <MuiBox
       data-slot="card-header"
-      className={cn(styles.cardHeaderClassName, className)}
+      className={cn(className)}
+      sx={mergeSx(styles.cardHeaderStyles, sx)}
       {...props}
     />
   );
 }
 
-function CardTitle({ className, ...props }: CardTitleProps) {
+function CardTitle({ className, sx, ...props }: CardTitleProps) {
   return (
-    <div
+    <MuiBox
       data-slot="card-title"
-      className={cn(styles.cardTitleClassName, className)}
+      className={cn(className)}
+      sx={mergeSx(styles.cardTitleStyles, sx)}
       {...props}
     />
   );
 }
 
-function CardDescription({ className, ...props }: CardDescriptionProps) {
+function CardDescription({ className, sx, ...props }: CardDescriptionProps) {
   return (
-    <div
+    <MuiBox
       data-slot="card-description"
-      className={cn(styles.cardDescriptionClassName, className)}
+      className={cn(className)}
+      sx={mergeSx(styles.cardDescriptionStyles, sx)}
       {...props}
     />
   );
 }
 
-function CardContent({ className, ...props }: CardContentProps) {
+function CardContent({ className, sx, ...props }: CardContentProps) {
   return (
-    <div
+    <MuiBox
       data-slot="card-content"
-      className={cn(styles.cardContentClassName, className)}
+      className={cn(className)}
+      sx={mergeSx(styles.cardContentStyles, sx)}
       {...props}
     />
   );
 }
 
-function CardFooter({ className, ...props }: CardFooterProps) {
+function CardFooter({ className, sx, ...props }: CardFooterProps) {
   return (
-    <div
+    <MuiBox
       data-slot="card-footer"
-      className={cn(styles.cardFooterClassName, className)}
+      className={cn(className)}
+      sx={mergeSx(styles.cardFooterStyles, sx)}
       {...props}
     />
   );

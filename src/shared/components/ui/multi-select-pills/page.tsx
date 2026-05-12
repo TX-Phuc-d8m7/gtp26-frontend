@@ -13,6 +13,7 @@ function MultiSelectPills({
   value,
   onChange,
   variant = "default",
+  sx,
 }: MultiSelectPillsProps) {
   const toggleOption = (option: string) => {
     if (value.includes(option)) {
@@ -23,19 +24,8 @@ function MultiSelectPills({
     onChange([...value, option]);
   };
 
-  const getSelectedClassName = () => {
-    switch (variant) {
-      case "danger":
-        return styles.optionButtonDanger;
-      case "success":
-        return styles.optionButtonSuccess;
-      default:
-        return styles.optionButtonDefault;
-    }
-  };
-
   return (
-    <Box className={styles.root}>
+    <Box sx={[styles.rootStyles, ...(Array.isArray(sx) ? sx : sx ? [sx] : [])]}>
       {options.map((option) => {
         const isSelected = value.includes(option);
 
@@ -45,11 +35,11 @@ function MultiSelectPills({
             variant="ghost"
             key={option}
             onClick={() => toggleOption(option)}
-            className={`${styles.optionButtonBase} ${
-              isSelected ? getSelectedClassName() : styles.optionButtonInactive
-            }`}
+            sx={styles.optionButtonStyles(variant, isSelected)}
           >
-            {isSelected && <Check className={styles.optionIcon} />}
+            {isSelected && (
+              <Box component={Check} sx={styles.optionIconStyles} />
+            )}
             {option}
           </Button>
         );

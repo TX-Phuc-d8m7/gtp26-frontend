@@ -1,4 +1,6 @@
 import { Button } from "@/shared/components/ui/button/index";
+import { Box } from "@mui/material";
+import { Typography } from "@/shared/components/ui/typography/index";
 import {
   Menu,
   SquarePen,
@@ -9,6 +11,7 @@ import {
   Search,
   Check,
   ChevronDown,
+  Soup,
 } from "lucide-react";
 import { ThemeToggle } from "@/shared/components/theme-toggle";
 import { GitHubSVG } from "@/shared/components/icons/github";
@@ -21,6 +24,7 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { FoodSearchUI } from "@/features/foods/search";
+import { styles } from "@/features/chat/_styles";
 
 import { HeaderProps } from "./_interface";
 import { useHeader } from "./_use-header";
@@ -47,42 +51,34 @@ export function Header({
     setSelectedModel,
   } = useHeader();
 
+  const shouldShowMenuButton = !chatHistoryOpen || !isLargeScreen;
+
   return (
     <>
-      <div className="flex items-center justify-between gap-3 p-3 px-4 z-10 relative border-b border-border bg-background/50 backdrop-blur-sm">
-        {/* Left: Menu + Search + Brand */}
-        <div className="flex items-center justify-start gap-4">
-          <div className="flex items-center gap-1">
-            {!chatStarted && (!chatHistoryOpen || !isLargeScreen) && (
+      <Box sx={styles.headerBarStyles}>
+        <Box sx={styles.headerSideStyles}>
+          <Box sx={styles.headerSideStyles}>
+            {shouldShowMenuButton && (
               <Button
-                className="hover:bg-gray-100 dark:hover:bg-gray-800"
                 variant="ghost"
-                size="sm"
+                size="icon"
+                sx={styles.headerIconButtonStyles}
                 onClick={onToggleChatHistory}
-              >
-                <Menu className="size-5" />
-              </Button>
-            )}
-            {chatStarted && (!chatHistoryOpen || !isLargeScreen) && (
-              <Button
-                className="hover:bg-gray-100 dark:hover:bg-gray-800"
-                variant="ghost"
-                size="sm"
-                onClick={onToggleChatHistory}
+                aria-label="Mở lịch sử trò chuyện"
               >
                 <Menu className="size-5" />
               </Button>
             )}
 
-            {/* Search Button placed on the left next to Menu */}
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button
-                    size="sm"
+                    size="icon"
                     variant="ghost"
-                    className="hover:bg-gray-100 dark:hover:bg-gray-800"
+                    sx={styles.headerIconButtonStyles}
                     onClick={() => setIsSearchOpen(true)}
+                    aria-label="Tra cứu món ăn"
                   >
                     <Search className="size-5" />
                   </Button>
@@ -92,33 +88,39 @@ export function Header({
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
-          </div>
+          </Box>
 
-          {chatStarted && (
-            <motion.button
-              className="flex gap-2 items-center cursor-pointer"
-              onClick={onNewThread}
-              animate={{
-                marginLeft: !chatHistoryOpen ? 0 : 8,
-              }}
-              transition={{
-                type: "spring",
-                stiffness: 300,
-                damping: 30,
-              }}
-            >
-              <span className="text-lg font-bold tracking-tight bg-gradient-to-r from-orange-500 to-rose-500 text-transparent bg-clip-text">
-                Foodie Suggest
-              </span>
-            </motion.button>
-          )}
+          <motion.button
+            type="button"
+            style={{ minWidth: 0 }}
+            className="group"
+            onClick={onNewThread}
+            animate={{ marginLeft: chatStarted && chatHistoryOpen ? 8 : 0 }}
+            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+          >
+            <Box sx={styles.brandButtonStyles}>
+              <Box sx={styles.brandMarkStyles}>
+                <Soup className="size-4" />
+              </Box>
+              <Box sx={styles.brandTextStyles}>
+                <Typography as="span" sx={styles.brandTitleStyles}>
+                  Foodie Suggest
+                </Typography>
+                <Typography as="span" sx={styles.brandSubtitleStyles}>
+                  Trợ lý món ngon Đà Nẵng
+                </Typography>
+              </Box>
+            </Box>
+          </motion.button>
 
-          <div className="relative hidden sm:block">
+          <Box
+            sx={{ position: "relative", display: { xs: "none", sm: "block" } }}
+          >
             <Button
               type="button"
               variant="ghost"
               size="sm"
-              className="rounded-full px-3 text-sm text-muted-foreground hover:text-foreground"
+              sx={styles.modelButtonStyles}
               onClick={() => setIsModelMenuOpen((open) => !open)}
             >
               <span>{selectedModel}</span>
@@ -127,65 +129,50 @@ export function Header({
 
             <AnimatePresence>
               {isModelMenuOpen && (
-                <motion.div
+                <Box
+                  component={motion.div}
                   initial={{ opacity: 0, y: 8, scale: 0.96 }}
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: 8, scale: 0.96 }}
                   transition={{ duration: 0.14 }}
-                  className="absolute left-0 mt-2 w-48 overflow-hidden rounded-xl border border-border bg-popover p-1 text-popover-foreground shadow-lg z-50"
+                  sx={[styles.dropdownPanelStyles, { left: 0, width: 192 }]}
                 >
-                  {modelOptions.map((option) => (
-                    <button
-                      key={option}
-                      type="button"
-                      className="flex w-full items-center justify-between rounded-lg px-3 py-2 text-left text-sm hover:bg-accent"
-                      onClick={() => {
-                        setSelectedModel(option);
-                        setIsModelMenuOpen(false);
-                      }}
-                    >
-                      <span>{option}</span>
-                      {selectedModel === option && (
-                        <Check className="size-4 text-orange-500" />
-                      )}
-                    </button>
-                  ))}
-                </motion.div>
+                  <Box sx={{ p: 0.75 }}>
+                    {modelOptions.map((option) => (
+                      <Box
+                        key={option}
+                        component="button"
+                        type="button"
+                        sx={styles.dropdownItemStyles}
+                        onClick={() => {
+                          setSelectedModel(option);
+                          setIsModelMenuOpen(false);
+                        }}
+                      >
+                        <span>{option}</span>
+                        {selectedModel === option && (
+                          <Check className="size-4 text-orange-500" />
+                        )}
+                      </Box>
+                    ))}
+                  </Box>
+                </Box>
               )}
             </AnimatePresence>
-          </div>
-        </div>
+          </Box>
+        </Box>
 
-        {/* Right: Actions */}
-        <div className="flex items-center gap-2">
-          {/* Search Button moved to the right */}
-          {/* <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  className="hover:bg-gray-100 dark:hover:bg-gray-800"
-                  onClick={() => setIsSearchOpen(true)}
-                >
-                  <Search className="size-5" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent side="bottom">
-                <p>Tra cứu món ăn</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider> */}
-
+        <Box sx={styles.headerSideStyles}>
           {chatStarted && (
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button
-                    size="sm"
+                    size="icon"
                     variant="ghost"
-                    className="hover:bg-gray-100 dark:hover:bg-gray-800"
+                    sx={styles.headerIconButtonStyles}
                     onClick={onNewThread}
+                    aria-label="Cuộc hội thoại mới"
                   >
                     <SquarePen className="size-5" />
                   </Button>
@@ -202,13 +189,22 @@ export function Header({
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
-                <a
+                <Box
+                  component="a"
                   href="https://github.com/TX-Phuc-d8m7/gtp26-frontend.git"
                   target="_blank"
-                  className="flex items-center justify-center p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+                  sx={[
+                    styles.headerIconButtonStyles,
+                    {
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      textDecoration: "none",
+                    },
+                  ]}
                 >
                   <GitHubSVG width="20" height="20" />
-                </a>
+                </Box>
               </TooltipTrigger>
               <TooltipContent side="bottom">
                 <p>Mã nguồn GitHub</p>
@@ -216,16 +212,16 @@ export function Header({
             </Tooltip>
           </TooltipProvider>
 
-          {/* User Profile Menu */}
-          <div className="relative" ref={menuRef}>
+          <Box sx={{ position: "relative" }} ref={menuRef}>
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button
                     variant="ghost"
-                    size="sm"
-                    className="rounded-full w-9 h-9 p-0 hover:bg-gray-100 dark:hover:bg-gray-800 ml-1"
+                    size="icon"
+                    sx={styles.headerIconButtonStyles}
                     onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+                    aria-label="Tài khoản"
                   >
                     <User className="size-5" />
                   </Button>
@@ -238,91 +234,162 @@ export function Header({
 
             <AnimatePresence>
               {isUserMenuOpen && (
-                <motion.div
+                <Box
+                  component={motion.div}
                   initial={{ opacity: 0, y: 10, scale: 0.95 }}
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: 10, scale: 0.95 }}
                   transition={{ duration: 0.15 }}
-                  className="absolute right-0 mt-2 w-56 rounded-xl border border-border bg-card text-card-foreground shadow-lg z-50 overflow-hidden"
+                  sx={[styles.dropdownPanelStyles, { right: 0, width: 236 }]}
                 >
-                  <div className="p-2 flex flex-col gap-1">
+                  <Box
+                    sx={{
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: 0.5,
+                      p: 1,
+                    }}
+                  >
                     {isLoggedIn ? (
                       <>
-                        <div className="px-3 py-2 text-sm font-semibold border-b border-border/50 mb-1 flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                        <Box
+                          sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 1.25,
+                            borderBottom: "1px solid var(--border)",
+                            px: 1.5,
+                            py: 1.2,
+                            mb: 0.5,
+                          }}
+                        >
+                          <Box sx={styles.assistantAvatarStyles}>
                             <User className="size-4" />
-                          </div>
-                          <div className="flex flex-col">
-                            <span className="leading-none mb-1">
+                          </Box>
+                          <Box
+                            sx={{
+                              display: "flex",
+                              minWidth: 0,
+                              flexDirection: "column",
+                            }}
+                          >
+                            <Typography
+                              as="span"
+                              sx={{ fontSize: "0.9rem", fontWeight: 700 }}
+                            >
                               Người dùng
-                            </span>
-                            <span className="text-xs text-muted-foreground font-normal">
+                            </Typography>
+                            <Typography
+                              as="span"
+                              sx={{
+                                color: "var(--muted-foreground)",
+                                fontSize: "0.76rem",
+                              }}
+                            >
                               user@example.com
-                            </span>
-                          </div>
-                        </div>
-                        <Link
+                            </Typography>
+                          </Box>
+                        </Box>
+                        <Box
+                          component={Link}
                           href="/profile"
-                          className="flex items-center gap-2 px-3 py-2 text-sm rounded-md hover:bg-secondary hover:text-secondary-foreground transition-colors cursor-pointer"
+                          sx={[
+                            styles.dropdownItemStyles,
+                            {
+                              justifyContent: "flex-start",
+                              textDecoration: "none",
+                            },
+                          ]}
                           onClick={() => setIsUserMenuOpen(false)}
                         >
                           <Settings className="size-4 text-muted-foreground" />
                           Quản lý tài khoản
-                        </Link>
-                        <div
-                          className="flex items-center gap-2 px-3 py-2 text-sm rounded-md hover:bg-red-500/10 text-red-600 dark:text-red-400 transition-colors cursor-pointer mt-1"
+                        </Box>
+                        <Box
+                          component="button"
+                          type="button"
+                          sx={[
+                            styles.dropdownItemStyles,
+                            {
+                              justifyContent: "flex-start",
+                              color: "var(--destructive)",
+                            },
+                          ]}
                           onClick={handleLogout}
                         >
                           <LogOut className="size-4" />
                           Đăng xuất
-                        </div>
+                        </Box>
                       </>
                     ) : (
                       <>
-                        <div className="px-3 py-2 text-sm font-semibold border-b border-border/50 mb-1">
+                        <Typography
+                          as="span"
+                          sx={{
+                            borderBottom: "1px solid var(--border)",
+                            px: 1.5,
+                            py: 1.2,
+                            mb: 0.5,
+                            fontSize: "0.9rem",
+                            fontWeight: 700,
+                          }}
+                        >
                           Chào mừng bạn!
-                        </div>
-                        <Link
+                        </Typography>
+                        <Box
+                          component={Link}
                           href="/login"
-                          className="flex items-center gap-2 px-3 py-2 text-sm rounded-md hover:bg-secondary hover:text-secondary-foreground transition-colors cursor-pointer"
+                          sx={[
+                            styles.dropdownItemStyles,
+                            {
+                              justifyContent: "flex-start",
+                              textDecoration: "none",
+                            },
+                          ]}
                           onClick={() => setIsUserMenuOpen(false)}
                         >
                           <LogIn className="size-4 text-muted-foreground" />
                           Đăng nhập
-                        </Link>
-                        <Link
+                        </Box>
+                        <Box
+                          component={Link}
                           href="/signup"
-                          className="flex items-center gap-2 px-3 py-2 text-sm rounded-md hover:bg-secondary hover:text-secondary-foreground transition-colors cursor-pointer"
+                          sx={[
+                            styles.dropdownItemStyles,
+                            {
+                              justifyContent: "flex-start",
+                              textDecoration: "none",
+                            },
+                          ]}
                           onClick={() => setIsUserMenuOpen(false)}
                         >
                           <User className="size-4 text-muted-foreground" />
                           Đăng ký
-                        </Link>
+                        </Box>
                       </>
                     )}
-                  </div>
-                </motion.div>
+                  </Box>
+                </Box>
               )}
             </AnimatePresence>
-          </div>
-        </div>
-      </div>
+          </Box>
+        </Box>
+      </Box>
 
-      {/* Full screen Search Overlay */}
       <AnimatePresence>
         {isSearchOpen && (
-          <motion.div
+          <Box
+            component={motion.div}
             initial={{ opacity: 0, scale: 0.97, y: 10 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.97, y: 10 }}
             transition={{ duration: 0.2, ease: "easeOut" }}
-            className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm flex items-center justify-center p-2 sm:p-6"
+            sx={styles.searchOverlayStyles}
           >
-            {/* The Search UI container */}
-            <div className="w-full h-full max-w-6xl max-h-[95vh] bg-background border border-border shadow-2xl rounded-2xl sm:rounded-3xl overflow-hidden relative flex flex-col">
+            <Box sx={styles.searchOverlayPanelStyles}>
               <FoodSearchUI onClose={() => setIsSearchOpen(false)} />
-            </div>
-          </motion.div>
+            </Box>
+          </Box>
         )}
       </AnimatePresence>
     </>

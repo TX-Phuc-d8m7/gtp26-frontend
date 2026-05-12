@@ -5,6 +5,7 @@
 import { Box as MuiBox } from "@mui/material";
 
 import { InputProps, styles } from ".";
+import { mergeSx } from "@/shared/shared.styles";
 import { cn } from "@/shared/lib/utils";
 
 function Input({ className, sx, type, ...props }: InputProps) {
@@ -13,12 +14,8 @@ function Input({ className, sx, type, ...props }: InputProps) {
       component="input"
       type={type}
       data-slot="input"
-      className={cn(
-        styles.inputClassName,
-        styles.inputInvalidClassName,
-        className,
-      )}
-      sx={sx}
+      className={cn(className)}
+      sx={mergeSx(styles.inputStyles, sx)}
       {...props}
     />
   );

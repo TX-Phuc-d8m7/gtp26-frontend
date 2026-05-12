@@ -5,7 +5,7 @@
 "use client";
 
 import { FoodSearchUI } from "./search";
-import type { FoodSearchUIProps } from ".";
+import type { FoodSearchUIProps } from "./search";
 
 export default function Foods(props: FoodSearchUIProps = {}) {
   return <FoodSearchUI {...props} />;

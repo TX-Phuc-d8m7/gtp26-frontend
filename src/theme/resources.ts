@@ -3,7 +3,7 @@
  *  All rights reserved.
  */
 
-import { pxToRem } from '../shared/utils'
+import { pxToRem } from "../shared/utils";
 
 /**
  * Font size scale
@@ -18,7 +18,14 @@ export const fontSizes = {
   xl: pxToRem(20), // 20px
   xxl: pxToRem(24), // 24px
   xxxl: pxToRem(32), // 32px
-} as const
+} as const;
+
+export const fontFamilies = {
+  display:
+    '"Be Vietnam Pro", "Lexend", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
+  body: '"Be Vietnam Pro", "Inter", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
+  mono: '"JetBrains Mono", "SFMono-Regular", Consolas, "Liberation Mono", monospace',
+} as const;
 
 /**
  * Font weight scale
@@ -31,7 +38,7 @@ export const fontWeights = {
   bold: 700,
   extrabold: 800,
   black: 900,
-} as const
+} as const;
 
 /**
  * Spacing scale system
@@ -46,4 +53,4 @@ export const spacing = {
   lg: 2.5, // 20px
   xl: 4, // 32px
   xxl: 5, // 40px
-} as const
+} as const;

@@ -2,24 +2,26 @@
  * Copyright (c) 2026 GTP26
  * All rights reserved.
  */
-import type { Food } from "@/features/foods/data/mock-foods";
+import type { SearchFood } from "./mockData";
 
 export interface FoodSearchUIProps {
   onClose?: () => void;
 }
 
+export interface RankedFood {
+  food: SearchFood;
+  score: number;
+  matchedTerms: string[];
+}
+
+export interface SearchSuggestion {
+  id: string;
+  label: string;
+  type: "dish" | "tag" | "ingredient";
+}
+
 export interface FoodSearchState {
-  searchTerm: string;
-  selectedCategory: string | null;
-  selectedFood: Food | null;
-}
-
-export interface FoodCardProps {
-  food: Food;
-  onClick: () => void;
-}
-
-export interface FoodDetailSheetProps {
-  food: Food | null;
-  onClose: () => void;
+  query: string;
+  selectedTags: string[];
+  selectedFood: SearchFood | null;
 }

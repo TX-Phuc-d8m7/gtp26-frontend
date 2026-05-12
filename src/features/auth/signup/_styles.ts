@@ -18,6 +18,8 @@ import {
   inputWrapperStyles,
   labelStyles,
   loadingIconStyles,
+  pageBackgroundStyles,
+  pageShellStyles,
   submitIconStyles,
   titleStyles,
 } from "../login/_styles";
@@ -36,6 +38,8 @@ export {
   inputWrapperStyles,
   labelStyles,
   loadingIconStyles,
+  pageBackgroundStyles,
+  pageShellStyles,
   submitIconStyles,
   titleStyles,
 };
@@ -66,6 +70,8 @@ export const submitButtonStyles = (theme: Theme) => ({
 });
 
 export const styles = {
+  pageShellStyles,
+  pageBackgroundStyles,
   containerStyles,
   headerStyles,
   titleStyles,

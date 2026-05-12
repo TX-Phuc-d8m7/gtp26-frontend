@@ -2,16 +2,72 @@
  * Copyright (c) 2026 GTP26
  * All rights reserved.
  */
+import type { Theme } from "@mui/material/styles";
+
+import type { MultiSelectPillsProps } from ".";
+
+export const rootStyles = (theme: Theme) => ({
+  display: "flex",
+  flexWrap: "wrap",
+  gap: 1,
+  marginTop: 1,
+});
+
+export const optionButtonStyles =
+  (
+    variant: NonNullable<MultiSelectPillsProps["variant"]>,
+    isSelected: boolean,
+  ) =>
+  (theme: Theme) => {
+    const selectedConfig = {
+      default: {
+        backgroundColor: "color-mix(in srgb, var(--primary) 14%, transparent)",
+        borderColor: "color-mix(in srgb, var(--primary) 34%, transparent)",
+        color: "var(--primary)",
+      },
+      danger: {
+        backgroundColor: "rgb(239 68 68 / 0.12)",
+        borderColor: "rgb(239 68 68 / 0.26)",
+        color: "#ef4444",
+      },
+      success: {
+        backgroundColor:
+          "color-mix(in srgb, var(--food-herb) 16%, transparent)",
+        borderColor: "color-mix(in srgb, var(--food-herb) 34%, transparent)",
+        color: "var(--food-herb)",
+      },
+    }[variant];
+
+    return {
+      minHeight: "auto",
+      padding: "0.4rem 0.75rem",
+      borderRadius: "999px",
+      border: "1px solid",
+      fontSize: 14,
+      fontWeight: 700,
+      gap: 0.55,
+      backgroundColor: isSelected
+        ? selectedConfig.backgroundColor
+        : "color-mix(in srgb, var(--card) 74%, transparent)",
+      borderColor: isSelected ? selectedConfig.borderColor : "var(--border)",
+      color: isSelected ? selectedConfig.color : "var(--muted-foreground)",
+      boxShadow: isSelected ? "0 8px 18px rgb(75 36 16 / 0.08)" : "none",
+      "&:hover": {
+        backgroundColor: isSelected
+          ? selectedConfig.backgroundColor
+          : "var(--secondary)",
+        transform: "translateY(-1px)",
+      },
+    };
+  };
+
+export const optionIconStyles = (theme: Theme) => ({
+  width: 14,
+  height: 14,
+});
+
 export const styles = {
-  root: "flex flex-wrap gap-2 mt-2",
-  optionButtonBase:
-    "h-auto px-3 py-1.5 rounded-full text-sm font-medium border transition-colors flex items-center gap-1",
-  optionButtonDefault: "bg-primary/10 text-primary border-primary/20",
-  optionButtonDanger:
-    "bg-red-100 text-red-700 border-red-200 dark:bg-red-900/30 dark:text-red-400 dark:border-red-800",
-  optionButtonSuccess:
-    "bg-green-100 text-green-700 border-green-200 dark:bg-green-900/30 dark:text-green-400 dark:border-green-800",
-  optionButtonInactive:
-    "bg-background text-muted-foreground border-border hover:bg-secondary",
-  optionIcon: "w-3.5 h-3.5",
+  rootStyles,
+  optionButtonStyles,
+  optionIconStyles,
 } as const;

@@ -4,341 +4,372 @@
  */
 import { Theme } from "@mui/material/styles";
 
-export const rootStyles = (theme: Theme) => ({
-  position: "relative",
-  display: "flex",
-  flexDirection: "column",
-  height: "100%",
+export const rootStyles = (isEmbedded?: boolean) => (theme: Theme) => ({
+  height: isEmbedded ? "100%" : "auto",
+  minHeight: isEmbedded ? 0 : "100dvh",
+  overflowX: "hidden",
+  overflowY: isEmbedded ? "auto" : "visible",
+  WebkitOverflowScrolling: "touch",
+  overscrollBehavior: isEmbedded ? "contain" : "auto",
+  background:
+    "linear-gradient(180deg, color-mix(in srgb, var(--primary) 7%, var(--background)) 0%, var(--background) 42%)",
+  color: "var(--foreground)",
+  scrollbarWidth: "thin",
+  scrollbarColor:
+    "color-mix(in srgb, var(--primary) 42%, var(--muted-foreground)) transparent",
+  "&::-webkit-scrollbar": {
+    width: 10,
+  },
+  "&::-webkit-scrollbar-track": {
+    backgroundColor: "transparent",
+    marginBlock: 18,
+  },
+  "&::-webkit-scrollbar-thumb": {
+    borderRadius: "999px",
+    border: "3px solid transparent",
+    backgroundColor:
+      "color-mix(in srgb, var(--muted-foreground) 28%, transparent)",
+  },
+});
+
+export const shellStyles = (theme: Theme) => ({
   width: "100%",
-});
-
-export const headerStyles = (theme: Theme) => ({
-  position: "sticky",
-  top: 0,
-  zIndex: 10,
-  padding: "1rem",
-  backgroundColor: "color-mix(in srgb, var(--background) 80%, transparent)",
-  backdropFilter: "blur(12px)",
-  borderBottom: "1px solid var(--border)",
-});
-
-export const headerContentStyles = (theme: Theme) => ({
-  maxWidth: "64rem",
+  maxWidth: 1180,
   marginInline: "auto",
-  display: "flex",
-  flexDirection: "column",
-  gap: "1rem",
+  padding: {
+    xs: "1rem",
+    sm: "1.25rem",
+    md: "1.75rem",
+  },
+  paddingBottom: {
+    xs: "2rem",
+    md: "2.5rem",
+  },
 });
 
-export const titleRowStyles = (theme: Theme) => ({
+export const topBarStyles = (theme: Theme) => ({
   display: "flex",
   alignItems: "center",
-  gap: "1rem",
+  justifyContent: "space-between",
+  gap: 1.5,
+  marginBottom: {
+    xs: 2,
+    md: 3,
+  },
 });
 
 export const backButtonStyles = (theme: Theme) => ({
-  padding: "0.5rem",
-  marginLeft: "-0.5rem",
-  borderRadius: "9999px",
-  transition: "background-color 150ms ease",
-  "&:hover": {
-    backgroundColor: "var(--secondary)",
-  },
+  width: 40,
+  height: 40,
+  borderRadius: "999px",
+  color: "var(--foreground)",
+  borderColor: "var(--border)",
+  backgroundColor: "color-mix(in srgb, var(--background) 76%, transparent)",
+  backdropFilter: "blur(10px)",
 });
 
-export const backIconStyles = (theme: Theme) => ({
-  width: 20,
-  height: 20,
-  color: "var(--muted-foreground)",
+export const titleBlockStyles = (theme: Theme) => ({
+  flex: 1,
+  minWidth: 0,
+});
+
+export const eyebrowStyles = (theme: Theme) => ({
+  display: "inline-flex",
+  alignItems: "center",
+  gap: 0.75,
+  color: "var(--primary)",
+  fontSize: 13,
+  fontWeight: 700,
+  letterSpacing: 0,
+  marginBottom: 0.5,
 });
 
 export const titleStyles = (theme: Theme) => ({
-  fontSize: "1.25rem",
-  lineHeight: "1.75rem",
-  fontWeight: 700,
+  fontWeight: 800,
+  letterSpacing: 0,
+  fontSize: {
+    xs: 28,
+    sm: 36,
+    md: 44,
+  },
+  lineHeight: 1.05,
 });
 
-export const searchRowStyles = (theme: Theme) => ({
-  display: "flex",
-  gap: "0.5rem",
-});
-
-export const searchFieldStyles = (theme: Theme) => ({
-  position: "relative",
-  flex: 1,
-});
-
-export const searchIconStyles = (theme: Theme) => ({
-  position: "absolute",
-  left: "0.75rem",
-  top: "50%",
-  width: 20,
-  height: 20,
+export const subtitleStyles = (theme: Theme) => ({
   color: "var(--muted-foreground)",
-  transform: "translateY(-50%)",
+  marginTop: 1,
+  maxWidth: 680,
+  fontSize: {
+    xs: 14,
+    sm: 16,
+  },
+});
+
+export const heroPanelStyles = (theme: Theme) => ({
+  position: "relative",
+  overflow: "visible",
+  borderRadius: {
+    xs: 3,
+    md: 4,
+  },
+  border: "1px solid var(--border)",
+  backgroundColor: "color-mix(in srgb, var(--card) 88%, transparent)",
+  boxShadow: "0 24px 80px rgb(0 0 0 / 0.12)",
+  backdropFilter: "blur(18px)",
+  padding: {
+    xs: 2,
+    md: 3,
+  },
+  marginBottom: 2.5,
+});
+
+export const searchAreaStyles = (theme: Theme) => ({
+  position: "relative",
 });
 
 export const searchInputStyles = (theme: Theme) => ({
-  width: "100%",
-  height: 48,
-  borderRadius: "0.75rem",
-  border: "1px solid var(--input)",
-  backgroundColor: "var(--background)",
-  padding: "0 1rem 0 2.5rem",
-  transition: "box-shadow 150ms ease",
-  "&:focus": {
-    outline: "none",
-    boxShadow: "0 0 0 2px color-mix(in srgb, var(--primary) 50%, transparent)",
+  "& .MuiOutlinedInput-root": {
+    minHeight: 58,
+    borderRadius: 3,
+    backgroundColor: "var(--background)",
+    color: "var(--foreground)",
+    boxShadow: "0 12px 30px rgb(0 0 0 / 0.08)",
+    "& fieldset": {
+      borderColor: "var(--border)",
+    },
+    "&:hover fieldset": {
+      borderColor: "color-mix(in srgb, var(--primary) 50%, var(--border))",
+    },
+    "&.Mui-focused fieldset": {
+      borderColor: "var(--primary)",
+      borderWidth: 1,
+    },
+  },
+  "& .MuiInputBase-input": {
+    fontSize: {
+      xs: 15,
+      sm: 16,
+    },
+    fontWeight: 600,
   },
 });
 
-export const filterButtonStyles = (theme: Theme) => ({
-  height: 48,
-  width: 48,
-  borderRadius: "0.75rem",
-  border: "1px solid var(--input)",
-  backgroundColor: "var(--background)",
-  transition: "background-color 150ms ease",
-  "&:hover": {
-    backgroundColor: "var(--secondary)",
-  },
+export const suggestionPaperStyles = (theme: Theme) => ({
+  position: "absolute",
+  zIndex: 20,
+  left: 0,
+  right: 0,
+  top: "calc(100% + 8px)",
+  borderRadius: 3,
+  border: "1px solid var(--border)",
+  backgroundColor: "var(--popover)",
+  color: "var(--popover-foreground)",
+  boxShadow: "0 24px 60px rgb(0 0 0 / 0.16)",
+  overflow: "hidden",
 });
 
-export const categoryListStyles = (theme: Theme) => ({
+export const suggestionItemStyles = (theme: Theme) => ({
   display: "flex",
-  gap: "0.5rem",
-  overflowX: "auto",
-  paddingBottom: "0.5rem",
-  marginInline: {
-    xs: "-1rem",
-    sm: 0,
-  },
-  paddingInline: {
-    xs: "1rem",
-    sm: 0,
-  },
-});
-
-export const categoryButtonBaseStyles = (theme: Theme) => ({
-  whiteSpace: "nowrap",
-  borderRadius: "9999px",
-  border: "1px solid",
-  padding: "0.5rem 1rem",
-  fontSize: "0.875rem",
-  lineHeight: "1.25rem",
-  fontWeight: 500,
-  transition: "background-color 150ms ease, color 150ms ease",
-});
-
-export const categoryButtonActiveStyles = (theme: Theme) => ({
-  backgroundColor: "var(--primary)",
-  color: "var(--primary-foreground)",
-  borderColor: "var(--primary)",
-});
-
-export const categoryButtonInactiveStyles = (theme: Theme) => ({
-  backgroundColor: "var(--background)",
-  color: "var(--muted-foreground)",
-  borderColor: "var(--border)",
+  alignItems: "center",
+  justifyContent: "space-between",
+  gap: 1,
+  cursor: "pointer",
+  padding: "0.75rem 1rem",
   "&:hover": {
-    backgroundColor: "var(--secondary)",
+    backgroundColor: "var(--accent)",
   },
 });
 
-export const resultsAreaStyles = (theme: Theme) => ({
-  flex: 1,
-  overflowY: "auto",
-  padding: "1rem 1rem 5rem",
+export const tagRailStyles = (theme: Theme) => ({
+  display: "flex",
+  gap: 1,
+  overflowX: "auto",
+  paddingTop: 2,
+  paddingBottom: 0.5,
+  scrollbarWidth: "none",
+  "&::-webkit-scrollbar": {
+    display: "none",
+  },
 });
 
-export const resultsContentStyles = (theme: Theme) => ({
-  maxWidth: "64rem",
-  marginInline: "auto",
+export const tagChipStyles = (isActive: boolean) => (theme: Theme) => ({
+  borderRadius: "999px",
+  fontWeight: 700,
+  flexShrink: 0,
+  borderColor: isActive ? "var(--primary)" : "var(--border)",
+  backgroundColor: isActive
+    ? "color-mix(in srgb, var(--primary) 15%, transparent)"
+    : "var(--background)",
+  color: isActive ? "var(--primary)" : "var(--muted-foreground)",
+  "&:hover": {
+    backgroundColor: isActive
+      ? "color-mix(in srgb, var(--primary) 20%, transparent)"
+      : "var(--secondary)",
+  },
 });
 
-export const emptyStateStyles = (theme: Theme) => ({
-  paddingBlock: "5rem",
-  textAlign: "center",
+export const statusRowStyles = (theme: Theme) => ({
+  display: "flex",
+  alignItems: {
+    xs: "flex-start",
+    sm: "center",
+  },
+  justifyContent: "space-between",
+  flexDirection: {
+    xs: "column",
+    sm: "row",
+  },
+  gap: 1,
+  marginBottom: 2,
 });
 
-export const emptyIconStyles = (theme: Theme) => ({
-  width: 48,
-  height: 48,
-  marginInline: "auto",
-  marginBottom: "1rem",
-  color: "color-mix(in srgb, var(--muted-foreground) 30%, transparent)",
+export const resultCountStyles = (theme: Theme) => ({
+  fontWeight: 800,
+  fontSize: {
+    xs: 18,
+    sm: 20,
+  },
 });
 
-export const emptyTitleStyles = (theme: Theme) => ({
-  fontSize: "1.125rem",
-  lineHeight: "1.75rem",
-  fontWeight: 500,
-});
-
-export const emptyDescriptionStyles = (theme: Theme) => ({
+export const helperTextStyles = (theme: Theme) => ({
   color: "var(--muted-foreground)",
+  fontSize: 14,
 });
 
 export const gridStyles = (theme: Theme) => ({
   display: "grid",
   gridTemplateColumns: {
-    xs: "repeat(1, minmax(0, 1fr))",
+    xs: "1fr",
     sm: "repeat(2, minmax(0, 1fr))",
-    md: "repeat(3, minmax(0, 1fr))",
-    lg: "repeat(4, minmax(0, 1fr))",
+    lg: "repeat(3, minmax(0, 1fr))",
   },
-  gap: "1.5rem",
+  gap: {
+    xs: 1.5,
+    md: 2,
+  },
 });
 
 export const cardStyles = (theme: Theme) => ({
-  display: "flex",
-  flexDirection: "column",
   height: "100%",
-  cursor: "pointer",
+  borderRadius: 3,
   overflow: "hidden",
-  borderRadius: "0.75rem",
   border: "1px solid var(--border)",
   backgroundColor: "var(--card)",
   color: "var(--card-foreground)",
-  boxShadow: "0 1px 2px 0 rgb(0 0 0 / 0.05)",
   transition:
-    "border-color 300ms ease, box-shadow 300ms ease, transform 300ms ease",
+    "transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease",
   "&:hover": {
-    borderColor: "color-mix(in srgb, var(--primary) 50%, transparent)",
-    boxShadow:
-      "0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)",
-  },
-  "&:hover [data-food-card-image='true']": {
-    transform: "scale(1.05)",
-  },
-  "&:hover [data-food-card-title='true']": {
-    color: "var(--primary)",
+    transform: "translateY(-3px)",
+    borderColor: "color-mix(in srgb, var(--primary) 46%, var(--border))",
+    boxShadow: "0 18px 40px rgb(0 0 0 / 0.14)",
   },
 });
 
-export const cardImageWrapperStyles = (theme: Theme) => ({
-  position: "relative",
-  height: 192,
-  width: "100%",
-  overflow: "hidden",
-  backgroundColor: "var(--muted)",
-});
-
-export const cardImageStyles = (theme: Theme) => ({
-  width: "100%",
+export const cardActionStyles = (theme: Theme) => ({
   height: "100%",
-  objectFit: "cover",
-  transition: "transform 500ms ease",
-});
-
-export const cardBadgeWrapperStyles = (theme: Theme) => ({
-  position: "absolute",
-  top: "0.5rem",
-  right: "0.5rem",
   display: "flex",
   flexDirection: "column",
-  gap: "0.25rem",
+  alignItems: "stretch",
 });
 
-export const allergyBadgeStyles = (theme: Theme) => ({
-  borderRadius: "9999px",
-  backgroundColor: "rgb(239 68 68 / 0.9)",
-  color: "#fff",
-  padding: "0.25rem 0.5rem",
-  fontSize: "10px",
-  lineHeight: "1rem",
-  fontWeight: 700,
-  boxShadow: "0 1px 2px 0 rgb(0 0 0 / 0.05)",
-  backdropFilter: "blur(4px)",
+export const cardMediaStyles = (theme: Theme) => ({
+  height: {
+    xs: 168,
+    md: 184,
+  },
 });
 
-export const cardBodyStyles = (theme: Theme) => ({
-  display: "flex",
+export const cardContentStyles = (theme: Theme) => ({
   flex: 1,
+  display: "flex",
   flexDirection: "column",
-  padding: "1rem",
+  gap: 1.25,
+  padding: 2,
 });
 
-export const cardTitleRowStyles = (theme: Theme) => ({
+export const cardHeaderStyles = (theme: Theme) => ({
   display: "flex",
-  alignItems: "flex-start",
   justifyContent: "space-between",
-  gap: "0.5rem",
-  marginBottom: "0.5rem",
+  alignItems: "flex-start",
+  gap: 1,
 });
 
-export const cardTitleStyles = (theme: Theme) => ({
-  overflow: "hidden",
-  display: "-webkit-box",
-  WebkitLineClamp: 1,
-  WebkitBoxOrient: "vertical",
-  fontSize: "1.125rem",
-  lineHeight: "1.75rem",
-  fontWeight: 700,
-  transition: "color 150ms ease",
+export const foodNameStyles = (theme: Theme) => ({
+  fontWeight: 800,
+  fontSize: 19,
+  lineHeight: 1.2,
 });
 
-export const caloriesStyles = (theme: Theme) => ({
-  whiteSpace: "nowrap",
-  fontSize: "0.875rem",
-  lineHeight: "1.25rem",
-  fontWeight: 500,
+export const scoreBadgeStyles = (theme: Theme) => ({
+  borderRadius: "999px",
+  backgroundColor: "color-mix(in srgb, var(--primary) 13%, transparent)",
   color: "var(--primary)",
+  fontWeight: 800,
+  fontSize: 12,
+  padding: "0.25rem 0.55rem",
+  flexShrink: 0,
 });
 
-export const cardDescriptionStyles = (theme: Theme) => ({
-  flex: 1,
-  marginBottom: "1rem",
-  overflow: "hidden",
+export const descriptionStyles = (theme: Theme) => ({
+  color: "var(--muted-foreground)",
+  fontSize: 14,
   display: "-webkit-box",
   WebkitLineClamp: 2,
   WebkitBoxOrient: "vertical",
-  fontSize: "0.875rem",
-  lineHeight: "1.25rem",
-  color: "var(--muted-foreground)",
+  overflow: "hidden",
 });
 
-export const cardCategoryListStyles = (theme: Theme) => ({
+export const chipWrapStyles = (theme: Theme) => ({
   display: "flex",
   flexWrap: "wrap",
-  gap: "0.25rem",
+  gap: 0.75,
+});
+
+export const softTagStyles = (theme: Theme) => ({
+  height: 25,
+  borderRadius: "999px",
+  backgroundColor: "var(--secondary)",
+  color: "var(--secondary-foreground)",
+  fontSize: 12,
+  fontWeight: 700,
+});
+
+export const locationLineStyles = (theme: Theme) => ({
+  display: "flex",
+  alignItems: "center",
+  gap: 0.75,
+  color: "var(--muted-foreground)",
+  fontSize: 13,
   marginTop: "auto",
 });
 
-export const cardCategoryStyles = (theme: Theme) => ({
-  display: "inline-flex",
-  alignItems: "center",
-  borderRadius: "9999px",
-  backgroundColor: "var(--secondary)",
-  color: "var(--secondary-foreground)",
-  padding: "0.125rem 0.5rem",
-  fontSize: "0.75rem",
-  lineHeight: "1rem",
-  fontWeight: 500,
-});
-
-export const sheetContentStyles = (theme: Theme) => ({
-  width: "100%",
-  maxWidth: {
-    sm: "28rem",
-    md: "32rem",
+export const emptyStateStyles = (theme: Theme) => ({
+  border: "1px dashed var(--border)",
+  borderRadius: 4,
+  textAlign: "center",
+  padding: {
+    xs: "3rem 1.25rem",
+    md: "4rem 2rem",
   },
-  overflowY: "auto",
-  padding: 0,
+  backgroundColor: "color-mix(in srgb, var(--card) 72%, transparent)",
 });
 
-export const detailRootStyles = (theme: Theme) => ({
-  display: "flex",
-  flexDirection: "column",
-  minHeight: "100%",
+export const dialogPaperStyles = (theme: Theme) => ({
+  borderRadius: {
+    xs: 0,
+    sm: 4,
+  },
+  backgroundColor: "var(--background)",
+  color: "var(--foreground)",
 });
 
-export const detailImageWrapperStyles = (theme: Theme) => ({
+export const detailHeroStyles = (theme: Theme) => ({
   position: "relative",
-  height: 256,
-  width: "100%",
-  flexShrink: 0,
-  backgroundColor: "var(--muted)",
+  height: {
+    xs: 220,
+    sm: 280,
+  },
+  overflow: "hidden",
 });
 
 export const detailImageStyles = (theme: Theme) => ({
@@ -347,223 +378,113 @@ export const detailImageStyles = (theme: Theme) => ({
   objectFit: "cover",
 });
 
-export const detailImageOverlayStyles = (theme: Theme) => ({
+export const detailOverlayStyles = (theme: Theme) => ({
   position: "absolute",
   inset: 0,
   background:
-    "linear-gradient(to top, color-mix(in srgb, var(--background) 90%, transparent), transparent)",
+    "linear-gradient(180deg, transparent 20%, color-mix(in srgb, var(--background) 94%, transparent) 100%)",
 });
 
-export const detailTitleWrapperStyles = (theme: Theme) => ({
+export const detailTitleWrapStyles = (theme: Theme) => ({
   position: "absolute",
-  bottom: "1rem",
-  left: "1.5rem",
-  right: "1.5rem",
+  left: {
+    xs: 16,
+    sm: 24,
+  },
+  right: {
+    xs: 16,
+    sm: 24,
+  },
+  bottom: {
+    xs: 14,
+    sm: 20,
+  },
 });
 
-export const detailTitleStyles = (theme: Theme) => ({
-  marginBottom: "0.25rem",
-  fontSize: "1.875rem",
-  lineHeight: "2.25rem",
-  fontWeight: 700,
-  color: "var(--foreground)",
+export const detailContentStyles = (theme: Theme) => ({
+  padding: {
+    xs: 2,
+    sm: 3,
+  },
 });
 
-export const detailPriceStyles = (theme: Theme) => ({
-  fontWeight: 600,
-  color: "var(--primary)",
+export const detailSectionStyles = (theme: Theme) => ({
+  marginTop: 2.5,
 });
 
-export const detailBodyStyles = (theme: Theme) => ({
+export const locationCardStyles = (theme: Theme) => ({
   display: "flex",
-  flexDirection: "column",
-  gap: "2rem",
-  padding: "1.5rem",
+  alignItems: "flex-start",
+  justifyContent: "space-between",
+  gap: 1.5,
+  padding: 1.5,
+  borderRadius: 2,
+  border: "1px solid var(--border)",
+  backgroundColor: "var(--card)",
 });
 
-export const detailDescriptionStyles = (theme: Theme) => ({
-  fontSize: "1rem",
-  lineHeight: "1.625rem",
-  color: "color-mix(in srgb, var(--foreground) 90%, transparent)",
-});
-
-export const detailTagListStyles = (theme: Theme) => ({
-  display: "flex",
-  flexWrap: "wrap",
-  gap: "0.5rem",
-  marginTop: "1rem",
-});
-
-export const detailTagStyles = (theme: Theme) => ({
+export const mapLinkStyles = (theme: Theme) => ({
   display: "inline-flex",
   alignItems: "center",
-  gap: "0.25rem",
-  borderRadius: "9999px",
-  backgroundColor: "var(--secondary)",
-  color: "var(--secondary-foreground)",
-  padding: "0.25rem 0.75rem",
-  fontSize: "0.75rem",
-  lineHeight: "1rem",
-  fontWeight: 500,
-});
-
-export const detailTagIconStyles = (theme: Theme) => ({
-  width: 12,
-  height: 12,
-});
-
-export const detailSectionTitleStyles = (theme: Theme) => ({
-  display: "flex",
-  alignItems: "center",
-  gap: "0.5rem",
-  marginBottom: "0.75rem",
-  fontWeight: 600,
-});
-
-export const detailSectionIconStyles = (theme: Theme) => ({
-  width: 20,
-  height: 20,
+  gap: 0.5,
+  whiteSpace: "nowrap",
   color: "var(--primary)",
+  fontWeight: 800,
+  textDecoration: "none",
 });
 
-export const nutritionGridStyles = (theme: Theme) => ({
-  display: "grid",
-  gridTemplateColumns: "repeat(4, minmax(0, 1fr))",
-  gap: "0.5rem",
-  textAlign: "center",
-});
-
-export const nutritionItemStyles = (theme: Theme) => ({
-  borderRadius: "0.5rem",
-  backgroundColor: "var(--muted)",
-  padding: "0.5rem",
-});
-
-export const nutritionValueStyles = (theme: Theme) => ({
-  fontSize: "1.125rem",
-  lineHeight: "1.75rem",
-  fontWeight: 700,
-});
-
-export const nutritionLabelStyles = (theme: Theme) => ({
-  fontSize: "0.75rem",
-  lineHeight: "1rem",
-  color: "var(--muted-foreground)",
-});
-
-export const ingredientListStyles = (theme: Theme) => ({
-  display: "flex",
-  flexWrap: "wrap",
-  gap: "0.5rem",
-});
-
-export const ingredientStyles = (theme: Theme) => ({
-  borderRadius: "0.375rem",
-  border: "1px solid var(--border)",
-  backgroundColor: "var(--background)",
-  padding: "0.375rem 0.75rem",
-  fontSize: "0.875rem",
-  lineHeight: "1.25rem",
-});
-
-export const warningBoxStyles = (theme: Theme) => ({
-  borderRadius: "0.75rem",
-  border: "1px solid rgb(239 68 68 / 0.2)",
-  backgroundColor: "rgb(239 68 68 / 0.1)",
-  padding: "1rem",
-});
-
-export const warningTitleStyles = (theme: Theme) => ({
-  display: "flex",
-  alignItems: "center",
-  gap: "0.5rem",
-  marginBottom: "0.5rem",
-  fontWeight: 600,
-  color: "#dc2626",
-});
-
-export const warningIconStyles = (theme: Theme) => ({
-  width: 20,
-  height: 20,
-});
-
-export const warningTextStyles = (theme: Theme) => ({
-  fontSize: "0.875rem",
-  lineHeight: "1.25rem",
-  color: "var(--foreground)",
-});
-
-export const warningTextSpacedStyles = (theme: Theme) => ({
-  ...warningTextStyles(theme),
-  marginBottom: "0.5rem",
-});
-
-export const warningStrongStyles = (theme: Theme) => ({
-  fontWeight: 600,
-  color: "#dc2626",
+export const closeButtonStyles = (theme: Theme) => ({
+  position: "absolute",
+  top: 12,
+  right: 12,
+  zIndex: 2,
+  backgroundColor: "rgb(0 0 0 / 0.42)",
+  color: "#fff",
+  "&:hover": {
+    backgroundColor: "rgb(0 0 0 / 0.58)",
+  },
 });
 
 export const styles = {
   rootStyles,
-  headerStyles,
-  headerContentStyles,
-  titleRowStyles,
+  shellStyles,
+  topBarStyles,
   backButtonStyles,
-  backIconStyles,
+  titleBlockStyles,
+  eyebrowStyles,
   titleStyles,
-  searchRowStyles,
-  searchFieldStyles,
-  searchIconStyles,
+  subtitleStyles,
+  heroPanelStyles,
+  searchAreaStyles,
   searchInputStyles,
-  filterButtonStyles,
-  categoryListStyles,
-  categoryButtonBaseStyles,
-  categoryButtonActiveStyles,
-  categoryButtonInactiveStyles,
-  resultsAreaStyles,
-  resultsContentStyles,
-  emptyStateStyles,
-  emptyIconStyles,
-  emptyTitleStyles,
-  emptyDescriptionStyles,
+  suggestionPaperStyles,
+  suggestionItemStyles,
+  tagRailStyles,
+  tagChipStyles,
+  statusRowStyles,
+  resultCountStyles,
+  helperTextStyles,
   gridStyles,
   cardStyles,
-  cardImageWrapperStyles,
-  cardImageStyles,
-  cardBadgeWrapperStyles,
-  allergyBadgeStyles,
-  cardBodyStyles,
-  cardTitleRowStyles,
-  cardTitleStyles,
-  caloriesStyles,
-  cardDescriptionStyles,
-  cardCategoryListStyles,
-  cardCategoryStyles,
-  sheetContentStyles,
-  detailRootStyles,
-  detailImageWrapperStyles,
+  cardActionStyles,
+  cardMediaStyles,
+  cardContentStyles,
+  cardHeaderStyles,
+  foodNameStyles,
+  scoreBadgeStyles,
+  descriptionStyles,
+  chipWrapStyles,
+  softTagStyles,
+  locationLineStyles,
+  emptyStateStyles,
+  dialogPaperStyles,
+  detailHeroStyles,
   detailImageStyles,
-  detailImageOverlayStyles,
-  detailTitleWrapperStyles,
-  detailTitleStyles,
-  detailPriceStyles,
-  detailBodyStyles,
-  detailDescriptionStyles,
-  detailTagListStyles,
-  detailTagStyles,
-  detailTagIconStyles,
-  detailSectionTitleStyles,
-  detailSectionIconStyles,
-  nutritionGridStyles,
-  nutritionItemStyles,
-  nutritionValueStyles,
-  nutritionLabelStyles,
-  ingredientListStyles,
-  ingredientStyles,
-  warningBoxStyles,
-  warningTitleStyles,
-  warningIconStyles,
-  warningTextStyles,
-  warningTextSpacedStyles,
-  warningStrongStyles,
+  detailOverlayStyles,
+  detailTitleWrapStyles,
+  detailContentStyles,
+  detailSectionStyles,
+  locationCardStyles,
+  mapLinkStyles,
+  closeButtonStyles,
 } as const;

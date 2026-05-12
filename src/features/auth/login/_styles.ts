@@ -28,6 +28,28 @@ const inputBaseStyles = (theme: Theme) => ({
   },
 });
 
+export const pageShellStyles = (theme: Theme) => ({
+  position: "relative",
+  display: "flex",
+  minHeight: "100vh",
+  alignItems: "center",
+  justifyContent: "center",
+  overflow: "hidden",
+  backgroundColor: "color-mix(in srgb, var(--background) 50%, transparent)",
+  padding: {
+    xs: "1rem",
+    sm: "2rem",
+  },
+});
+
+export const pageBackgroundStyles = (theme: Theme) => ({
+  position: "absolute",
+  inset: 0,
+  zIndex: -1,
+  background:
+    "radial-gradient(ellipse at top, color-mix(in srgb, var(--primary) 20%, transparent), var(--background), var(--background))",
+});
+
 export const containerStyles = (theme: Theme) => ({
   width: "100%",
   maxWidth: "28rem",
@@ -216,6 +238,8 @@ export const footerLinkStyles = (theme: Theme) => ({
 });
 
 export const styles = {
+  pageShellStyles,
+  pageBackgroundStyles,
   containerStyles,
   headerStyles,
   titleStyles,

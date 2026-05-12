@@ -8,6 +8,8 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 
+const AUTH_STORAGE_KEY = "food-recommendation:isLoggedIn";
+
 export function useHeader() {
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -17,6 +19,10 @@ export function useHeader() {
   const router = useRouter();
   const menuRef = useRef<HTMLDivElement>(null);
   const modelOptions = ["Cân bằng", "Nhanh", "Chính xác", "Sáng tạo"];
+
+  useEffect(() => {
+    setIsLoggedIn(window.localStorage.getItem(AUTH_STORAGE_KEY) === "true");
+  }, []);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -30,10 +36,11 @@ export function useHeader() {
   }, []);
 
   const handleLogout = () => {
+    window.localStorage.removeItem(AUTH_STORAGE_KEY);
     setIsLoggedIn(false);
     setIsUserMenuOpen(false);
     toast.success("Đã đăng xuất thành công!");
-    router.push("/login");
+    router.push("/");
   };
 
   return {

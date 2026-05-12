@@ -14,6 +14,8 @@ import { ThreadView } from "../agent-inbox";
 import { useQueryState, parseAsBoolean } from "nuqs";
 import { GenericInterruptView } from "./generic-interrupt";
 import { GeminiSparkleSVG } from "@/shared/components/icons/gemini-sparkle";
+import { Box } from "@mui/material";
+import { styles } from "../../../_styles";
 
 function CustomComponent({
   message,
@@ -114,22 +116,25 @@ export function AssistantMessage({
   }
 
   return (
-    <div className="flex items-start mr-auto gap-3 group w-full max-w-4xl animate-in fade-in-50 slide-in-from-bottom-2 duration-300">
-      <div className="flex-shrink-0 mt-1">
-        <GeminiSparkleSVG
-          width={24}
-          height={24}
-          className="text-orange-500 drop-shadow-[0_0_8px_rgba(249,115,22,0.8)]"
-        />
-      </div>
+    <Box className="group" sx={styles.langchainAssistantRowStyles}>
+      <Box sx={styles.assistantAvatarStyles}>
+        <GeminiSparkleSVG width={18} height={18} className="text-orange-500" />
+      </Box>
       {isToolResult ? (
         <ToolResult message={message} />
       ) : (
-        <div className="flex flex-col gap-3 w-full">
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            gap: 1.25,
+            width: "100%",
+          }}
+        >
           {contentString.length > 0 && (
-            <div className="py-2 text-zinc-800 dark:text-zinc-200 text-sm leading-relaxed">
+            <Box sx={styles.langchainAssistantContentStyles}>
               <MarkdownText>{contentString}</MarkdownText>
-            </div>
+            </Box>
           )}
 
           {!hideToolCalls && (
@@ -154,7 +159,7 @@ export function AssistantMessage({
           isLastMessage ? (
             <GenericInterruptView interrupt={threadInterrupt.value} />
           ) : null}
-          <div
+          <Box
             className={cn(
               "flex gap-2 items-center mr-auto transition-opacity",
               "opacity-0 group-focus-within:opacity-100 group-hover:opacity-100",
@@ -172,23 +177,26 @@ export function AssistantMessage({
               isAiMessage={true}
               handleRegenerate={() => handleRegenerate(parentCheckpoint)}
             />
-          </div>
-        </div>
+          </Box>
+        </Box>
       )}
-    </div>
+    </Box>
   );
 }
 
 export function AssistantMessageLoading() {
   return (
-    <div className="flex items-start mr-auto gap-4">
-      <div className="flex-shrink-0 mt-1 animate-pulse">
-        <GeminiSparkleSVG
-          width={24}
-          height={24}
-          className="text-orange-500 drop-shadow-[0_0_8px_rgba(249,115,22,0.8)]"
-        />
-      </div>
-    </div>
+    <Box
+      sx={{ display: "flex", alignItems: "flex-start", gap: 1.5, mr: "auto" }}
+    >
+      <Box
+        sx={{
+          ...styles.assistantAvatarStyles,
+          animation: "pulse 1.5s ease-in-out infinite",
+        }}
+      >
+        <GeminiSparkleSVG width={18} height={18} className="text-orange-500" />
+      </Box>
+    </Box>
   );
 }

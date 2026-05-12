@@ -5,6 +5,9 @@ import { getContentString } from "../utils";
 import { cn } from "@/shared/lib/utils";
 import { Textarea } from "@/shared/components/ui/textarea/index";
 import { BranchSwitcher, CommandBar } from "./shared";
+import { Box } from "@mui/material";
+import { Typography } from "@/shared/components/ui/typography/index";
+import { styles } from "../../../_styles";
 
 function EditableContent({
   value,
@@ -70,13 +73,21 @@ export function HumanMessage({
   };
 
   return (
-    <div
-      className={cn(
-        "flex items-center ml-auto gap-2 group w-fit max-w-2xl",
-        isEditing && "w-full",
-      )}
+    <Box
+      className={cn("group", isEditing && "w-full")}
+      sx={{
+        ...styles.langchainHumanGroupStyles,
+        ...(isEditing ? { width: "100%" } : {}),
+      }}
     >
-      <div className={cn("flex flex-col gap-2", isEditing && "w-full")}>
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          gap: 1,
+          ...(isEditing ? { width: "100%" } : {}),
+        }}
+      >
         {isEditing ? (
           <EditableContent
             value={value}
@@ -84,14 +95,14 @@ export function HumanMessage({
             onSubmit={handleSubmitEdit}
           />
         ) : (
-          <div className="animate-in fade-in-50 slide-in-from-bottom-2 duration-300">
-            <p className="px-4 py-3 rounded-2xl bg-gradient-to-r from-orange-500 to-orange-600 text-white w-fit ml-auto whitespace-pre-wrap text-sm shadow-sm">
+          <Box component="div" sx={{ animation: "fadeIn 180ms ease-out both" }}>
+            <Typography as="p" sx={styles.langchainHumanBubbleStyles}>
               {contentString}
-            </p>
-          </div>
+            </Typography>
+          </Box>
         )}
 
-        <div
+        <Box
           className={cn(
             "flex gap-2 items-center ml-auto transition-opacity",
             "opacity-0 group-focus-within:opacity-100 group-hover:opacity-100",
@@ -117,8 +128,8 @@ export function HumanMessage({
             handleSubmitEdit={handleSubmitEdit}
             isHumanMessage={true}
           />
-        </div>
-      </div>
-    </div>
+        </Box>
+      </Box>
+    </Box>
   );
 }

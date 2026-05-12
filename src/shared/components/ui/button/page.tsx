@@ -6,6 +6,7 @@ import { Slot } from "@radix-ui/react-slot";
 import { Box as MuiBox } from "@mui/material";
 
 import { ButtonProps, styles } from ".";
+import { mergeSx } from "@/shared/shared.styles";
 import { cn } from "@/shared/lib/utils";
 
 function Button({
@@ -17,21 +18,15 @@ function Button({
   ...props
 }: ButtonProps) {
   if (asChild) {
-    return (
-      <Slot
-        data-slot="button"
-        className={cn(styles.buttonVariants({ variant, size, className }))}
-        {...props}
-      />
-    );
+    return <Slot data-slot="button" className={cn(className)} {...props} />;
   }
 
   return (
     <MuiBox
       component="button"
       data-slot="button"
-      className={cn(styles.buttonVariants({ variant, size, className }))}
-      sx={sx}
+      className={cn(className)}
+      sx={mergeSx(styles.getButtonSx(variant, size, Boolean(className)), sx)}
       {...props}
     />
   );

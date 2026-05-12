@@ -1,4 +1,6 @@
 import { Button } from "@/shared/components/ui/button/index";
+import { Box } from "@mui/material";
+import { Typography } from "@/shared/components/ui/typography/index";
 import { useThreads } from "@/features/chat/providers/thread-provider";
 import { Thread } from "@langchain/langgraph-sdk";
 import { useEffect } from "react";
@@ -14,6 +16,7 @@ import {
 import { Skeleton } from "@/shared/components/ui/skeleton/index";
 import { PanelRightOpen, PanelRightClose } from "lucide-react";
 import { useMediaQuery } from "@/shared/hooks/use-media-query";
+import { styles } from "../../../_styles";
 
 function ThreadList({
   threads,
@@ -25,7 +28,7 @@ function ThreadList({
   const [threadId, setThreadId] = useQueryState("threadId");
 
   return (
-    <div className="h-full flex flex-col w-full gap-2 items-start justify-start overflow-y-scroll [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-300 [&::-webkit-scrollbar-track]:bg-transparent">
+    <Box sx={styles.historyListStyles}>
       {threads.map((t) => {
         let itemText = t.thread_id;
         if (
@@ -39,10 +42,10 @@ function ThreadList({
           itemText = getContentString(firstMessage.content);
         }
         return (
-          <div key={t.thread_id} className="w-full px-1">
+          <Box key={t.thread_id} sx={{ width: "100%" }}>
             <Button
               variant="ghost"
-              className="text-left items-start justify-start font-normal w-[280px]"
+              sx={styles.historyItemButtonStyles(t.thread_id === threadId)}
               onClick={(e) => {
                 e.preventDefault();
                 onThreadClick?.(t.thread_id);
@@ -50,22 +53,33 @@ function ThreadList({
                 setThreadId(t.thread_id);
               }}
             >
-              <p className="truncate text-ellipsis">{itemText}</p>
+              <Typography
+                as="span"
+                sx={{
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  whiteSpace: "nowrap",
+                  fontSize: "0.86rem",
+                  fontWeight: t.thread_id === threadId ? 700 : 500,
+                }}
+              >
+                {itemText}
+              </Typography>
             </Button>
-          </div>
+          </Box>
         );
       })}
-    </div>
+    </Box>
   );
 }
 
 function ThreadHistoryLoading() {
   return (
-    <div className="h-full flex flex-col w-full gap-2 items-start justify-start overflow-y-scroll [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-300 [&::-webkit-scrollbar-track]:bg-transparent">
+    <Box sx={styles.historyListStyles}>
       {Array.from({ length: 30 }).map((_, i) => (
         <Skeleton key={`skeleton-${i}`} className="w-[280px] h-10" />
       ))}
-    </div>
+    </Box>
   );
 }
 
@@ -90,26 +104,48 @@ export default function ThreadHistory() {
 
   return (
     <>
-      <div className="hidden lg:flex flex-col border-r-[1px] border-border bg-background items-start justify-start gap-6 h-screen w-[300px] shrink-0 shadow-inner-right">
-        <div className="flex items-center justify-between w-full pt-1.5 px-4">
-          <Button
-            className="hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-zinc-100"
-            variant="ghost"
-            onClick={() => setChatHistoryOpen((p) => !p)}
-          >
-            {chatHistoryOpen ? (
-              <PanelRightOpen className="size-5" />
-            ) : (
-              <PanelRightClose className="size-5" />
-            )}
-          </Button>
-        </div>
-        {threadsLoading ? (
-          <ThreadHistoryLoading />
-        ) : (
-          <ThreadList threads={threads} />
-        )}
-      </div>
+      <Box sx={{ display: { xs: "none", lg: "flex" } }}>
+        <Box sx={styles.historyShellStyles}>
+          <Box sx={styles.historyHeaderStyles}>
+            <Box sx={styles.historyTitleStyles}>
+              <Typography
+                as="span"
+                sx={{
+                  fontFamily: "var(--font-display)",
+                  fontSize: "1.05rem",
+                  fontWeight: 800,
+                }}
+              >
+                Bếp trò chuyện
+              </Typography>
+              <Typography
+                as="span"
+                sx={{ color: "var(--muted-foreground)", fontSize: "0.76rem" }}
+              >
+                Các lần hỏi món gần đây
+              </Typography>
+            </Box>
+            <Button
+              variant="ghost"
+              size="icon"
+              sx={styles.headerIconButtonStyles}
+              onClick={() => setChatHistoryOpen((p) => !p)}
+              aria-label="Thu gọn lịch sử"
+            >
+              {chatHistoryOpen ? (
+                <PanelRightOpen className="size-5" />
+              ) : (
+                <PanelRightClose className="size-5" />
+              )}
+            </Button>
+          </Box>
+          {threadsLoading ? (
+            <ThreadHistoryLoading />
+          ) : (
+            <ThreadList threads={threads} />
+          )}
+        </Box>
+      </Box>
       <div className="lg:hidden">
         <Sheet
           open={!!chatHistoryOpen && !isLargeScreen}
@@ -120,7 +156,7 @@ export default function ThreadHistory() {
         >
           <SheetContent side="left" className="lg:hidden flex">
             <SheetHeader>
-              <SheetTitle>Thread History</SheetTitle>
+              <SheetTitle>Bếp trò chuyện</SheetTitle>
             </SheetHeader>
             <ThreadList
               threads={threads}
