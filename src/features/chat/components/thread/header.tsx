@@ -38,6 +38,8 @@ export function Header({
 }: HeaderProps) {
   const {
     handleLogout,
+    handleSearchBackdropMouseDown,
+    handleSearchOverlayBlur,
     isLoggedIn,
     isModelMenuOpen,
     isSearchOpen,
@@ -49,6 +51,7 @@ export function Header({
     setIsSearchOpen,
     setIsUserMenuOpen,
     setSelectedModel,
+    searchOverlayRef,
   } = useHeader();
 
   const shouldShowMenuButton = !chatHistoryOpen || !isLargeScreen;
@@ -106,60 +109,9 @@ export function Header({
                 <Typography as="span" sx={styles.brandTitleStyles}>
                   Foodie Suggest
                 </Typography>
-                <Typography as="span" sx={styles.brandSubtitleStyles}>
-                  Trợ lý món ngon Đà Nẵng
-                </Typography>
               </Box>
             </Box>
           </motion.button>
-
-          <Box
-            sx={{ position: "relative", display: { xs: "none", sm: "block" } }}
-          >
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              sx={styles.modelButtonStyles}
-              onClick={() => setIsModelMenuOpen((open) => !open)}
-            >
-              <span>{selectedModel}</span>
-              <ChevronDown className="size-4" />
-            </Button>
-
-            <AnimatePresence>
-              {isModelMenuOpen && (
-                <Box
-                  component={motion.div}
-                  initial={{ opacity: 0, y: 8, scale: 0.96 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: 8, scale: 0.96 }}
-                  transition={{ duration: 0.14 }}
-                  sx={[styles.dropdownPanelStyles, { left: 0, width: 192 }]}
-                >
-                  <Box sx={{ p: 0.75 }}>
-                    {modelOptions.map((option) => (
-                      <Box
-                        key={option}
-                        component="button"
-                        type="button"
-                        sx={styles.dropdownItemStyles}
-                        onClick={() => {
-                          setSelectedModel(option);
-                          setIsModelMenuOpen(false);
-                        }}
-                      >
-                        <span>{option}</span>
-                        {selectedModel === option && (
-                          <Check className="size-4 text-orange-500" />
-                        )}
-                      </Box>
-                    ))}
-                  </Box>
-                </Box>
-              )}
-            </AnimatePresence>
-          </Box>
         </Box>
 
         <Box sx={styles.headerSideStyles}>
@@ -184,7 +136,16 @@ export function Header({
             </TooltipProvider>
           )}
 
-          <ThemeToggle />
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <ThemeToggle />
+              </TooltipTrigger>
+              <TooltipContent side="bottom">
+                <p>Đổi theme</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
 
           <TooltipProvider>
             <Tooltip>
@@ -380,13 +341,29 @@ export function Header({
         {isSearchOpen && (
           <Box
             component={motion.div}
-            initial={{ opacity: 0, scale: 0.97, y: 10 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.97, y: 10 }}
-            transition={{ duration: 0.2, ease: "easeOut" }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.16, ease: "easeOut" }}
+            onMouseDown={handleSearchBackdropMouseDown}
             sx={styles.searchOverlayStyles}
           >
-            <Box sx={styles.searchOverlayPanelStyles}>
+            <Box
+              component={motion.div}
+              ref={searchOverlayRef}
+              tabIndex={-1}
+              initial={{ opacity: 0, scale: 0.985, y: 14 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.985, y: 10 }}
+              transition={{
+                type: "spring",
+                stiffness: 280,
+                damping: 30,
+                mass: 0.8,
+              }}
+              onBlur={handleSearchOverlayBlur}
+              sx={styles.searchOverlayPanelStyles}
+            >
               <FoodSearchUI onClose={() => setIsSearchOpen(false)} />
             </Box>
           </Box>

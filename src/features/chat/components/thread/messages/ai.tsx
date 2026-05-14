@@ -79,8 +79,8 @@ export function AssistantMessage({
 }) {
   const content = message?.content ?? [];
   const contentString = getContentString(content);
-  const [hideToolCalls] = useQueryState(
-    "hideToolCalls",
+  const [showRecommendationAnalysis] = useQueryState(
+    "showRecommendationAnalysis",
     parseAsBoolean.withDefault(false),
   );
 
@@ -111,7 +111,7 @@ export function AssistantMessage({
   const hasAnthropicToolCalls = !!anthropicStreamedToolCalls?.length;
   const isToolResult = message?.type === "tool";
 
-  if (isToolResult && hideToolCalls) {
+  if (isToolResult && !showRecommendationAnalysis) {
     return null;
   }
 
@@ -137,7 +137,7 @@ export function AssistantMessage({
             </Box>
           )}
 
-          {!hideToolCalls && (
+          {showRecommendationAnalysis && (
             <>
               {(hasToolCalls && toolCallsHaveContents && (
                 <ToolCalls toolCalls={message.tool_calls} />

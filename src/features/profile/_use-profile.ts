@@ -22,8 +22,14 @@ export function useProfile() {
       email: "user@example.com",
       password: "",
       allergies: ["Sữa"],
-      favorites: ["Phở", "Trà sữa"],
-      dislikes: ["Hành lá"],
+      medicalConditions: ["Đau dạ dày"],
+      dietTypes: ["Ít dầu mỡ"],
+      favorites: ["Mì Quảng", "Bánh mì"],
+      dislikes: ["Hành lá", "Nội tạng"],
+      tastePreferences: ["Thanh đạm", "Ít dầu"],
+      budgetLevels: ["Trung bình"],
+      mealTimes: ["Bữa sáng", "Bữa tối"],
+      nutritionGoals: ["Ăn nhẹ bụng", "Dễ tiêu hóa"],
     },
   });
 
@@ -48,8 +54,10 @@ export function useProfile() {
     errors: form.formState.errors,
     handleBack,
     handleSubmit: form.handleSubmit,
+    isDirty: form.formState.isDirty,
     isLoading,
     onSubmit,
     register: form.register,
+    profileValues: form.watch(),
   };
 }

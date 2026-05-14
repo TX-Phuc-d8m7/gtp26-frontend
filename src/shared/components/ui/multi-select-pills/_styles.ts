@@ -21,20 +21,28 @@ export const optionButtonStyles =
   (theme: Theme) => {
     const selectedConfig = {
       default: {
-        backgroundColor: "color-mix(in srgb, var(--primary) 14%, transparent)",
-        borderColor: "color-mix(in srgb, var(--primary) 34%, transparent)",
-        color: "var(--primary)",
+        backgroundColor: "rgba(255, 107, 0, 0.12)",
+        borderColor: "rgba(255, 107, 0, 0.28)",
+        color: "#D9480F",
+        darkBackgroundColor: "rgba(249, 115, 22, 0.14)",
+        darkBorderColor: "rgba(251, 146, 60, 0.28)",
+        darkColor: "#FB923C",
       },
       danger: {
         backgroundColor: "rgb(239 68 68 / 0.12)",
         borderColor: "rgb(239 68 68 / 0.26)",
         color: "#ef4444",
+        darkBackgroundColor: "rgba(239, 68, 68, 0.14)",
+        darkBorderColor: "rgba(252, 165, 165, 0.28)",
+        darkColor: "#FCA5A5",
       },
       success: {
-        backgroundColor:
-          "color-mix(in srgb, var(--food-herb) 16%, transparent)",
-        borderColor: "color-mix(in srgb, var(--food-herb) 34%, transparent)",
-        color: "var(--food-herb)",
+        backgroundColor: "rgba(47, 143, 70, 0.12)",
+        borderColor: "rgba(47, 143, 70, 0.28)",
+        color: "#1D5F31",
+        darkBackgroundColor: "rgba(47, 143, 70, 0.16)",
+        darkBorderColor: "rgba(124, 197, 132, 0.28)",
+        darkColor: "#7CC584",
       },
     }[variant];
 
@@ -48,15 +56,41 @@ export const optionButtonStyles =
       gap: 0.55,
       backgroundColor: isSelected
         ? selectedConfig.backgroundColor
-        : "color-mix(in srgb, var(--card) 74%, transparent)",
-      borderColor: isSelected ? selectedConfig.borderColor : "var(--border)",
+        : "rgba(255, 255, 255, 0.58)",
+      borderColor: isSelected
+        ? selectedConfig.borderColor
+        : "rgba(15, 23, 42, 0.14)",
       color: isSelected ? selectedConfig.color : "var(--muted-foreground)",
-      boxShadow: isSelected ? "0 8px 18px rgb(75 36 16 / 0.08)" : "none",
+      boxShadow: isSelected
+        ? "inset 0 1px 0 rgba(255, 255, 255, 0.72)"
+        : "none",
+      backdropFilter: "blur(12px)",
+      WebkitBackdropFilter: "blur(12px)",
       "&:hover": {
         backgroundColor: isSelected
           ? selectedConfig.backgroundColor
-          : "var(--secondary)",
+          : "rgba(255, 255, 255, 0.78)",
         transform: "translateY(-1px)",
+      },
+      ".dark &": {
+        backgroundColor: isSelected
+          ? selectedConfig.darkBackgroundColor
+          : "rgba(28, 25, 23, 0.72)",
+        borderColor: isSelected
+          ? selectedConfig.darkBorderColor
+          : "rgba(255, 247, 237, 0.12)",
+        color: isSelected
+          ? selectedConfig.darkColor
+          : "rgba(255, 247, 237, 0.6)",
+        boxShadow: "none",
+        "&:hover": {
+          backgroundColor: isSelected
+            ? selectedConfig.darkBackgroundColor
+            : "rgba(255, 247, 237, 0.08)",
+          color: isSelected
+            ? selectedConfig.darkColor
+            : "rgba(255, 247, 237, 0.9)",
+        },
       },
     };
   };

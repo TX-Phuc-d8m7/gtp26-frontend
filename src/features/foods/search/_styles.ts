@@ -4,6 +4,23 @@
  */
 import { Theme } from "@mui/material/styles";
 
+const darkFoodTheme = {
+  background: "#0C0A09",
+  backgroundSoft: "#151110",
+  surface: "#1C1917",
+  surfaceSoft: "#292524",
+  surfaceRaised: "#44403C",
+  border: "rgba(255, 247, 237, 0.12)",
+  borderSoft: "rgba(255, 247, 237, 0.06)",
+  borderStrong: "#FB923C",
+  text: "#FFF7ED",
+  muted: "rgba(255, 247, 237, 0.6)",
+  mutedSoft: "rgba(255, 247, 237, 0.5)",
+  orange: "#FB923C",
+  orangeStrong: "#F97316",
+  orangeDeep: "#EA580C",
+} as const;
+
 export const rootStyles = (isEmbedded?: boolean) => (theme: Theme) => ({
   height: isEmbedded ? "100%" : "auto",
   minHeight: isEmbedded ? 0 : "100dvh",
@@ -12,29 +29,22 @@ export const rootStyles = (isEmbedded?: boolean) => (theme: Theme) => ({
   WebkitOverflowScrolling: "touch",
   overscrollBehavior: isEmbedded ? "contain" : "auto",
   background:
-    "linear-gradient(180deg, color-mix(in srgb, var(--primary) 7%, var(--background)) 0%, var(--background) 42%)",
+    "radial-gradient(circle at 14% 0%, rgba(245, 114, 107, 0.1) 0, transparent 30%), radial-gradient(circle at 88% 8%, rgba(248, 182, 90, 0.1) 0, transparent 26%), linear-gradient(180deg, #F9FAFB 0%, #FFFFFF 52%, #F9FAFB 100%)",
   color: "var(--foreground)",
-  scrollbarWidth: "thin",
-  scrollbarColor:
-    "color-mix(in srgb, var(--primary) 42%, var(--muted-foreground)) transparent",
+  scrollbarWidth: "none",
   "&::-webkit-scrollbar": {
-    width: 10,
+    display: "none",
   },
-  "&::-webkit-scrollbar-track": {
-    backgroundColor: "transparent",
-    marginBlock: 18,
-  },
-  "&::-webkit-scrollbar-thumb": {
-    borderRadius: "999px",
-    border: "3px solid transparent",
-    backgroundColor:
-      "color-mix(in srgb, var(--muted-foreground) 28%, transparent)",
+  ".dark &": {
+    background:
+      "radial-gradient(circle at 12% 0%, rgba(249, 115, 22, 0.22) 0, transparent 30%), radial-gradient(circle at 92% 14%, rgba(249, 115, 22, 0.18) 0, transparent 25%), linear-gradient(180deg, #0C0A09 0%, #151110 48%, #0C0A09 100%)",
+    color: darkFoodTheme.text,
   },
 });
 
 export const shellStyles = (theme: Theme) => ({
   width: "100%",
-  maxWidth: 1180,
+  maxWidth: 1160,
   marginInline: "auto",
   padding: {
     xs: "1rem",
@@ -53,19 +63,36 @@ export const topBarStyles = (theme: Theme) => ({
   justifyContent: "space-between",
   gap: 1.5,
   marginBottom: {
-    xs: 2,
-    md: 3,
+    xs: 1.5,
+    md: 2.5,
   },
 });
 
 export const backButtonStyles = (theme: Theme) => ({
-  width: 40,
-  height: 40,
+  width: 44,
+  height: 44,
   borderRadius: "999px",
   color: "var(--foreground)",
-  borderColor: "var(--border)",
-  backgroundColor: "color-mix(in srgb, var(--background) 76%, transparent)",
-  backdropFilter: "blur(10px)",
+  border: "1px solid rgba(15, 23, 42, 0.14)",
+  backgroundColor: "rgba(255, 255, 255, 0.68)",
+  boxShadow: "0 12px 30px rgba(15, 23, 42, 0.06)",
+  backdropFilter: "blur(18px) saturate(1.14)",
+  WebkitBackdropFilter: "blur(18px) saturate(1.14)",
+  "&:hover": {
+    color: "var(--primary)",
+    backgroundColor: "rgba(255, 255, 255, 0.86)",
+  },
+  ".dark &": {
+    color: darkFoodTheme.text,
+    borderColor: darkFoodTheme.border,
+    backgroundColor: "rgba(12, 10, 9, 0.82)",
+    boxShadow: "0 12px 28px rgba(0, 0, 0, 0.45)",
+    "&:hover": {
+      color: darkFoodTheme.orange,
+      backgroundColor: "rgba(249, 115, 22, 0.14)",
+      borderColor: darkFoodTheme.borderStrong,
+    },
+  },
 });
 
 export const titleBlockStyles = (theme: Theme) => ({
@@ -77,11 +104,20 @@ export const eyebrowStyles = (theme: Theme) => ({
   display: "inline-flex",
   alignItems: "center",
   gap: 0.75,
-  color: "var(--primary)",
+  width: "fit-content",
+  borderRadius: "999px",
+  color: "#D9480F",
+  backgroundColor: "color-mix(in srgb, #FF6B00 13%, transparent)",
+  padding: "0.45rem 0.75rem",
   fontSize: 13,
-  fontWeight: 700,
+  fontWeight: 800,
   letterSpacing: 0,
   marginBottom: 0.5,
+  ".dark &": {
+    color: darkFoodTheme.orange,
+    backgroundColor: "rgb(249 115 22 / 0.16)",
+    boxShadow: "inset 0 0 0 1px rgb(249 115 22 / 0.2)",
+  },
 });
 
 export const titleStyles = (theme: Theme) => ({
@@ -93,6 +129,10 @@ export const titleStyles = (theme: Theme) => ({
     md: 44,
   },
   lineHeight: 1.05,
+  textWrap: "balance",
+  ".dark &": {
+    color: darkFoodTheme.text,
+  },
 });
 
 export const subtitleStyles = (theme: Theme) => ({
@@ -103,88 +143,347 @@ export const subtitleStyles = (theme: Theme) => ({
     xs: 14,
     sm: 16,
   },
+  lineHeight: 1.65,
+  ".dark &": {
+    color: darkFoodTheme.muted,
+  },
 });
 
 export const heroPanelStyles = (theme: Theme) => ({
   position: "relative",
+  zIndex: 5,
   overflow: "visible",
   borderRadius: {
     xs: 3,
     md: 4,
   },
-  border: "1px solid var(--border)",
-  backgroundColor: "color-mix(in srgb, var(--card) 88%, transparent)",
-  boxShadow: "0 24px 80px rgb(0 0 0 / 0.12)",
-  backdropFilter: "blur(18px)",
+  border: "1px solid rgba(15, 23, 42, 0.16)",
+  background:
+    "linear-gradient(135deg, rgba(255, 255, 255, 0.72) 0%, rgba(255, 247, 237, 0.24) 54%, rgba(255, 255, 255, 0.58) 100%)",
+  boxShadow:
+    "0 24px 64px rgba(15, 23, 42, 0.09), 0 0 0 1px rgba(15, 23, 42, 0.035), inset 0 1px 0 rgba(255, 255, 255, 0.86)",
+  backdropFilter: "blur(24px) saturate(1.18)",
+  WebkitBackdropFilter: "blur(24px) saturate(1.18)",
   padding: {
-    xs: 2,
-    md: 3,
+    xs: 1.5,
+    md: 2,
   },
   marginBottom: 2.5,
+  "&::before": {
+    content: '""',
+    position: "absolute",
+    inset: 0,
+    pointerEvents: "none",
+    borderRadius: "inherit",
+    background:
+      "radial-gradient(circle at 12% 0%, rgba(248, 182, 90, 0.14), transparent 28%), radial-gradient(circle at 92% 18%, rgba(249, 115, 22, 0.1), transparent 24%)",
+    opacity: 0.72,
+  },
+  "& > *": {
+    position: "relative",
+    zIndex: 1,
+  },
+  ".dark &": {
+    borderColor: darkFoodTheme.border,
+    background:
+      "linear-gradient(135deg, rgba(28, 25, 23, 0.98) 0%, rgba(41, 37, 36, 0.9) 54%, rgba(12, 10, 9, 0.98) 100%)",
+    boxShadow:
+      "0 28px 80px rgba(0, 0, 0, 0.52), 0 0 42px rgba(249, 115, 22, 0.1), inset 0 1px 0 rgba(255, 247, 237, 0.08)",
+    "&::before": {
+      background:
+        "radial-gradient(circle at 14% 0%, rgba(249, 115, 22, 0.18), transparent 30%), radial-gradient(circle at 92% 12%, rgba(234, 88, 12, 0.14), transparent 27%)",
+      opacity: 0.86,
+    },
+  },
+});
+
+export const searchPanelHeaderStyles = (theme: Theme) => ({
+  display: "grid",
+  gridTemplateColumns: {
+    xs: "1fr",
+    md: "minmax(360px, 1fr)",
+  },
+  gap: {
+    xs: 1.5,
+    md: 2,
+  },
+  alignItems: "stretch",
+  marginBottom: {
+    xs: 1.5,
+    md: 2,
+  },
+});
+
+export const searchPanelCopyStyles = (theme: Theme) => ({
+  display: "flex",
+  flexDirection: "column",
+  justifyContent: "center",
+  minWidth: 0,
+  gap: 1,
+});
+
+export const searchPanelEyebrowStyles = (theme: Theme) => ({
+  display: "inline-flex",
+  width: "fit-content",
+  alignItems: "center",
+  gap: 0.65,
+  borderRadius: "999px",
+  backgroundColor: "color-mix(in srgb, #FF6B00 13%, transparent)",
+  color: "#D9480F",
+  padding: "0.4rem 0.7rem",
+  fontSize: 12,
+  fontWeight: 800,
+  ".dark &": {
+    color: darkFoodTheme.orange,
+    backgroundColor: "rgb(249 115 22 / 0.14)",
+    boxShadow: "inset 0 0 0 1px rgb(249 115 22 / 0.18)",
+  },
+});
+
+export const searchPanelTitleStyles = (theme: Theme) => ({
+  marginTop: 1,
+  maxWidth: 520,
+  color: "var(--foreground)",
+  fontSize: {
+    xs: 20,
+    sm: 24,
+    md: 28,
+  },
+  fontWeight: 850,
+  lineHeight: 1.12,
+  letterSpacing: 0,
+  textWrap: "balance",
+  ".dark &": {
+    color: darkFoodTheme.text,
+  },
+});
+
+export const contextCardGridStyles = (theme: Theme) => ({
+  display: "grid",
+  gridTemplateColumns: {
+    xs: "1fr",
+    sm: "repeat(3, minmax(0, 1fr))",
+  },
+  gap: 1,
+});
+
+export const contextCardStyles = (theme: Theme) => ({
+  display: "flex",
+  minWidth: 0,
+  alignItems: "center",
+  gap: 1,
+  borderRadius: 3,
+  border: "1px solid rgba(15, 23, 42, 0.14)",
+  backgroundColor: "rgba(255, 255, 255, 0.58)",
+  padding: {
+    xs: "0.8rem 0.9rem",
+    md: "0.9rem",
+  },
+  boxShadow:
+    "0 14px 30px rgba(15, 23, 42, 0.07), inset 0 1px 0 rgba(255, 255, 255, 0.72)",
+  backdropFilter: "blur(16px) saturate(1.12)",
+  WebkitBackdropFilter: "blur(16px) saturate(1.12)",
+  ".dark &": {
+    borderColor: darkFoodTheme.border,
+    background:
+      "linear-gradient(145deg, rgba(28, 25, 23, 0.96) 0%, rgba(41, 37, 36, 0.88) 100%)",
+    boxShadow:
+      "0 16px 34px rgba(0, 0, 0, 0.42), inset 0 1px 0 rgba(255, 247, 237, 0.06)",
+  },
+});
+
+export const contextIconStyles = (theme: Theme) => ({
+  display: "grid",
+  width: 34,
+  height: 34,
+  flexShrink: 0,
+  placeItems: "center",
+  borderRadius: "12px",
+  color: "#FFFFFF",
+  background: "linear-gradient(135deg, #FF8A1F 0%, #D9480F 100%)",
+  boxShadow: "none",
+});
+
+export const contextTitleStyles = (theme: Theme) => ({
+  overflow: "hidden",
+  textOverflow: "ellipsis",
+  whiteSpace: "nowrap",
+  color: "var(--foreground)",
+  fontSize: 13,
+  fontWeight: 850,
+  ".dark &": {
+    color: darkFoodTheme.text,
+  },
+});
+
+export const contextHelperStyles = (theme: Theme) => ({
+  overflow: "hidden",
+  textOverflow: "ellipsis",
+  whiteSpace: "nowrap",
+  color: "var(--muted-foreground)",
+  fontSize: 12,
+  fontWeight: 700,
+  ".dark &": {
+    color: darkFoodTheme.muted,
+  },
 });
 
 export const searchAreaStyles = (theme: Theme) => ({
   position: "relative",
+  zIndex: 10,
 });
 
 export const searchInputStyles = (theme: Theme) => ({
   "& .MuiOutlinedInput-root": {
-    minHeight: 58,
-    borderRadius: 3,
-    backgroundColor: "var(--background)",
+    minHeight: {
+      xs: 56,
+      sm: 62,
+    },
+    borderRadius: {
+      xs: 3,
+      sm: 4,
+    },
+    backgroundColor: "rgba(255, 255, 255, 0.68)",
     color: "var(--foreground)",
-    boxShadow: "0 12px 30px rgb(0 0 0 / 0.08)",
+    boxShadow:
+      "0 16px 34px rgba(15, 23, 42, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.78)",
+    backdropFilter: "blur(18px) saturate(1.14)",
+    WebkitBackdropFilter: "blur(18px) saturate(1.14)",
     "& fieldset": {
-      borderColor: "var(--border)",
+      borderColor: "rgba(15, 23, 42, 0.16)",
     },
     "&:hover fieldset": {
-      borderColor: "color-mix(in srgb, var(--primary) 50%, var(--border))",
+      borderColor: "rgba(15, 23, 42, 0.24)",
     },
     "&.Mui-focused fieldset": {
-      borderColor: "var(--primary)",
+      borderColor: "#D9480F",
       borderWidth: 1,
     },
+  },
+  "& .MuiInputAdornment-root svg": {
+    color: "#D9480F",
   },
   "& .MuiInputBase-input": {
     fontSize: {
       xs: 15,
       sm: 16,
     },
-    fontWeight: 600,
+    fontWeight: 650,
+  },
+  ".dark & .MuiOutlinedInput-root": {
+    backgroundColor: "rgba(12, 10, 9, 0.82)",
+    color: darkFoodTheme.text,
+    boxShadow:
+      "0 18px 38px rgba(0, 0, 0, 0.46), inset 0 1px 0 rgba(255, 247, 237, 0.06)",
+    "& fieldset": {
+      borderColor: darkFoodTheme.border,
+    },
+    "&:hover fieldset": {
+      borderColor: darkFoodTheme.borderStrong,
+    },
+    "&.Mui-focused fieldset": {
+      borderColor: darkFoodTheme.orange,
+    },
+  },
+  ".dark & .MuiInputBase-input::placeholder": {
+    color: darkFoodTheme.mutedSoft,
+    opacity: 1,
+  },
+  ".dark & .MuiInputAdornment-root svg": {
+    color: darkFoodTheme.orangeStrong,
   },
 });
 
 export const suggestionPaperStyles = (theme: Theme) => ({
   position: "absolute",
-  zIndex: 20,
+  zIndex: 100,
   left: 0,
   right: 0,
-  top: "calc(100% + 8px)",
-  borderRadius: 3,
-  border: "1px solid var(--border)",
-  backgroundColor: "var(--popover)",
+  top: "calc(100% + 10px)",
+  borderRadius: 4,
+  border: "1px solid rgba(15, 23, 42, 0.16)",
+  backgroundColor: "rgba(255, 255, 255, 0.82)",
   color: "var(--popover-foreground)",
-  boxShadow: "0 24px 60px rgb(0 0 0 / 0.16)",
+  boxShadow:
+    "0 24px 70px rgba(15, 23, 42, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.78)",
+  backdropFilter: "blur(22px) saturate(1.14)",
+  WebkitBackdropFilter: "blur(22px) saturate(1.14)",
   overflow: "hidden",
+  padding: "0.45rem",
+  ".dark &": {
+    borderColor: darkFoodTheme.border,
+    background:
+      "linear-gradient(180deg, rgba(28, 25, 23, 0.98) 0%, rgba(12, 10, 9, 0.98) 100%)",
+    color: darkFoodTheme.text,
+    boxShadow:
+      "0 28px 78px rgb(0 0 0 / 0.62), 0 0 0 1px rgb(249 115 22 / 0.08)",
+  },
+});
+
+export const suggestionGroupStyles = (theme: Theme) => ({
+  "& + &": {
+    borderTop: "1px solid var(--border)",
+    marginTop: 0.35,
+    paddingTop: 0.35,
+  },
+  ".dark & + &": {
+    borderTopColor: "rgb(249 115 22 / 0.18)",
+  },
+});
+
+export const suggestionGroupLabelStyles = (theme: Theme) => ({
+  padding: "0.45rem 0.65rem 0.3rem",
+  color: "var(--muted-foreground)",
+  fontSize: 12,
+  fontWeight: 800,
+  textTransform: "uppercase",
+  letterSpacing: "0.04em",
+  ".dark &": {
+    color: darkFoodTheme.muted,
+  },
 });
 
 export const suggestionItemStyles = (theme: Theme) => ({
   display: "flex",
+  width: "100%",
   alignItems: "center",
   justifyContent: "space-between",
   gap: 1,
+  border: 0,
   cursor: "pointer",
   padding: "0.75rem 1rem",
+  borderRadius: 2,
+  color: "var(--popover-foreground)",
+  backgroundColor: "transparent",
+  textAlign: "left",
+  outline: "2px solid transparent",
+  outlineOffset: -2,
   "&:hover": {
-    backgroundColor: "var(--accent)",
+    backgroundColor: "color-mix(in srgb, #FF6B00 14%, var(--accent))",
+  },
+  "&:focus-visible": {
+    backgroundColor: "color-mix(in srgb, #FF6B00 14%, var(--accent))",
+    boxShadow: "inset 0 0 0 2px #D9480F",
+  },
+  ".dark &": {
+    color: darkFoodTheme.text,
+    "&:hover": {
+      backgroundColor: "rgb(249 115 22 / 0.16)",
+    },
+    "&:focus-visible": {
+      backgroundColor: "rgb(249 115 22 / 0.18)",
+      boxShadow: `inset 0 0 0 2px ${darkFoodTheme.orange}`,
+    },
   },
 });
 
 export const tagRailStyles = (theme: Theme) => ({
+  position: "relative",
+  zIndex: 1,
   display: "flex",
   gap: 1,
   overflowX: "auto",
-  paddingTop: 2,
+  paddingTop: 1.5,
   paddingBottom: 0.5,
   scrollbarWidth: "none",
   "&::-webkit-scrollbar": {
@@ -196,19 +495,39 @@ export const tagChipStyles = (isActive: boolean) => (theme: Theme) => ({
   borderRadius: "999px",
   fontWeight: 700,
   flexShrink: 0,
-  borderColor: isActive ? "var(--primary)" : "var(--border)",
-  backgroundColor: isActive
-    ? "color-mix(in srgb, var(--primary) 15%, transparent)"
-    : "var(--background)",
-  color: isActive ? "var(--primary)" : "var(--muted-foreground)",
+  borderColor: isActive ? "#D9480F" : "rgba(15, 23, 42, 0.14)",
+  background: isActive
+    ? "linear-gradient(135deg, #D9480F 0%, #FF6B00 100%)"
+    : "rgba(255, 255, 255, 0.58)",
+  color: isActive ? "#FFFFFF" : "var(--muted-foreground)",
+  boxShadow: isActive ? "none" : "inset 0 1px 0 rgba(255, 255, 255, 0.72)",
+  backdropFilter: "blur(14px)",
+  WebkitBackdropFilter: "blur(14px)",
   "&:hover": {
-    backgroundColor: isActive
-      ? "color-mix(in srgb, var(--primary) 20%, transparent)"
-      : "var(--secondary)",
+    backgroundColor: isActive ? "#D9480F" : "rgba(255, 255, 255, 0.78)",
+  },
+  ".dark &": {
+    borderColor: isActive
+      ? darkFoodTheme.orangeStrong
+      : "rgb(249 115 22 / 0.26)",
+    background: isActive
+      ? "linear-gradient(135deg, #FB923C 0%, #F97316 54%, #EA580C 100%)"
+      : "rgba(28, 25, 23, 0.72)",
+    color: isActive ? "#FFFFFF" : darkFoodTheme.muted,
+    boxShadow: "none",
+    "&:hover": {
+      background: isActive
+        ? "linear-gradient(135deg, #FDBA74 0%, #F97316 58%, #EA580C 100%)"
+        : "rgb(249 115 22 / 0.14)",
+      color: isActive ? "#FFFFFF" : darkFoodTheme.text,
+      borderColor: darkFoodTheme.borderStrong,
+    },
   },
 });
 
 export const statusRowStyles = (theme: Theme) => ({
+  position: "relative",
+  zIndex: 1,
   display: "flex",
   alignItems: {
     xs: "flex-start",
@@ -221,6 +540,10 @@ export const statusRowStyles = (theme: Theme) => ({
   },
   gap: 1,
   marginBottom: 2,
+  paddingInline: {
+    xs: 0.25,
+    sm: 0.5,
+  },
 });
 
 export const resultCountStyles = (theme: Theme) => ({
@@ -229,14 +552,23 @@ export const resultCountStyles = (theme: Theme) => ({
     xs: 18,
     sm: 20,
   },
+  color: "var(--foreground)",
+  ".dark &": {
+    color: darkFoodTheme.text,
+  },
 });
 
 export const helperTextStyles = (theme: Theme) => ({
   color: "var(--muted-foreground)",
   fontSize: 14,
+  ".dark &": {
+    color: darkFoodTheme.muted,
+  },
 });
 
 export const gridStyles = (theme: Theme) => ({
+  position: "relative",
+  zIndex: 1,
   display: "grid",
   gridTemplateColumns: {
     xs: "1fr",
@@ -244,24 +576,46 @@ export const gridStyles = (theme: Theme) => ({
     lg: "repeat(3, minmax(0, 1fr))",
   },
   gap: {
-    xs: 1.5,
+    xs: 1.35,
     md: 2,
   },
 });
 
 export const cardStyles = (theme: Theme) => ({
   height: "100%",
-  borderRadius: 3,
+  borderRadius: {
+    xs: 3,
+    md: 4,
+  },
   overflow: "hidden",
-  border: "1px solid var(--border)",
-  backgroundColor: "var(--card)",
+  border: "1px solid rgba(15, 23, 42, 0.16)",
+  background:
+    "linear-gradient(180deg, rgba(255, 255, 255, 0.72) 0%, rgba(255, 247, 237, 0.22) 100%)",
   color: "var(--card-foreground)",
+  boxShadow:
+    "0 18px 42px rgba(15, 23, 42, 0.1), 0 0 0 1px rgba(15, 23, 42, 0.035), inset 0 1px 0 rgba(255, 255, 255, 0.86)",
+  backdropFilter: "blur(22px) saturate(1.16)",
+  WebkitBackdropFilter: "blur(22px) saturate(1.16)",
   transition:
     "transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease",
   "&:hover": {
     transform: "translateY(-3px)",
-    borderColor: "color-mix(in srgb, var(--primary) 46%, var(--border))",
-    boxShadow: "0 18px 40px rgb(0 0 0 / 0.14)",
+    borderColor: "rgba(15, 23, 42, 0.24)",
+    boxShadow:
+      "0 24px 54px rgba(15, 23, 42, 0.14), 0 0 0 1px rgba(15, 23, 42, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.88)",
+  },
+  ".dark &": {
+    borderColor: darkFoodTheme.border,
+    background:
+      "linear-gradient(180deg, #1C1917 0%, #151110 56%, #0C0A09 100%)",
+    color: darkFoodTheme.text,
+    boxShadow:
+      "0 18px 42px rgba(0, 0, 0, 0.52), inset 0 1px 0 rgba(255, 247, 237, 0.06)",
+    "&:hover": {
+      borderColor: darkFoodTheme.borderStrong,
+      boxShadow:
+        "0 24px 56px rgba(0, 0, 0, 0.62), 0 0 34px rgba(249, 115, 22, 0.12)",
+    },
   },
 });
 
@@ -270,13 +624,38 @@ export const cardActionStyles = (theme: Theme) => ({
   display: "flex",
   flexDirection: "column",
   alignItems: "stretch",
+  "&:focus-visible": {
+    outline: "3px solid color-mix(in srgb, #D9480F 38%, transparent)",
+    outlineOffset: -3,
+  },
+});
+
+export const cardMediaWrapStyles = (theme: Theme) => ({
+  position: "relative",
+  overflow: "hidden",
 });
 
 export const cardMediaStyles = (theme: Theme) => ({
   height: {
-    xs: 168,
-    md: 184,
+    xs: 178,
+    md: 190,
   },
+  transition: "transform 220ms ease",
+  ".MuiCardActionArea-root:hover &": {
+    transform: "scale(1.035)",
+  },
+});
+
+export const cardMediaOverlayStyles = (theme: Theme) => ({
+  position: "absolute",
+  inset: 0,
+  display: "flex",
+  alignItems: "flex-end",
+  justifyContent: "space-between",
+  gap: 1,
+  padding: 1.4,
+  background:
+    "linear-gradient(180deg, rgb(0 0 0 / 0.04) 0%, transparent 32%, rgb(0 0 0 / 0.64) 100%)",
 });
 
 export const cardContentStyles = (theme: Theme) => ({
@@ -284,7 +663,10 @@ export const cardContentStyles = (theme: Theme) => ({
   display: "flex",
   flexDirection: "column",
   gap: 1.25,
-  padding: 2,
+  padding: {
+    xs: 1.6,
+    sm: 2,
+  },
 });
 
 export const cardHeaderStyles = (theme: Theme) => ({
@@ -295,28 +677,61 @@ export const cardHeaderStyles = (theme: Theme) => ({
 });
 
 export const foodNameStyles = (theme: Theme) => ({
-  fontWeight: 800,
-  fontSize: 19,
+  fontWeight: 850,
+  fontSize: {
+    xs: 18,
+    sm: 19,
+  },
   lineHeight: 1.2,
+  textWrap: "balance",
+  ".dark &": {
+    color: darkFoodTheme.text,
+  },
 });
 
 export const scoreBadgeStyles = (theme: Theme) => ({
   borderRadius: "999px",
-  backgroundColor: "color-mix(in srgb, var(--primary) 13%, transparent)",
-  color: "var(--primary)",
+  border: "1px solid rgba(187, 247, 208, 0.64)",
+  backgroundColor: "rgba(240, 253, 244, 0.9)",
+  color: "#15803D",
   fontWeight: 800,
   fontSize: 12,
   padding: "0.25rem 0.55rem",
   flexShrink: 0,
+  boxShadow:
+    "0 10px 26px rgba(0, 0, 0, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.84)",
+  backdropFilter: "blur(14px)",
+  WebkitBackdropFilter: "blur(14px)",
+  ".dark &": {
+    borderColor: "rgba(124, 197, 132, 0.3)",
+    backgroundColor: "rgba(47, 143, 70, 0.18)",
+    color: "#7CC584",
+    boxShadow: "none",
+  },
+});
+
+export const pricePillStyles = (theme: Theme) => ({
+  borderRadius: "999px",
+  backgroundColor: "rgb(9 9 11 / 0.64)",
+  color: "#fff",
+  fontSize: 12,
+  fontWeight: 800,
+  padding: "0.25rem 0.6rem",
+  backdropFilter: "blur(8px)",
 });
 
 export const descriptionStyles = (theme: Theme) => ({
   color: "var(--muted-foreground)",
   fontSize: 14,
+  lineHeight: 1.62,
   display: "-webkit-box",
   WebkitLineClamp: 2,
   WebkitBoxOrient: "vertical",
   overflow: "hidden",
+  textWrap: "pretty",
+  ".dark &": {
+    color: darkFoodTheme.muted,
+  },
 });
 
 export const chipWrapStyles = (theme: Theme) => ({
@@ -328,10 +743,18 @@ export const chipWrapStyles = (theme: Theme) => ({
 export const softTagStyles = (theme: Theme) => ({
   height: 25,
   borderRadius: "999px",
-  backgroundColor: "var(--secondary)",
-  color: "var(--secondary-foreground)",
+  borderColor: "rgba(15, 23, 42, 0.12)",
+  backgroundColor: "rgba(255, 255, 255, 0.58)",
+  color: "#3F3F46",
   fontSize: 12,
   fontWeight: 700,
+  backdropFilter: "blur(12px)",
+  WebkitBackdropFilter: "blur(12px)",
+  ".dark &": {
+    backgroundColor: "rgba(249, 115, 22, 0.12)",
+    color: "#FDBA74",
+    borderColor: "rgba(249, 115, 22, 0.2)",
+  },
 });
 
 export const locationLineStyles = (theme: Theme) => ({
@@ -341,17 +764,36 @@ export const locationLineStyles = (theme: Theme) => ({
   color: "var(--muted-foreground)",
   fontSize: 13,
   marginTop: "auto",
+  minWidth: 0,
+  ".dark &": {
+    color: darkFoodTheme.muted,
+  },
+});
+
+export const locationTextStyles = (theme: Theme) => ({
+  minWidth: 0,
+  overflow: "hidden",
+  textOverflow: "ellipsis",
+  whiteSpace: "nowrap",
 });
 
 export const emptyStateStyles = (theme: Theme) => ({
-  border: "1px dashed var(--border)",
+  border: "1px dashed rgba(15, 23, 42, 0.18)",
   borderRadius: 4,
   textAlign: "center",
   padding: {
     xs: "3rem 1.25rem",
     md: "4rem 2rem",
   },
-  backgroundColor: "color-mix(in srgb, var(--card) 72%, transparent)",
+  background:
+    "linear-gradient(135deg, rgba(255, 255, 255, 0.72) 0%, rgba(255, 247, 237, 0.24) 100%)",
+  boxShadow: "0 18px 42px rgba(15, 23, 42, 0.08)",
+  backdropFilter: "blur(20px) saturate(1.12)",
+  WebkitBackdropFilter: "blur(20px) saturate(1.12)",
+  ".dark &": {
+    borderColor: darkFoodTheme.border,
+    background: "linear-gradient(135deg, #1C1917 0%, #292524 100%)",
+  },
 });
 
 export const dialogPaperStyles = (theme: Theme) => ({
@@ -359,8 +801,18 @@ export const dialogPaperStyles = (theme: Theme) => ({
     xs: 0,
     sm: 4,
   },
-  backgroundColor: "var(--background)",
+  border: "1px solid rgba(15, 23, 42, 0.14)",
+  backgroundColor: "rgba(255, 255, 255, 0.92)",
   color: "var(--foreground)",
+  boxShadow: "0 28px 80px rgba(15, 23, 42, 0.18)",
+  backdropFilter: "blur(18px) saturate(1.12)",
+  WebkitBackdropFilter: "blur(18px) saturate(1.12)",
+  ".dark &": {
+    backgroundColor: darkFoodTheme.background,
+    color: darkFoodTheme.text,
+    border: `1px solid ${darkFoodTheme.border}`,
+    boxShadow: "0 28px 80px rgba(0, 0, 0, 0.64)",
+  },
 });
 
 export const detailHeroStyles = (theme: Theme) => ({
@@ -383,6 +835,10 @@ export const detailOverlayStyles = (theme: Theme) => ({
   inset: 0,
   background:
     "linear-gradient(180deg, transparent 20%, color-mix(in srgb, var(--background) 94%, transparent) 100%)",
+  ".dark &": {
+    background:
+      "linear-gradient(180deg, transparent 16%, rgb(5 5 5 / 0.96) 100%)",
+  },
 });
 
 export const detailTitleWrapStyles = (theme: Theme) => ({
@@ -419,8 +875,16 @@ export const locationCardStyles = (theme: Theme) => ({
   gap: 1.5,
   padding: 1.5,
   borderRadius: 2,
-  border: "1px solid var(--border)",
-  backgroundColor: "var(--card)",
+  border: "1px solid rgba(15, 23, 42, 0.14)",
+  backgroundColor: "rgba(255, 255, 255, 0.62)",
+  boxShadow: "inset 0 1px 0 rgba(255, 255, 255, 0.72)",
+  backdropFilter: "blur(14px)",
+  WebkitBackdropFilter: "blur(14px)",
+  ".dark &": {
+    borderColor: darkFoodTheme.border,
+    background:
+      "linear-gradient(135deg, rgba(28, 25, 23, 0.98) 0%, rgba(41, 37, 36, 0.92) 100%)",
+  },
 });
 
 export const mapLinkStyles = (theme: Theme) => ({
@@ -431,6 +895,9 @@ export const mapLinkStyles = (theme: Theme) => ({
   color: "var(--primary)",
   fontWeight: 800,
   textDecoration: "none",
+  ".dark &": {
+    color: darkFoodTheme.orange,
+  },
 });
 
 export const closeButtonStyles = (theme: Theme) => ({
@@ -442,6 +909,13 @@ export const closeButtonStyles = (theme: Theme) => ({
   color: "#fff",
   "&:hover": {
     backgroundColor: "rgb(0 0 0 / 0.58)",
+  },
+  ".dark &": {
+    border: `1px solid ${darkFoodTheme.border}`,
+    backgroundColor: "rgb(5 5 5 / 0.72)",
+    "&:hover": {
+      backgroundColor: "rgb(249 115 22 / 0.18)",
+    },
   },
 });
 
@@ -455,9 +929,20 @@ export const styles = {
   titleStyles,
   subtitleStyles,
   heroPanelStyles,
+  searchPanelHeaderStyles,
+  searchPanelCopyStyles,
+  searchPanelEyebrowStyles,
+  searchPanelTitleStyles,
+  contextCardGridStyles,
+  contextCardStyles,
+  contextIconStyles,
+  contextTitleStyles,
+  contextHelperStyles,
   searchAreaStyles,
   searchInputStyles,
   suggestionPaperStyles,
+  suggestionGroupStyles,
+  suggestionGroupLabelStyles,
   suggestionItemStyles,
   tagRailStyles,
   tagChipStyles,
@@ -467,15 +952,19 @@ export const styles = {
   gridStyles,
   cardStyles,
   cardActionStyles,
+  cardMediaWrapStyles,
   cardMediaStyles,
+  cardMediaOverlayStyles,
   cardContentStyles,
   cardHeaderStyles,
   foodNameStyles,
   scoreBadgeStyles,
+  pricePillStyles,
   descriptionStyles,
   chipWrapStyles,
   softTagStyles,
   locationLineStyles,
+  locationTextStyles,
   emptyStateStyles,
   dialogPaperStyles,
   detailHeroStyles,

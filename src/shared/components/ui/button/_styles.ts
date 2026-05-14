@@ -141,7 +141,8 @@ export const getButtonSx = (
   textDecoration: "none",
   transition:
     "background-color 160ms ease, border-color 160ms ease, color 160ms ease, box-shadow 160ms ease, transform 160ms ease, filter 160ms ease",
-  outline: "none",
+  outline: "2px solid transparent",
+  outlineOffset: 2,
   "&:focus-visible": {
     boxShadow: effects.shadows.focus,
   },

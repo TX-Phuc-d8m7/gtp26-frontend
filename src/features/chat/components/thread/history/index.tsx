@@ -1,12 +1,23 @@
-import { Button } from "@/shared/components/ui/button/index";
+/*
+ * Copyright (c) 2026 GTP26
+ * All rights reserved.
+ */
+import { FormEvent, useEffect, useState } from "react";
 import { Box } from "@mui/material";
-import { Typography } from "@/shared/components/ui/typography/index";
-import { useThreads } from "@/features/chat/providers/thread-provider";
-import { Thread } from "@langchain/langgraph-sdk";
-import { useEffect } from "react";
+import {
+  Check,
+  MessageSquareText,
+  PanelRightClose,
+  PanelRightOpen,
+  Pencil,
+  Trash2,
+  X,
+} from "lucide-react";
+import { parseAsBoolean, useQueryState } from "nuqs";
 
-import { getContentString } from "../utils";
-import { useQueryState, parseAsBoolean } from "nuqs";
+import type { ChatThread } from "@/features/chat/_interface";
+import { useThreads } from "@/features/chat/providers/thread-provider";
+import { Button } from "@/shared/components/ui/button/index";
 import {
   Sheet,
   SheetContent,
@@ -14,58 +25,190 @@ import {
   SheetTitle,
 } from "@/shared/components/ui/sheet/index";
 import { Skeleton } from "@/shared/components/ui/skeleton/index";
-import { PanelRightOpen, PanelRightClose } from "lucide-react";
+import { Typography } from "@/shared/components/ui/typography/index";
 import { useMediaQuery } from "@/shared/hooks/use-media-query";
+
 import { styles } from "../../../_styles";
+
+function formatUpdatedAt(value: string) {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "";
+
+  const diffMs = Date.now() - date.getTime();
+  const diffMinutes = Math.max(0, Math.floor(diffMs / 60000));
+  if (diffMinutes < 1) return "vừa xong";
+  if (diffMinutes < 60) return `${diffMinutes} phút`;
+
+  const diffHours = Math.floor(diffMinutes / 60);
+  if (diffHours < 24) return `${diffHours} giờ`;
+
+  return new Intl.DateTimeFormat("vi-VN", {
+    day: "2-digit",
+    month: "2-digit",
+  }).format(date);
+}
+
+function ThreadHistoryEmpty() {
+  return (
+    <Box sx={styles.historyEmptyStyles}>
+      <MessageSquareText className="size-5" />
+      <Typography as="span" sx={{ fontWeight: 700 }}>
+        Chưa có cuộc trò chuyện
+      </Typography>
+      <Typography as="span" sx={{ fontSize: "0.76rem", lineHeight: 1.5 }}>
+        Gửi câu hỏi đầu tiên để bắt đầu lưu lịch sử gợi ý món ăn.
+      </Typography>
+    </Box>
+  );
+}
 
 function ThreadList({
   threads,
   onThreadClick,
 }: {
-  threads: Thread[];
+  threads: ChatThread[];
   onThreadClick?: (threadId: string) => void;
 }) {
   const [threadId, setThreadId] = useQueryState("threadId");
+  const { renameThread, deleteThread } = useThreads();
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [draftTitle, setDraftTitle] = useState("");
+
+  if (!threads.length) {
+    return <ThreadHistoryEmpty />;
+  }
+
+  const startRename = (thread: ChatThread) => {
+    setEditingId(thread.id);
+    setDraftTitle(thread.title);
+  };
+
+  const handleRename = async (event: FormEvent, targetThreadId: string) => {
+    event.preventDefault();
+    await renameThread(targetThreadId, draftTitle);
+    setEditingId(null);
+    setDraftTitle("");
+  };
+
+  const handleDelete = async (targetThreadId: string) => {
+    const confirmed = window.confirm("Xóa cuộc trò chuyện này?");
+    if (!confirmed) return;
+
+    await deleteThread(targetThreadId);
+    if (targetThreadId === threadId) {
+      setThreadId(null);
+    }
+  };
+
+  const isRenameControlEvent = (target: EventTarget | null) =>
+    target instanceof HTMLElement &&
+    !!target.closest("form, input, textarea, button");
 
   return (
     <Box sx={styles.historyListStyles}>
-      {threads.map((t) => {
-        let itemText = t.thread_id;
-        if (
-          typeof t.values === "object" &&
-          t.values &&
-          "messages" in t.values &&
-          Array.isArray(t.values.messages) &&
-          t.values.messages?.length > 0
-        ) {
-          const firstMessage = t.values.messages[0];
-          itemText = getContentString(firstMessage.content);
-        }
+      {threads.map((thread) => {
+        const isActive = thread.id === threadId;
+        const isEditing = editingId === thread.id;
+
         return (
-          <Box key={t.thread_id} sx={{ width: "100%" }}>
-            <Button
-              variant="ghost"
-              sx={styles.historyItemButtonStyles(t.thread_id === threadId)}
-              onClick={(e) => {
-                e.preventDefault();
-                onThreadClick?.(t.thread_id);
-                if (t.thread_id === threadId) return;
-                setThreadId(t.thread_id);
+          <Box key={thread.id} className="history-item" sx={{ width: "100%" }}>
+            <Box
+              role="button"
+              tabIndex={0}
+              sx={styles.historyItemButtonStyles(isActive)}
+              onClick={(event) => {
+                event.preventDefault();
+                if (isEditing) return;
+                onThreadClick?.(thread.id);
+                if (isActive) return;
+                setThreadId(thread.id);
+              }}
+              onKeyDown={(event) => {
+                if (isRenameControlEvent(event.target)) return;
+                if (event.key !== "Enter" && event.key !== " ") return;
+                event.preventDefault();
+                if (isEditing) return;
+                onThreadClick?.(thread.id);
+                if (isActive) return;
+                setThreadId(thread.id);
               }}
             >
-              <Typography
-                as="span"
-                sx={{
-                  overflow: "hidden",
-                  textOverflow: "ellipsis",
-                  whiteSpace: "nowrap",
-                  fontSize: "0.86rem",
-                  fontWeight: t.thread_id === threadId ? 700 : 500,
-                }}
-              >
-                {itemText}
-              </Typography>
-            </Button>
+              {isEditing ? (
+                <Box
+                  component="form"
+                  onSubmit={(event) => handleRename(event, thread.id)}
+                  sx={{ display: "flex", width: "100%", gap: 0.6 }}
+                  onClick={(event) => event.stopPropagation()}
+                  onKeyDown={(event) => event.stopPropagation()}
+                >
+                  <Box
+                    component="input"
+                    value={draftTitle}
+                    onChange={(event) => setDraftTitle(event.target.value)}
+                    autoFocus
+                    sx={styles.historyRenameInputStyles}
+                    aria-label="Tên cuộc trò chuyện"
+                  />
+                  <Box
+                    component="button"
+                    type="submit"
+                    sx={styles.historyActionButtonStyles}
+                    aria-label="Lưu tên cuộc trò chuyện"
+                  >
+                    <Check className="size-4" />
+                  </Box>
+                  <Box
+                    component="button"
+                    type="button"
+                    sx={styles.historyActionButtonStyles}
+                    onClick={() => setEditingId(null)}
+                    aria-label="Hủy đổi tên"
+                  >
+                    <X className="size-4" />
+                  </Box>
+                </Box>
+              ) : (
+                <>
+                  <Box sx={styles.historyItemContentStyles}>
+                    <Typography
+                      as="span"
+                      sx={styles.historyItemTitleStyles(isActive)}
+                    >
+                      {thread.title}
+                    </Typography>
+                    <Typography as="span" sx={styles.historyItemPreviewStyles}>
+                      {thread.lastMessagePreview || "Chưa có tin nhắn"}
+                    </Typography>
+                  </Box>
+                  <Typography as="span" sx={styles.historyItemTimeStyles}>
+                    {formatUpdatedAt(thread.updatedAt)}
+                  </Typography>
+                  <Box
+                    sx={styles.historyItemActionsStyles}
+                    onClick={(event) => event.stopPropagation()}
+                  >
+                    <Box
+                      component="button"
+                      type="button"
+                      sx={styles.historyActionButtonStyles}
+                      onClick={() => startRename(thread)}
+                      aria-label="Đổi tên cuộc trò chuyện"
+                    >
+                      <Pencil className="size-3.5" />
+                    </Box>
+                    <Box
+                      component="button"
+                      type="button"
+                      sx={styles.historyActionButtonStyles}
+                      onClick={() => handleDelete(thread.id)}
+                      aria-label="Xóa cuộc trò chuyện"
+                    >
+                      <Trash2 className="size-3.5" />
+                    </Box>
+                  </Box>
+                </>
+              )}
+            </Box>
           </Box>
         );
       })}
@@ -76,8 +219,8 @@ function ThreadList({
 function ThreadHistoryLoading() {
   return (
     <Box sx={styles.historyListStyles}>
-      {Array.from({ length: 30 }).map((_, i) => (
-        <Skeleton key={`skeleton-${i}`} className="w-[280px] h-10" />
+      {Array.from({ length: 8 }).map((_, i) => (
+        <Skeleton key={`skeleton-${i}`} className="w-full h-14 rounded-2xl" />
       ))}
     </Box>
   );
@@ -90,17 +233,12 @@ export default function ThreadHistory() {
     parseAsBoolean.withDefault(false),
   );
 
-  const { getThreads, threads, setThreads, threadsLoading, setThreadsLoading } =
-    useThreads();
+  const { threads, threadsLoading, refreshThreads } = useThreads();
 
   useEffect(() => {
     if (typeof window === "undefined") return;
-    setThreadsLoading(true);
-    getThreads()
-      .then(setThreads)
-      .catch(console.error)
-      .finally(() => setThreadsLoading(false));
-  }, []);
+    refreshThreads().catch(console.error);
+  }, [refreshThreads]);
 
   return (
     <>
@@ -158,10 +296,14 @@ export default function ThreadHistory() {
             <SheetHeader>
               <SheetTitle>Bếp trò chuyện</SheetTitle>
             </SheetHeader>
-            <ThreadList
-              threads={threads}
-              onThreadClick={() => setChatHistoryOpen((o) => !o)}
-            />
+            {threadsLoading ? (
+              <ThreadHistoryLoading />
+            ) : (
+              <ThreadList
+                threads={threads}
+                onThreadClick={() => setChatHistoryOpen(false)}
+              />
+            )}
           </SheetContent>
         </Sheet>
       </div>

@@ -5,27 +5,28 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  --background: #fff8ef;
-  --foreground: #1a1511;
-  --card: #fffdf7;
-  --card-foreground: #1a1511;
-  --popover: #fffdf7;
-  --popover-foreground: #1a1511;
-  --primary: #f97316;
-  --primary-foreground: #fafafa;
-  --secondary: #e9f7e8;
-  --secondary-foreground: #12351f;
-  --muted: #f6eadc;
-  --muted-foreground: #6f5a49;
-  --accent: #fff1d9;
-  --accent-foreground: #4b2410;
-  --border: #ead9c5;
-  --input: #e3cdb6;
-  --ring: #f97316;
+  color-scheme: light;
+  --background: #fffaf5;
+  --foreground: #17110d;
+  --card: #fffefd;
+  --card-foreground: #17110d;
+  --popover: #fffefd;
+  --popover-foreground: #17110d;
+  --primary: #d9480f;
+  --primary-foreground: #ffffff;
+  --secondary: #fff1e3;
+  --secondary-foreground: #8f2209;
+  --muted: #fff0e4;
+  --muted-foreground: #735449;
+  --accent: #ffe0bd;
+  --accent-foreground: #8f2209;
+  --border: #f4c9aa;
+  --input: #efb98f;
+  --ring: #ff6b00;
   --radius: 0.625rem;
-  --food-herb: #2f8f46;
-  --food-broth: #d99d2b;
-  --food-chilli: #e85d04;
+  --food-herb: #16a34a;
+  --food-broth: #ff8a1f;
+  --food-chilli: #d9480f;
   --font-display:
     "Be Vietnam Pro", "Lexend", ui-sans-serif, system-ui, -apple-system,
     BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -35,26 +36,27 @@
 }
 
 .dark {
-  --background: #160f0b;
-  --foreground: #fff8ef;
-  --card: #211711;
-  --card-foreground: #fff8ef;
-  --popover: #211711;
-  --popover-foreground: #fff8ef;
-  --primary: #f97316;
+  color-scheme: dark;
+  --background: #09090b;
+  --foreground: #fafafa;
+  --card: #18181b;
+  --card-foreground: #fafafa;
+  --popover: #18181b;
+  --popover-foreground: #fafafa;
+  --primary: #fb923c;
   --primary-foreground: #fafafa;
-  --secondary: #173a24;
-  --secondary-foreground: #effaf0;
-  --muted: #302219;
-  --muted-foreground: #d8bfa6;
-  --accent: #3a2618;
-  --accent-foreground: #fff4e8;
-  --border: #463125;
-  --input: #5f4a3b;
-  --ring: #f97316;
-  --food-herb: #7cc584;
-  --food-broth: #f7d78a;
-  --food-chilli: #ff912b;
+  --secondary: #27272a;
+  --secondary-foreground: #fafafa;
+  --muted: #27272a;
+  --muted-foreground: #a1a1aa;
+  --accent: #7c2d12;
+  --accent-foreground: #fff7ed;
+  --border: #27272a;
+  --input: #3f3f46;
+  --ring: #fb923c;
+  --food-herb: #22c55e;
+  --food-broth: #fdba74;
+  --food-chilli: #f97316;
 }
 
 @theme inline {
@@ -104,19 +106,31 @@
   body {
     @apply bg-background text-foreground;
     font-family: var(--font-body);
+    overflow-x: hidden;
     -webkit-font-smoothing: antialiased;
+    -webkit-tap-highlight-color: color-mix(
+      in srgb,
+      var(--primary) 18%,
+      transparent
+    );
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
     background:
       radial-gradient(
-        circle at top left,
-        color-mix(in srgb, var(--primary) 12%, transparent),
-        transparent 32%
+        circle at 12% 0%,
+        color-mix(in srgb, #ff6b00 22%, transparent),
+        transparent 34%
+      ),
+      radial-gradient(
+        circle at 88% 8%,
+        color-mix(in srgb, #ffb25c 18%, transparent),
+        transparent 30%
       ),
       linear-gradient(
         180deg,
-        var(--background) 0%,
-        color-mix(in srgb, var(--background) 92%, var(--food-broth)) 100%
+        #fffefd 0%,
+        var(--background) 48%,
+        color-mix(in srgb, #ffe0bd 42%, var(--background)) 100%
       );
   }
 
@@ -128,6 +142,7 @@
   h6 {
     font-family: var(--font-display);
     letter-spacing: 0;
+    text-wrap: balance;
   }
 
   :root {
@@ -144,6 +159,17 @@
     --chart-3: 30 80% 55%;
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
   }
 }
 

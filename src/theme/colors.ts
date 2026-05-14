@@ -8,26 +8,26 @@ import { alpha } from "@mui/material";
 // Base color palettes (primitives) - defined first for reference
 const baseColors = {
   gray: {
-    50: "#FFF9F1",
-    100: "#F6EADC",
-    200: "#E8D6C3",
-    300: "#D8BFA6",
-    500: "#947C68",
-    700: "#5F4A3B",
-    800: "#332A24",
-    900: "#1A1511",
+    50: "#FAFAFA",
+    100: "#F4F4F5",
+    200: "#E4E4E7",
+    300: "#D4D4D8",
+    500: "#71717A",
+    700: "#3F3F46",
+    800: "#27272A",
+    900: "#18181B",
   },
   brand: {
     50: "#FFF4E8",
-    100: "#FFE1BF",
-    200: "#FFC989",
-    300: "#FFAD52",
-    400: "#FF912B",
-    500: "#F97316",
-    600: "#E85D04",
-    700: "#B94709",
-    800: "#81380E",
-    900: "#4B2410",
+    100: "#FFE4C2",
+    200: "#FFC987",
+    300: "#FFB25C",
+    400: "#FF8A1F",
+    500: "#FF6B00",
+    600: "#D9480F",
+    700: "#B52F08",
+    800: "#8F2209",
+    900: "#5F180A",
   },
   herb: {
     50: "#EFFAF0",
@@ -38,11 +38,11 @@ const baseColors = {
     900: "#0F321E",
   },
   broth: {
-    50: "#FFFDF7",
-    100: "#FFF7DF",
-    300: "#F7D78A",
-    500: "#D99D2B",
-    700: "#8A5B17",
+    50: "#FFF4E8",
+    100: "#FFE4C2",
+    300: "#FFB25C",
+    500: "#FF8A1F",
+    700: "#B52F08",
   },
 } as const;
 
@@ -58,7 +58,7 @@ export const colors = {
    */
   primary: {
     main: baseColors.brand[500],
-    gradient: `linear-gradient(135deg, ${baseColors.brand[400]} 0%, ${baseColors.brand[700]} 100%)`,
+    gradient: `linear-gradient(135deg, ${baseColors.brand[300]} 0%, ${baseColors.brand[500]} 54%, ${baseColors.brand[600]} 100%)`,
   },
 
   /**
@@ -74,7 +74,7 @@ export const colors = {
    */
   backgroundButtons: {
     primary: {
-      main: `linear-gradient(135deg, ${baseColors.brand[400]} 0%, ${baseColors.brand[700]} 100%)`,
+      main: `linear-gradient(135deg, ${baseColors.brand[300]} 0%, ${baseColors.brand[500]} 54%, ${baseColors.brand[600]} 100%)`,
     },
     secondary: {
       main: alpha(baseColors.herb[500], 0.12),
@@ -158,7 +158,7 @@ export const colors = {
    * Default colors for placeholders and fallbacks
    */
   default: {
-    placeholder: "#B89373",
+    placeholder: "#A1A1AA",
   },
   /**
    * Component-specific colors
@@ -168,8 +168,8 @@ export const colors = {
     body: {
       bg: `radial-gradient(circle at top left, ${alpha(
         baseColors.brand[400],
-        0.18,
-      )}, transparent 34%), linear-gradient(180deg, ${baseColors.gray[50]} 0%, #FFFFFF 48%, #FFF8EF 100%)`,
+        0.12,
+      )}, transparent 34%), linear-gradient(180deg, #FFFFFF 0%, ${baseColors.gray[50]} 48%, ${baseColors.broth[50]} 100%)`,
       text: baseColors.gray[900],
     },
     header: {
@@ -190,14 +190,14 @@ export const colors = {
   },
 
   food: {
-    backgroundWarm: "#FFF8EF",
-    backgroundDeep: "#160F0B",
-    surface: "#FFFDF7",
-    surfaceDark: "#211711",
+    backgroundWarm: "#FFFFFF",
+    backgroundDeep: "#09090B",
+    surface: "#FFFFFF",
+    surfaceDark: "#18181B",
     herb: baseColors.herb[500],
     broth: baseColors.broth[500],
     chilli: baseColors.brand[600],
-    accentGradient: `linear-gradient(135deg, ${baseColors.brand[400]} 0%, ${baseColors.brand[700]} 58%, ${baseColors.broth[500]} 100%)`,
+    accentGradient: `linear-gradient(135deg, ${baseColors.brand[300]} 0%, ${baseColors.brand[500]} 54%, ${baseColors.brand[600]} 100%)`,
   },
 
   black: {

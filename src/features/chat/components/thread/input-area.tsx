@@ -12,7 +12,7 @@ import {
   Sparkles,
   X,
 } from "lucide-react";
-import { FormEvent, useRef, useState } from "react";
+import { FormEvent, useEffect, useRef, useState } from "react";
 import { styles } from "../../_styles";
 
 export interface ComposerAttachment {
@@ -26,8 +26,8 @@ interface InputAreaProps {
   input: string;
   onInputChange: (value: string) => void;
   onSubmit: (e: FormEvent) => void;
-  onHideToolCallsChange: (checked: boolean) => void;
-  hideToolCalls: boolean;
+  onShowRecommendationAnalysisChange: (checked: boolean) => void;
+  showRecommendationAnalysis: boolean;
   isLoading: boolean;
   onCancel?: () => void;
   onKeyDown?: (e: React.KeyboardEvent) => void;
@@ -40,8 +40,8 @@ export function InputArea({
   input,
   onInputChange,
   onSubmit,
-  onHideToolCallsChange,
-  hideToolCalls,
+  onShowRecommendationAnalysisChange,
+  showRecommendationAnalysis,
   isLoading,
   onCancel,
   onKeyDown,
@@ -51,6 +51,29 @@ export function InputArea({
 }: InputAreaProps) {
   const [toolsOpen, setToolsOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const toolsRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        toolsRef.current &&
+        !toolsRef.current.contains(event.target as Node)
+      ) {
+        setToolsOpen(false);
+      }
+    };
+
+    // Chỉ gắn event listener khi panel đang mở để tối ưu hiệu suất
+    if (toolsOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    // Cleanup function
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [toolsOpen]);
 
   const quickPrompts = [
     "Gợi ý bữa tối nhẹ bụng trong 15 phút",
@@ -165,7 +188,10 @@ export function InputArea({
                 }
                 onKeyDown?.(e);
               }}
-              placeholder="Bạn muốn ăn món gì, khẩu vị ra sao?"
+              aria-label="Nhập yêu cầu gợi ý món ăn"
+              name="food-chat-message"
+              autoComplete="off"
+              placeholder="Bạn muốn ăn món gì, khẩu vị ra sao…"
               sx={styles.textareaStyles}
               rows={1}
             />
@@ -176,6 +202,7 @@ export function InputArea({
                   ref={fileInputRef}
                   type="file"
                   multiple
+                  aria-label="Chọn tệp đính kèm"
                   className="hidden"
                   onChange={(e) => handleFilesSelected(e.target.files)}
                 />
@@ -190,7 +217,7 @@ export function InputArea({
                 >
                   <Paperclip className="size-4" />
                 </Button>
-                <Box sx={{ position: "relative" }}>
+                <Box ref={toolsRef} sx={{ position: "relative" }}>
                   <Button
                     type="button"
                     variant="ghost"
@@ -259,15 +286,15 @@ export function InputArea({
                           }}
                         >
                           <Label
-                            htmlFor="render-tool-calls"
+                            htmlFor="show-recommendation-analysis"
                             className="text-sm text-foreground cursor-pointer"
                           >
-                            Ẩn tool calls
+                            Hiện phân tích gợi ý
                           </Label>
                           <Switch
-                            id="render-tool-calls"
-                            checked={hideToolCalls ?? false}
-                            onCheckedChange={onHideToolCallsChange}
+                            id="show-recommendation-analysis"
+                            checked={showRecommendationAnalysis ?? false}
+                            onCheckedChange={onShowRecommendationAnalysisChange}
                             disabled={isLoading}
                           />
                         </Box>
@@ -283,16 +310,16 @@ export function InputArea({
                   }}
                 >
                   <Switch
-                    id="render-tool-calls-inline"
-                    checked={hideToolCalls ?? false}
-                    onCheckedChange={onHideToolCallsChange}
+                    id="show-recommendation-analysis-inline"
+                    checked={showRecommendationAnalysis ?? false}
+                    onCheckedChange={onShowRecommendationAnalysisChange}
                     disabled={isLoading}
                   />
                   <Label
-                    htmlFor="render-tool-calls-inline"
+                    htmlFor="show-recommendation-analysis-inline"
                     className="cursor-pointer"
                   >
-                    Ẩn tool calls
+                    Hiện phân tích gợi ý
                   </Label>
                 </Box>
               </Box>

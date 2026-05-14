@@ -25,7 +25,11 @@ import {
 import { useTheme } from "@mui/material/styles";
 import {
   ArrowLeft,
+  Bot,
+  Clock3,
+  Leaf,
   MapPin,
+  MapPinned,
   Navigation,
   Search,
   Sparkles,
@@ -33,6 +37,8 @@ import {
   Utensils,
   X,
 } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 
 import type {
   FoodSearchUIProps,
@@ -49,9 +55,34 @@ const suggestionTypeLabels: Record<SearchSuggestion["type"], string> = {
   ingredient: "Nguyên liệu",
 };
 
+const searchContextCards: {
+  title: string;
+  helper: string;
+  Icon: LucideIcon;
+}[] = [
+  {
+    title: "Nói tự nhiên",
+    helper: "khẩu vị, ngân sách",
+    Icon: Bot,
+  },
+  {
+    title: "Ăn nhẹ hơn",
+    helper: "ít dầu, dễ tiêu",
+    Icon: Leaf,
+  },
+  {
+    title: "Gần trải nghiệm thật",
+    helper: "món + địa điểm",
+    Icon: MapPinned,
+  },
+];
+
 export default function FoodSearchUI(props: FoodSearchUIProps = {}) {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const shouldReduceMotion = useReducedMotion();
+  const isEmbedded = Boolean(props.onClose);
+  const shouldSkipMountMotion = Boolean(shouldReduceMotion || isEmbedded);
   const {
     query,
     selectedTags,
@@ -69,9 +100,17 @@ export default function FoodSearchUI(props: FoodSearchUIProps = {}) {
     toggleTag,
   } = useFoodSearch(props);
   const hasActiveSearch = Boolean(query.trim()) || selectedTags.length > 0;
+  const suggestionGroups = (
+    ["dish", "tag", "ingredient"] as SearchSuggestion["type"][]
+  )
+    .map((type) => ({
+      type,
+      items: suggestions.filter((suggestion) => suggestion.type === type),
+    }))
+    .filter((group) => group.items.length > 0);
 
   return (
-    <Box sx={styles.rootStyles(Boolean(props.onClose))}>
+    <Box sx={styles.rootStyles(isEmbedded)}>
       <Box sx={styles.shellStyles}>
         <Box sx={styles.topBarStyles}>
           <IconButton
@@ -81,28 +120,40 @@ export default function FoodSearchUI(props: FoodSearchUIProps = {}) {
           >
             <ArrowLeft size={20} />
           </IconButton>
-
-          <Box sx={styles.titleBlockStyles}>
-            <Typography sx={styles.eyebrowStyles}>
-              <Sparkles size={16} />
-              Gợi ý đặc sản Đà Nẵng
-            </Typography>
-            <Typography component="h1" sx={styles.titleStyles}>
-              Hôm nay bạn muốn ăn gì?
-            </Typography>
-            <Typography sx={styles.subtitleStyles}>
-              Tìm theo tên món, nguyên liệu, khẩu vị hoặc nhu cầu ăn uống. Kết
-              quả được xếp hạng theo mức độ phù hợp với truy vấn của bạn.
-            </Typography>
-          </Box>
         </Box>
 
-        <Paper elevation={0} sx={styles.heroPanelStyles}>
+        <Paper
+          component={motion.section}
+          elevation={0}
+          initial={shouldSkipMountMotion ? false : { opacity: 0, y: 14 }}
+          animate={shouldSkipMountMotion ? undefined : { opacity: 1, y: 0 }}
+          transition={{ duration: 0.24, ease: "easeOut" }}
+          sx={styles.heroPanelStyles}
+        >
+          <Box sx={styles.searchPanelHeaderStyles}>
+            <Box sx={styles.searchPanelCopyStyles}>
+              <Typography sx={styles.searchPanelEyebrowStyles}>
+                <Clock3 size={15} />
+                Food discovery nhanh
+              </Typography>
+              <Box sx={styles.titleBlockStyles}>
+                <Typography component="h1" sx={styles.titleStyles}>
+                  Hôm nay bạn muốn ăn gì?
+                </Typography>
+                <Typography sx={styles.subtitleStyles}>
+                  Tìm theo tên món, nguyên liệu, khẩu vị hoặc nhu cầu ăn uống.
+                  Kết quả được xếp hạng theo mức độ phù hợp với truy vấn của
+                  bạn.
+                </Typography>
+              </Box>
+            </Box>
+          </Box>
+
           <Box sx={styles.searchAreaStyles}>
             <TextField
               fullWidth
               value={query}
-              placeholder="Ví dụ: mi quang, ít dầu, hải sản, tôm..."
+              placeholder="Ví dụ: mì quảng, ít dầu, hải sản, tôm…"
               onBlur={() => {
                 setTimeout(() => setIsSuggestionOpen(false), 120);
               }}
@@ -121,30 +172,61 @@ export default function FoodSearchUI(props: FoodSearchUIProps = {}) {
                   ),
                   endAdornment: hasActiveSearch ? (
                     <InputAdornment position="end">
-                      <Button size="small" onClick={clearSearch}>
+                      <Button
+                        size="small"
+                        onClick={clearSearch}
+                        variant="contained"
+                        sx={{
+                          mr: 1,
+                          color: "#FFFFFF",
+                          backgroundColor: "#D9480F",
+                          fontWeight: "bold",
+                        }}
+                      >
                         Xóa
                       </Button>
                     </InputAdornment>
                   ) : null,
                 },
+                htmlInput: {
+                  "aria-label": "Tìm món ăn Đà Nẵng",
+                  autoComplete: "off",
+                  name: "food-search-query",
+                },
               }}
             />
 
-            {isSuggestionOpen && suggestions.length > 0 ? (
-              <Paper
-                elevation={0}
-                onMouseDown={(event) => event.preventDefault()}
-                sx={styles.suggestionPaperStyles}
-              >
-                {suggestions.map((suggestion) => (
-                  <SuggestionItem
-                    key={suggestion.id}
-                    suggestion={suggestion}
-                    onSelect={selectSuggestion}
-                  />
-                ))}
-              </Paper>
-            ) : null}
+            <AnimatePresence>
+              {isSuggestionOpen && suggestions.length > 0 ? (
+                <Paper
+                  component={motion.div}
+                  elevation={0}
+                  initial={shouldReduceMotion ? false : { opacity: 0, y: 8 }}
+                  animate={
+                    shouldReduceMotion ? undefined : { opacity: 1, y: 0 }
+                  }
+                  exit={shouldReduceMotion ? undefined : { opacity: 0, y: 6 }}
+                  transition={{ duration: 0.16, ease: "easeOut" }}
+                  onMouseDown={(event) => event.preventDefault()}
+                  sx={styles.suggestionPaperStyles}
+                >
+                  {suggestionGroups.map((group) => (
+                    <Box key={group.type} sx={styles.suggestionGroupStyles}>
+                      <Typography sx={styles.suggestionGroupLabelStyles}>
+                        {suggestionTypeLabels[group.type]}
+                      </Typography>
+                      {group.items.map((suggestion) => (
+                        <SuggestionItem
+                          key={suggestion.id}
+                          suggestion={suggestion}
+                          onSelect={selectSuggestion}
+                        />
+                      ))}
+                    </Box>
+                  ))}
+                </Paper>
+              ) : null}
+            </AnimatePresence>
           </Box>
 
           <Box sx={styles.tagRailStyles}>
@@ -176,13 +258,36 @@ export default function FoodSearchUI(props: FoodSearchUIProps = {}) {
 
         {rankedFoods.length > 0 ? (
           <Box sx={styles.gridStyles}>
-            {rankedFoods.map((result) => (
-              <FoodResultCard
-                key={result.food.id}
-                result={result}
-                onSelect={() => setSelectedFood(result.food)}
-              />
-            ))}
+            <AnimatePresence mode="popLayout" initial={!shouldSkipMountMotion}>
+              {rankedFoods.map((result, index) => (
+                <Box
+                  key={result.food.id}
+                  component={motion.div}
+                  layout
+                  initial={
+                    shouldSkipMountMotion ? false : { opacity: 0, y: 14 }
+                  }
+                  animate={
+                    shouldSkipMountMotion ? undefined : { opacity: 1, y: 0 }
+                  }
+                  exit={
+                    shouldSkipMountMotion ? undefined : { opacity: 0, y: 10 }
+                  }
+                  transition={{
+                    duration: 0.18,
+                    delay: shouldSkipMountMotion
+                      ? 0
+                      : Math.min(index * 0.025, 0.12),
+                    ease: "easeOut",
+                  }}
+                >
+                  <FoodResultCard
+                    result={result}
+                    onSelect={() => setSelectedFood(result.food)}
+                  />
+                </Box>
+              ))}
+            </AnimatePresence>
           </Box>
         ) : (
           <EmptyState onClear={clearSearch} />
@@ -207,14 +312,9 @@ function SuggestionItem({
 }) {
   return (
     <Box
-      role="button"
-      tabIndex={0}
+      component="button"
+      type="button"
       onClick={() => onSelect(suggestion)}
-      onKeyDown={(event) => {
-        if (event.key === "Enter" || event.key === " ") {
-          onSelect(suggestion);
-        }
-      }}
       sx={styles.suggestionItemStyles}
     >
       <Box
@@ -247,17 +347,22 @@ function FoodResultCard({
   return (
     <Card elevation={0} sx={styles.cardStyles}>
       <CardActionArea onClick={onSelect} sx={styles.cardActionStyles}>
-        <CardMedia
-          image={food.image}
-          title={food.name}
-          sx={styles.cardMediaStyles}
-        />
+        <Box sx={styles.cardMediaWrapStyles}>
+          <CardMedia
+            image={food.image}
+            title={food.name}
+            sx={styles.cardMediaStyles}
+          />
+          <Box sx={styles.cardMediaOverlayStyles}>
+            <Box sx={styles.scoreBadgeStyles}>{scoreLabel}</Box>
+            <Box sx={styles.pricePillStyles}>{food.priceRange}</Box>
+          </Box>
+        </Box>
         <CardContent sx={styles.cardContentStyles}>
           <Box sx={styles.cardHeaderStyles}>
             <Typography component="h2" sx={styles.foodNameStyles}>
               {food.name}
             </Typography>
-            <Box sx={styles.scoreBadgeStyles}>{scoreLabel}</Box>
           </Box>
 
           <Typography sx={styles.descriptionStyles}>
@@ -283,9 +388,9 @@ function FoodResultCard({
 
           <Box sx={styles.locationLineStyles}>
             <MapPin size={16} />
-            <span>
+            <Typography component="span" sx={styles.locationTextStyles}>
               {food.locations[0].name} · {food.locations.length} địa điểm
-            </span>
+            </Typography>
           </Box>
         </CardContent>
       </CardActionArea>
@@ -319,6 +424,8 @@ function FoodDetailDialog({
             component="img"
             src={food.image}
             alt={food.name}
+            width={960}
+            height={540}
             sx={styles.detailImageStyles}
           />
           <Box sx={styles.detailOverlayStyles} />

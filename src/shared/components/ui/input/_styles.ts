@@ -23,7 +23,8 @@ export const inputStyles = (theme: Theme) => ({
   boxShadow: "0 1px 0 rgb(75 36 16 / 0.04)",
   transition:
     "border-color 160ms ease, box-shadow 160ms ease, background-color 160ms ease",
-  outline: "none",
+  outline: "2px solid transparent",
+  outlineOffset: 2,
   "&::placeholder": {
     color: "var(--muted-foreground)",
   },

@@ -1,8 +1,7 @@
-import { v4 as uuidv4 } from "uuid";
 import { ReactNode, useEffect, useRef } from "react";
-import { motion } from "framer-motion";
-import { cn } from "@/shared/lib/utils";
+import { motion, useReducedMotion } from "framer-motion";
 import { useStreamContext } from "@/features/chat/providers/stream-provider";
+import { useThreads } from "@/features/chat/providers/thread-provider";
 import { useState, FormEvent } from "react";
 import { Button } from "@/shared/components/ui/button/index";
 import { Box } from "@mui/material";
@@ -14,14 +13,19 @@ import { HumanMessage } from "./messages/human";
 import { DO_NOT_RENDER_ID_PREFIX } from "@/features/chat/lib/ensure-tool-responses";
 import {
   ArrowDown,
+  Clock3,
   Copy,
   CopyCheck,
+  Leaf,
+  MapPinned,
   Paperclip,
   RefreshCcw,
   Sparkles,
   ThumbsDown,
   ThumbsUp,
+  WalletCards,
 } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import { useQueryState, parseAsBoolean } from "nuqs";
 import { StickToBottom, useStickToBottomContext } from "use-stick-to-bottom";
 import ThreadHistory from "./history";
@@ -29,42 +33,43 @@ import { toast } from "sonner";
 import { useMediaQuery } from "@/shared/hooks/use-media-query";
 import { Header } from "./header";
 import { ComposerAttachment, InputArea } from "./input-area";
+import { MapInsightPanel } from "./map-insight-panel";
+import type {
+  BackendFoodResult,
+  ChatFeedback,
+  ChatMessage,
+} from "../../_interface";
 import { styles } from "../../_styles";
-
-interface BackendFoodResult {
-  id: string;
-  name: string;
-  description: string;
-  matchScore: number;
-}
-
-interface BackendSearchResponse {
-  query: string;
-  ai_insight?: {
-    warning_message?: string | null;
-  };
-  results: BackendFoodResult[];
-  ai_response?: string | null;
-}
-
-interface LocalChatMessage {
-  id: string;
-  type: "human" | "ai";
-  content: string;
-  foods?: BackendFoodResult[];
-  attachments?: ComposerAttachment[];
-  feedback?: "like" | "dislike";
-  sourceQuery?: string;
-}
-
-const FOOD_AI_API_URL =
-  process.env.NEXT_PUBLIC_FOOD_AI_API_URL ?? "http://localhost:8000";
-const SEARCH_API_TIMEOUT_MS = 30000;
-const EMPTY_STATE_PROMPTS = [
-  "Gợi ý món tối nhanh, ít dầu mỡ",
-  "Tạo thực đơn 3 ngày cho sinh viên",
-  "Món phù hợp khi bị đau dạ dày",
-  "Tìm món nhiều đạm nhưng không quá ngấy",
+const EMPTY_STATE_PROMPTS: {
+  title: string;
+  meta: string;
+  prompt: string;
+  Icon: LucideIcon;
+}[] = [
+  {
+    title: "Bữa tối nhanh",
+    meta: "15 phút · ít dầu mỡ",
+    prompt: "Gợi ý món tối nhanh, ít dầu mỡ",
+    Icon: Clock3,
+  },
+  {
+    title: "Sinh viên tiết kiệm",
+    meta: "3 ngày · dễ mua",
+    prompt: "Tạo thực đơn 3 ngày cho sinh viên",
+    Icon: WalletCards,
+  },
+  {
+    title: "Nhẹ bụng hơn",
+    meta: "dịu vị · dễ tiêu",
+    prompt: "Món phù hợp khi bị đau dạ dày",
+    Icon: Leaf,
+  },
+  {
+    title: "Đậm chất Đà Nẵng",
+    meta: "địa phương · nhiều đạm",
+    prompt: "Tìm món nhiều đạm nhưng không quá ngấy",
+    Icon: MapPinned,
+  },
 ];
 
 function escapeRegExp(value: string): string {
@@ -80,10 +85,10 @@ function LocalMessageActions({
   onRetry,
 }: {
   content: string;
-  feedback?: "like" | "dislike";
+  feedback?: ChatFeedback;
   isAiMessage?: boolean;
   isLoading: boolean;
-  onFeedback?: (feedback: "like" | "dislike") => void;
+  onFeedback?: (feedback: ChatFeedback) => void;
   onRetry?: () => void;
 }) {
   const [copied, setCopied] = useState(false);
@@ -174,6 +179,63 @@ function LocalMessageActions({
   );
 }
 
+function FoodRecommendationCard({
+  food,
+  index,
+  onOpenLocations,
+}: {
+  food: BackendFoodResult;
+  index: number;
+  onOpenLocations: (food: BackendFoodResult) => void;
+}) {
+  const score = Math.max(0, Math.min(100, food.matchScore));
+  const locationCount = food.locations?.length ?? 0;
+  const scoreLabel = new Intl.NumberFormat("vi-VN", {
+    maximumFractionDigits: 1,
+  }).format(score);
+
+  return (
+    <Box sx={styles.foodResultCardStyles}>
+      <Box sx={styles.foodResultIconStyles}>
+        <Typography as="span">{index + 1}</Typography>
+      </Box>
+      <Box sx={styles.foodResultContentStyles}>
+        <Box sx={styles.foodResultHeaderStyles}>
+          <Box sx={{ minWidth: 0 }}>
+            <Typography as="span" sx={styles.foodResultMetaStyles}>
+              Gợi ý món phù hợp
+            </Typography>
+            <Typography as="h4" sx={styles.foodResultTitleStyles}>
+              {food.name}
+            </Typography>
+          </Box>
+          <Typography as="span" sx={styles.scorePillStyles}>
+            {scoreLabel}% hợp
+          </Typography>
+        </Box>
+        <Typography as="p" sx={styles.foodResultDescriptionStyles}>
+          {food.description}
+        </Typography>
+        <Box sx={styles.foodResultScoreTrackStyles}>
+          <Box sx={styles.foodResultScoreFillStyles(score)} />
+        </Box>
+        {locationCount > 0 && (
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            sx={styles.foodLocationButtonStyles}
+            onClick={() => onOpenLocations(food)}
+          >
+            <MapPinned className="size-4" />
+            <span>{locationCount} quán gần bạn</span>
+          </Button>
+        )}
+      </Box>
+    </Box>
+  );
+}
+
 function StickyToBottomContent(props: {
   content: ReactNode;
   className?: string;
@@ -203,7 +265,7 @@ function ScrollToBottom(props: { className?: string }) {
       onClick={() => scrollToBottom()}
     >
       <ArrowDown className="w-4 h-4" />
-      <span>Xuống cuối</span>
+      <span>Cuộn xuống dưới</span>
     </Button>
   );
 }
@@ -214,22 +276,33 @@ export function Thread() {
     "chatHistoryOpen",
     parseAsBoolean.withDefault(false),
   );
-  const [hideToolCalls, setHideToolCalls] = useQueryState(
-    "hideToolCalls",
-    parseAsBoolean.withDefault(false),
-  );
+  const [showRecommendationAnalysis, setShowRecommendationAnalysis] =
+    useQueryState(
+      "showRecommendationAnalysis",
+      parseAsBoolean.withDefault(false),
+    );
   const [input, setInput] = useState("");
   const [firstTokenReceived, setFirstTokenReceived] = useState(false);
-  const [localMessages, setLocalMessages] = useState<LocalChatMessage[]>([]);
-  const [isBackendLoading, setIsBackendLoading] = useState(false);
   const [attachments, setAttachments] = useState<ComposerAttachment[]>([]);
+  const [mapFood, setMapFood] = useState<BackendFoodResult | null>(null);
   const isLargeScreen = useMediaQuery("(min-width: 1024px)");
+  const shouldReduceMotion = useReducedMotion();
   const backendAbortController = useRef<AbortController | null>(null);
+  const {
+    messagesByThreadId,
+    loadMessages,
+    createThread,
+    sendMessage,
+    updateMessageFeedback,
+    isSendingMessage,
+    messagesLoading,
+  } = useThreads();
 
   const stream = useStreamContext();
   const messages = stream.messages;
   const isStreamLoading = stream.isLoading;
-  const isLoading = isStreamLoading || isBackendLoading;
+  const isLoading = isStreamLoading || isSendingMessage || messagesLoading;
+  const localMessages = threadId ? (messagesByThreadId[threadId] ?? []) : [];
 
   const renderHighlightedText = (
     text: string,
@@ -314,88 +387,10 @@ export function Thread() {
     prevMessageLength.current = messages.length;
   }, [messages]);
 
-  const requestFoodResponse = async (
-    userQuery: string,
-    options?: { replaceMessageId?: string },
-  ) => {
-    setFirstTokenReceived(false);
-    setIsBackendLoading(true);
-
-    const controller = new AbortController();
-    backendAbortController.current = controller;
-    const timeoutId = setTimeout(
-      () => controller.abort(),
-      SEARCH_API_TIMEOUT_MS,
-    );
-
-    try {
-      const res = await fetch(
-        `${FOOD_AI_API_URL}/foods/search?q=${encodeURIComponent(userQuery)}`,
-        { signal: controller.signal },
-      );
-
-      if (!res.ok) {
-        throw new Error(`API trả về mã lỗi ${res.status}`);
-      }
-
-      const data: BackendSearchResponse = await res.json();
-      const suggestionNames = (data.results ?? [])
-        .slice(0, 5)
-        .map((item) => item.name);
-      const adviceText =
-        data.ai_response?.trim() ||
-        "Mình đã tìm được một số món phù hợp cho bạn.";
-      const warningText = data.ai_insight?.warning_message?.trim();
-      const suggestionText = suggestionNames.length
-        ? `\n\nGợi ý nhanh: ${suggestionNames.join(", ")}.`
-        : "\n\nHiện chưa có món phù hợp trong dữ liệu.";
-
-      const aiMessage: LocalChatMessage = {
-        id: uuidv4(),
-        type: "ai",
-        content: `${warningText ? `${warningText}\n\n` : ""}${adviceText}${suggestionText}`,
-        foods: data.results ?? [],
-        sourceQuery: userQuery,
-      };
-      setLocalMessages((prev) =>
-        options?.replaceMessageId
-          ? prev.map((message) =>
-              message.id === options.replaceMessageId
-                ? { ...aiMessage, id: message.id }
-                : message,
-            )
-          : [...prev, aiMessage],
-      );
-      setFirstTokenReceived(true);
-    } catch (error) {
-      const errorText =
-        error instanceof Error && error.name === "AbortError"
-          ? "Yêu cầu đã bị dừng hoặc backend phản hồi quá 30 giây, vui lòng thử lại."
-          : "Không gọi được API backend để tra cứu món ăn, vui lòng kiểm tra server.";
-      const aiErrorMessage: LocalChatMessage = {
-        id: uuidv4(),
-        type: "ai",
-        content: errorText,
-        sourceQuery: userQuery,
-      };
-      setLocalMessages((prev) =>
-        options?.replaceMessageId
-          ? prev.map((message) =>
-              message.id === options.replaceMessageId
-                ? { ...aiErrorMessage, id: message.id }
-                : message,
-            )
-          : [...prev, aiErrorMessage],
-      );
-      setFirstTokenReceived(true);
-    } finally {
-      clearTimeout(timeoutId);
-      setIsBackendLoading(false);
-      if (backendAbortController.current === controller) {
-        backendAbortController.current = null;
-      }
-    }
-  };
+  useEffect(() => {
+    if (!threadId || messagesByThreadId[threadId]) return;
+    loadMessages(threadId).catch(console.error);
+  }, [loadMessages, messagesByThreadId, threadId]);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -403,52 +398,68 @@ export function Thread() {
 
     const userQuery = input.trim();
     const messageAttachments = attachments;
-    const newHumanMessage: LocalChatMessage = {
-      id: uuidv4(),
-      type: "human",
-      content: userQuery,
-      attachments: messageAttachments,
-    };
 
-    setLocalMessages((prev) => [...prev, newHumanMessage]);
     setInput("");
     setAttachments([]);
-    await requestFoodResponse(userQuery);
+
+    const controller = new AbortController();
+    backendAbortController.current = controller;
+    setFirstTokenReceived(false);
+
+    try {
+      let activeThread = threadId;
+      if (!activeThread) {
+        const thread = await createThread(userQuery);
+        activeThread = thread.id;
+      }
+      if (!threadId) {
+        setThreadId(activeThread);
+      }
+
+      await sendMessage({
+        threadId: activeThread,
+        content: userQuery,
+        attachments: messageAttachments,
+        signal: controller.signal,
+      });
+      setFirstTokenReceived(true);
+    } finally {
+      if (backendAbortController.current === controller) {
+        backendAbortController.current = null;
+      }
+    }
   };
 
-  const handleLocalRegenerate = (message: LocalChatMessage) => {
+  const handleLocalRegenerate = async (message: ChatMessage) => {
     if (!message.sourceQuery || isLoading) return;
 
-    setLocalMessages((prev) =>
-      prev.map((item) =>
-        item.id === message.id
-          ? {
-              ...item,
-              content: "Đang tạo lại câu trả lời...",
-              foods: undefined,
-              feedback: undefined,
-            }
-          : item,
-      ),
-    );
-    void requestFoodResponse(message.sourceQuery, {
-      replaceMessageId: message.id,
-    });
+    const controller = new AbortController();
+    backendAbortController.current = controller;
+    setFirstTokenReceived(false);
+
+    try {
+      await sendMessage({
+        threadId: message.threadId,
+        content: message.sourceQuery,
+        replaceMessageId: message.id,
+        signal: controller.signal,
+      });
+      setFirstTokenReceived(true);
+    } finally {
+      if (backendAbortController.current === controller) {
+        backendAbortController.current = null;
+      }
+    }
   };
 
-  const handleLocalFeedback = (
-    messageId: string,
-    feedback: "like" | "dislike",
+  const handleLocalFeedback = async (
+    message: ChatMessage,
+    feedback: ChatFeedback,
   ) => {
-    setLocalMessages((prev) =>
-      prev.map((message) =>
-        message.id === messageId
-          ? {
-              ...message,
-              feedback: message.feedback === feedback ? undefined : feedback,
-            }
-          : message,
-      ),
+    await updateMessageFeedback(
+      message.threadId,
+      message.id,
+      message.feedback === feedback ? undefined : feedback,
     );
     toast.success(
       feedback === "like"
@@ -459,7 +470,6 @@ export function Thread() {
 
   const handleNewThread = () => {
     setThreadId(null);
-    setLocalMessages([]);
     setAttachments([]);
     setInput("");
     backendAbortController.current?.abort();
@@ -505,9 +515,13 @@ export function Thread() {
             }}
             initial={{ x: -300 }}
             transition={{
-              type: "spring",
-              stiffness: 300,
-              damping: 30,
+              ...(shouldReduceMotion
+                ? { duration: 0 }
+                : {
+                    type: "spring",
+                    stiffness: 300,
+                    damping: 30,
+                  }),
             }}
           >
             <Box sx={{ position: "relative", height: "100%", width: 300 }}>
@@ -528,9 +542,13 @@ export function Thread() {
               : "100%",
           }}
           transition={{
-            type: "spring",
-            stiffness: 300,
-            damping: 30,
+            ...(shouldReduceMotion
+              ? { duration: 0 }
+              : {
+                  type: "spring",
+                  stiffness: 300,
+                  damping: 30,
+                }),
           }}
         >
           {!chatStarted && (
@@ -538,227 +556,240 @@ export function Thread() {
               <Box sx={styles.emptyHeroPanelStyles}>
                 <Typography as="span" sx={styles.emptyEyebrowStyles}>
                   <Sparkles className="size-4" />
-                  Food assistant cho Đà Nẵng
+                  Food assistant cho món Đà Nẵng
                 </Typography>
                 <Typography as="h1" sx={styles.emptyTitleStyles}>
-                  # Hôm nay bạn ăn gì?
+                  Hôm nay bạn ăn gì?
                 </Typography>
                 <Typography as="p" sx={styles.emptyDescriptionStyles}>
                   Nói khẩu vị, nguyên liệu, sức khỏe hoặc ngân sách. Mình sẽ gợi
                   ý món phù hợp và giữ câu trả lời ngắn gọn như một người bạn
                   rành đồ ăn địa phương.
                 </Typography>
-                <Box sx={styles.promptGridStyles}>
-                  {EMPTY_STATE_PROMPTS.map((prompt) => (
-                    <Box
-                      key={prompt}
-                      component="button"
-                      type="button"
-                      sx={styles.promptCardStyles}
-                      onClick={() => setInput(prompt)}
-                    >
-                      <Box sx={styles.promptIconStyles}>
-                        <Sparkles className="size-4" />
-                      </Box>
-                      <Typography as="span" sx={styles.promptTextStyles}>
-                        {prompt}
+                <Box sx={styles.emptySignalRowStyles}>
+                  {["Khẩu vị", "Ngân sách", "Sức khỏe", "Địa điểm"].map(
+                    (signal) => (
+                      <Typography
+                        key={signal}
+                        as="span"
+                        sx={styles.emptySignalChipStyles}
+                      >
+                        {signal}
                       </Typography>
-                    </Box>
-                  ))}
+                    ),
+                  )}
+                </Box>
+                <Box sx={styles.promptGridStyles}>
+                  {EMPTY_STATE_PROMPTS.map((prompt) => {
+                    const PromptIcon = prompt.Icon;
+
+                    return (
+                      <Box
+                        key={prompt.title}
+                        component={motion.button}
+                        type="button"
+                        sx={styles.promptCardStyles}
+                        whileHover={
+                          shouldReduceMotion
+                            ? undefined
+                            : { y: -3, scale: 1.01 }
+                        }
+                        whileTap={
+                          shouldReduceMotion ? undefined : { scale: 0.99 }
+                        }
+                        transition={{ duration: 0.16, ease: "easeOut" }}
+                        onClick={() => setInput(prompt.prompt)}
+                        aria-label={`Dùng prompt: ${prompt.prompt}`}
+                      >
+                        <Box sx={styles.promptIconStyles}>
+                          <PromptIcon className="size-4" />
+                        </Box>
+                        <Box sx={styles.promptCardContentStyles}>
+                          <Typography as="span" sx={styles.promptTextStyles}>
+                            {prompt.title}
+                          </Typography>
+                          <Typography as="span" sx={styles.promptTagStyles}>
+                            {prompt.meta}
+                          </Typography>
+                        </Box>
+                      </Box>
+                    );
+                  })}
                 </Box>
               </Box>
             </Box>
           )}
 
-          <StickToBottom className="relative flex-1 overflow-hidden">
-            <StickyToBottomContent
-              className={cn(!chatStarted && "empty-chat-scroll")}
-              contentClassName="chat-message-content"
-              sx={styles.messageScrollStyles(chatStarted)}
-              content={
-                <Box sx={styles.messageContentStyles}>
-                  {localMessages.map((message) =>
-                    message.type === "human" ? (
-                      <Box
-                        key={message.id}
-                        className="group"
-                        sx={styles.localHumanGroupStyles}
-                      >
-                        <Box sx={styles.localHumanBubbleStyles}>
-                          <Typography as="p" sx={{ whiteSpace: "pre-wrap" }}>
-                            {message.content}
-                          </Typography>
-                          {message.attachments &&
-                            message.attachments.length > 0 && (
-                              <Box
-                                sx={{
-                                  mt: 1.5,
-                                  display: "flex",
-                                  flexWrap: "wrap",
-                                  gap: 1,
-                                }}
-                              >
-                                {message.attachments.map((attachment) => (
-                                  <Box
-                                    key={attachment.id}
-                                    sx={{
-                                      display: "inline-flex",
-                                      maxWidth: "100%",
-                                      alignItems: "center",
-                                      gap: 0.75,
-                                      borderRadius: "999px",
-                                      backgroundColor: "rgba(255,255,255,0.16)",
-                                      px: 1.25,
-                                      py: 0.5,
-                                      color: "rgba(255,255,255,0.95)",
-                                      fontSize: "0.75rem",
-                                    }}
-                                  >
-                                    <Paperclip className="size-3.5" />
-                                    <Typography
-                                      as="span"
+          {chatStarted && (
+            <StickToBottom className="relative flex-1 overflow-hidden">
+              <StickyToBottomContent
+                contentClassName="chat-message-content"
+                sx={styles.messageScrollStyles(chatStarted)}
+                content={
+                  <Box sx={styles.messageContentStyles}>
+                    {localMessages.map((message) =>
+                      message.role === "human" ? (
+                        <Box
+                          key={message.id}
+                          className="group"
+                          sx={styles.localHumanGroupStyles}
+                        >
+                          <Box sx={styles.localHumanBubbleStyles}>
+                            <Typography as="p" sx={{ whiteSpace: "pre-wrap" }}>
+                              {message.content}
+                            </Typography>
+                            {message.attachments &&
+                              message.attachments.length > 0 && (
+                                <Box
+                                  sx={{
+                                    mt: 1.5,
+                                    display: "flex",
+                                    flexWrap: "wrap",
+                                    gap: 1,
+                                  }}
+                                >
+                                  {message.attachments.map((attachment) => (
+                                    <Box
+                                      key={attachment.id}
                                       sx={{
-                                        maxWidth: "12rem",
-                                        overflow: "hidden",
-                                        textOverflow: "ellipsis",
-                                        whiteSpace: "nowrap",
+                                        display: "inline-flex",
+                                        maxWidth: "100%",
+                                        alignItems: "center",
+                                        gap: 0.75,
+                                        borderRadius: "999px",
+                                        backgroundColor:
+                                          "rgba(255,255,255,0.16)",
+                                        px: 1.25,
+                                        py: 0.5,
+                                        color: "rgba(255,255,255,0.95)",
+                                        fontSize: "0.75rem",
                                       }}
                                     >
-                                      {attachment.name}
-                                    </Typography>
-                                  </Box>
-                                ))}
-                              </Box>
-                            )}
-                        </Box>
-                        <LocalMessageActions
-                          content={message.content}
-                          isLoading={isLoading}
-                        />
-                      </Box>
-                    ) : (
-                      <Box
-                        key={message.id}
-                        className="group"
-                        sx={styles.localAssistantGroupStyles}
-                      >
-                        <Box sx={styles.assistantAvatarStyles}>
-                          <Sparkles className="size-4" />
-                        </Box>
-                        <Box
-                          sx={{
-                            display: "flex",
-                            minWidth: 0,
-                            flexDirection: "column",
-                            gap: 0.75,
-                          }}
-                        >
-                          <Box sx={styles.localAssistantBubbleStyles}>
-                            <Typography as="p" sx={{ whiteSpace: "pre-wrap" }}>
-                              {renderHighlightedText(
-                                message.content,
-                                message.foods,
-                              )}
-                            </Typography>
-
-                            {message.foods && message.foods.length > 0 && (
-                              <Box
-                                sx={{
-                                  display: "grid",
-                                  gridTemplateColumns: "1fr",
-                                  gap: 1.2,
-                                  mt: 2,
-                                }}
-                              >
-                                {message.foods.map((food) => (
-                                  <Box
-                                    key={food.id}
-                                    sx={styles.foodResultCardStyles}
-                                  >
-                                    <Box sx={styles.foodResultHeaderStyles}>
-                                      <Typography
-                                        as="h4"
-                                        sx={styles.foodResultTitleStyles}
-                                      >
-                                        {food.name}
-                                      </Typography>
+                                      <Paperclip className="size-3.5" />
                                       <Typography
                                         as="span"
-                                        sx={styles.scorePillStyles}
+                                        sx={{
+                                          maxWidth: "12rem",
+                                          overflow: "hidden",
+                                          textOverflow: "ellipsis",
+                                          whiteSpace: "nowrap",
+                                        }}
                                       >
-                                        {food.matchScore.toFixed(1)}%
+                                        {attachment.name}
                                       </Typography>
                                     </Box>
-                                    <Typography
-                                      as="p"
-                                      sx={{
-                                        mt: 1,
-                                        color: "var(--muted-foreground)",
-                                        fontSize: "0.78rem",
-                                        lineHeight: 1.6,
-                                      }}
-                                    >
-                                      {food.description}
-                                    </Typography>
-                                  </Box>
-                                ))}
-                              </Box>
-                            )}
+                                  ))}
+                                </Box>
+                              )}
                           </Box>
                           <LocalMessageActions
                             content={message.content}
-                            feedback={message.feedback}
-                            isAiMessage
                             isLoading={isLoading}
-                            onFeedback={(feedback) =>
-                              handleLocalFeedback(message.id, feedback)
-                            }
-                            onRetry={
-                              message.sourceQuery
-                                ? () => handleLocalRegenerate(message)
-                                : undefined
-                            }
                           />
                         </Box>
-                      </Box>
-                    ),
-                  )}
-                  {messages
-                    .filter((m) => !m.id?.startsWith(DO_NOT_RENDER_ID_PREFIX))
-                    .map((message, index) =>
-                      message.type === "human" ? (
-                        <HumanMessage
-                          key={message.id || `${message.type}-${index}`}
-                          message={message}
-                          isLoading={isLoading}
-                        />
                       ) : (
-                        <AssistantMessage
-                          key={message.id || `${message.type}-${index}`}
-                          message={message}
-                          isLoading={isLoading}
-                          handleRegenerate={handleRegenerate}
-                        />
+                        <Box
+                          key={message.id}
+                          className="group"
+                          sx={styles.localAssistantGroupStyles}
+                        >
+                          <Box sx={styles.assistantAvatarStyles}>
+                            <Sparkles className="size-4" />
+                          </Box>
+                          <Box
+                            sx={{
+                              display: "flex",
+                              minWidth: 0,
+                              flexDirection: "column",
+                              gap: 0.75,
+                            }}
+                          >
+                            <Box sx={styles.localAssistantBubbleStyles}>
+                              <Typography
+                                as="p"
+                                sx={{ whiteSpace: "pre-wrap" }}
+                              >
+                                {renderHighlightedText(
+                                  message.content,
+                                  message.foods,
+                                )}
+                              </Typography>
+
+                              {message.foods && message.foods.length > 0 && (
+                                <Box
+                                  sx={{
+                                    display: "grid",
+                                    gridTemplateColumns: "1fr",
+                                    gap: 1.2,
+                                    mt: 2,
+                                  }}
+                                >
+                                  {message.foods.map((food, index) => (
+                                    <FoodRecommendationCard
+                                      key={food.id}
+                                      food={food}
+                                      index={index}
+                                      onOpenLocations={setMapFood}
+                                    />
+                                  ))}
+                                </Box>
+                              )}
+                            </Box>
+                            <LocalMessageActions
+                              content={message.content}
+                              feedback={message.feedback}
+                              isAiMessage
+                              isLoading={isLoading}
+                              onFeedback={(feedback) =>
+                                handleLocalFeedback(message, feedback)
+                              }
+                              onRetry={
+                                message.sourceQuery
+                                  ? () => handleLocalRegenerate(message)
+                                  : undefined
+                              }
+                            />
+                          </Box>
+                        </Box>
                       ),
                     )}
-                  {isLoading && !firstTokenReceived && (
-                    <AssistantMessageLoading />
-                  )}
-                </Box>
-              }
-            />
+                    {messages
+                      .filter((m) => !m.id?.startsWith(DO_NOT_RENDER_ID_PREFIX))
+                      .map((message, index) =>
+                        message.type === "human" ? (
+                          <HumanMessage
+                            key={message.id || `${message.type}-${index}`}
+                            message={message}
+                            isLoading={isLoading}
+                          />
+                        ) : (
+                          <AssistantMessage
+                            key={message.id || `${message.type}-${index}`}
+                            message={message}
+                            isLoading={isLoading}
+                            handleRegenerate={handleRegenerate}
+                          />
+                        ),
+                      )}
+                    {isLoading && !firstTokenReceived && (
+                      <AssistantMessageLoading />
+                    )}
+                  </Box>
+                }
+              />
 
-            <Box sx={styles.scrollToBottomWrapStyles}>
-              <ScrollToBottom />
-            </Box>
-          </StickToBottom>
+              <Box sx={styles.scrollToBottomWrapStyles}>
+                <ScrollToBottom />
+              </Box>
+            </StickToBottom>
+          )}
 
           <InputArea
             input={input}
             onInputChange={setInput}
             onSubmit={handleSubmit}
-            onHideToolCallsChange={setHideToolCalls}
-            hideToolCalls={hideToolCalls}
+            onShowRecommendationAnalysisChange={setShowRecommendationAnalysis}
+            showRecommendationAnalysis={showRecommendationAnalysis}
             isLoading={isLoading}
             onCancel={handleCancel}
             attachments={attachments}
@@ -767,6 +798,7 @@ export function Thread() {
           />
         </Box>
       </Box>
+      <MapInsightPanel food={mapFood} onClose={() => setMapFood(null)} />
     </Box>
   );
 }
