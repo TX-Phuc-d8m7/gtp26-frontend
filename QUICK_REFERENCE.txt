@@ -1,0 +1,177 @@
+════════════════════════════════════════════════════════════════════════════════
+                     QUICK REFERENCE - UI IMPROVEMENTS
+════════════════════════════════════════════════════════════════════════════════
+
+🌐 MAIN URLS TO VIEW CHANGES
+────────────────────────────────────────────────────────────────────────────────
+Landing Page        http://localhost:3000
+Chat Interface      http://localhost:3000/chat
+Onboarding          http://localhost:3000/(auth)/onboarding
+Profile             http://localhost:3000/profile
+
+════════════════════════════════════════════════════════════════════════════════
+
+📋 WHAT'S NEW - QUICK CHECKLIST
+────────────────────────────────────────────────────────────────────────────────
+
+✓ LANDING PAGE
+  Location: src/features/landing/
+  Routes:   /
+  Elements: Hero section, 4 feature cards, CTA button
+  
+✓ ENHANCED FOOD CARDS
+  Location: src/features/chat/components/food-card.tsx
+  Route:    /chat (in AI responses)
+  Shows:    Image, cooking time, difficulty, nutrition, tags, explanation
+  
+✓ COLORED QUICK PROMPTS
+  Location: src/features/chat/components/thread/input-area.tsx
+  Route:    /chat (bottom input area)
+  Icons:    Clock (orange), Leaf (green), Flame (red)
+  
+✓ RATING SYSTEM
+  Location: src/features/chat/components/star-rating.tsx
+  Route:    /chat (on food cards)
+  Feature:  5-star interactive rating
+  
+✓ FEEDBACK DIALOG
+  Location: src/features/chat/components/recipe-feedback-dialog.tsx
+  Route:    /chat (click feedback button)
+  Form:     Rating, comment, tried checkbox
+  
+✓ EMPTY STATES
+  Location: src/features/chat/components/empty-state.tsx
+  Route:    /chat (when no results)
+  Shows:    Helpful message + next steps
+  
+✓ ERROR HANDLING
+  Location: src/features/chat/components/error-boundary.tsx
+  Route:    /chat (on errors)
+  Shows:    Error message + retry button
+  
+✓ LOADING STATES
+  Location: src/features/chat/components/food-card-skeleton.tsx
+  Route:    /chat (while fetching)
+  Shows:    Skeleton card loaders
+
+════════════════════════════════════════════════════════════════════════════════
+
+🗂️ KEY FILE PATHS
+────────────────────────────────────────────────────────────────────────────────
+CREATED FILES:
+  src/app/chat/page.tsx                                   (chat route)
+  src/app/page.tsx                                        (landing page)
+  src/features/landing/index.tsx                          (landing wrapper)
+  src/features/landing/components/hero-section.tsx        (hero)
+  src/features/landing/components/features-section.tsx    (features)
+  src/features/landing/components/cta-section.tsx         (cta)
+  src/features/chat/components/food-card.tsx              (enhanced card)
+  src/features/chat/components/star-rating.tsx            (rating)
+  src/features/chat/components/recipe-feedback-dialog.tsx (feedback)
+  src/features/chat/components/empty-state.tsx            (empty)
+  src/features/chat/components/error-boundary.tsx         (errors)
+  src/features/chat/components/food-card-skeleton.tsx     (loading)
+  src/features/chat/components/recommendation-insight.tsx (explain)
+  src/features/auth/components/onboarding-steps.tsx       (onboarding)
+
+MODIFIED FILES:
+  src/app/globals.css                                     (colors → HSL)
+  src/features/chat/_interface.ts                         (new fields)
+  src/features/chat/components/thread/index.tsx           (FoodCard import)
+  src/features/chat/components/thread/input-area.tsx      (enhanced prompts)
+
+════════════════════════════════════════════════════════════════════════════════
+
+🎨 COLOR SYSTEM (UPDATED TO HSL)
+────────────────────────────────────────────────────────────────────────────────
+PRIMARY:     hsl(13 100% 59%)   → Vibrant Orange (#FF6B35)
+SECONDARY:   hsl(18 100% 88%)   → Light Orange (#FFE5D3)
+ACCENT:      hsl(145 62% 33%)   → Green (#1d7f3a)
+
+Location: src/app/globals.css (lines 9-25 for light, 40-59 for dark)
+
+════════════════════════════════════════════════════════════════════════════════
+
+🧪 TESTING STEPS
+────────────────────────────────────────────────────────────────────────────────
+
+1. VIEW LANDING PAGE
+   → Go to http://localhost:3000
+   → See hero, 4 features, CTA button
+   → Click "START YOUR JOURNEY"
+
+2. VIEW CHAT INTERFACE
+   → Redirected to /chat
+   → Click Tools button (⚙️) to see colored prompts
+   → Wait for AI response with food cards
+   → See new food card layout with metadata
+
+3. TEST QUICK PROMPTS
+   → Click Tools button in input area
+   → 3 pills with icons: Clock, Leaf, Flame
+   → Click any pill to send prompt
+
+4. VIEW FOOD CARD DETAILS
+   → In AI response, check each card for:
+     • Image placeholder
+     • Cooking time & servings
+     • Difficulty badge
+     • Nutrition grid (calories, protein, carbs, fat)
+     • Tags
+     • Blue "Tại sao lại gợi ý?" box
+     • Location button
+
+5. TEST FEEDBACK SYSTEM
+   → Look for feedback icons on cards
+   → Click to open RecipeFeedbackDialog
+   → Rate with stars, add comment
+   → Submit feedback
+
+6. TEST ONBOARDING
+   → Go to http://localhost:3000/(auth)/onboarding
+   → See progress bar & step indicators
+   → Select preferences, click Next
+   → Check Previous button works
+
+════════════════════════════════════════════════════════════════════════════════
+
+📝 INTERFACE UPDATES
+────────────────────────────────────────────────────────────────────────────────
+BackendFoodResult now includes:
+
+  image?: string                           (recipe image URL)
+  cookingTime?: number                     (minutes)
+  difficulty?: "easy"|"medium"|"hard"      (difficulty level)
+  servings?: number                        (number of servings)
+  calories?: number                        (per serving)
+  protein?: number                         (grams)
+  carbs?: number                           (grams)
+  fat?: number                             (grams)
+  tags?: string[]                          (e.g., "vegetarian")
+  reason?: string                          (why recommended)
+
+════════════════════════════════════════════════════════════════════════════════
+
+💡 HELPFUL TIPS
+────────────────────────────────────────────────────────────────────────────────
+• All new components use Tailwind CSS + Material-UI
+• Components are fully typed with TypeScript
+• Responsive design works on mobile/tablet
+• Dark mode is supported
+• Colors use HSL format for consistency
+
+• To debug, check console.log messages with "[v0]" prefix
+• To modify colors, edit src/app/globals.css
+• To update food card layout, edit src/features/chat/components/food-card.tsx
+• To modify quick prompts, edit src/features/chat/components/thread/input-area.tsx
+
+════════════════════════════════════════════════════════════════════════════════
+
+📚 DETAILED DOCUMENTATION
+────────────────────────────────────────────────────────────────────────────────
+For full documentation, see:
+  IMPLEMENTATION_GUIDE.md  → Complete guide with examples
+  CHANGES_SUMMARY.md       → Detailed summary of all changes
+  UI_UX_RECOMMENDATIONS.md → Original recommendations list
+
+════════════════════════════════════════════════════════════════════════════════
