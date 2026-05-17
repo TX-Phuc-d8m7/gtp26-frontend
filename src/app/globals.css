@@ -6,25 +6,25 @@
 
 :root {
   color-scheme: light;
-  --background: #fffaf5;
-  --foreground: #17110d;
-  --card: #fffefd;
-  --card-foreground: #17110d;
-  --popover: #fffefd;
-  --popover-foreground: #17110d;
+  --background: #fefcf9;
+  --foreground: #0f0905;
+  --card: #ffffff;
+  --card-foreground: #0f0905;
+  --popover: #ffffff;
+  --popover-foreground: #0f0905;
   --primary: #d9480f;
   --primary-foreground: #ffffff;
-  --secondary: #fff1e3;
-  --secondary-foreground: #8f2209;
-  --muted: #fff0e4;
-  --muted-foreground: #735449;
-  --accent: #ffe0bd;
-  --accent-foreground: #8f2209;
-  --border: #f4c9aa;
-  --input: #efb98f;
-  --ring: #ff6b00;
+  --secondary: #f5ede4;
+  --secondary-foreground: #6f1d04;
+  --muted: #efe7dd;
+  --muted-foreground: #6b5a52;
+  --accent: #1d7f3a;
+  --accent-foreground: #ffffff;
+  --border: #e8dcd4;
+  --input: #f5ede4;
+  --ring: #d9480f;
   --radius: 0.625rem;
-  --food-herb: #16a34a;
+  --food-herb: #1d7f3a;
   --food-broth: #ff8a1f;
   --food-chilli: #d9480f;
   --font-display:
@@ -117,20 +117,25 @@
     text-rendering: optimizeLegibility;
     background:
       radial-gradient(
-        circle at 12% 0%,
-        color-mix(in srgb, #ff6b00 22%, transparent),
-        transparent 34%
+        circle at 15% 5%,
+        color-mix(in srgb, #d9480f 15%, transparent),
+        transparent 35%
       ),
       radial-gradient(
-        circle at 88% 8%,
-        color-mix(in srgb, #ffb25c 18%, transparent),
-        transparent 30%
+        circle at 85% 10%,
+        color-mix(in srgb, #ffb25c 12%, transparent),
+        transparent 32%
+      ),
+      radial-gradient(
+        circle at 50% 95%,
+        color-mix(in srgb, #1d7f3a 8%, transparent),
+        transparent 40%
       ),
       linear-gradient(
         180deg,
-        #fffefd 0%,
-        var(--background) 48%,
-        color-mix(in srgb, #ffe0bd 42%, var(--background)) 100%
+        #ffffff 0%,
+        var(--background) 50%,
+        color-mix(in srgb, #f5ede4 35%, var(--background)) 100%
       );
   }
 
@@ -180,5 +185,24 @@
 
   .shadow-inner-left {
     box-shadow: inset 9px 0 6px -1px rgb(0 0 0 / 0.02);
+  }
+
+  .shadow-soft {
+    box-shadow: 0 2px 8px rgb(0 0 0 / 0.04), 0 1px 2px rgb(0 0 0 / 0.02);
+  }
+
+  .shadow-elevated {
+    box-shadow: 0 4px 16px rgb(0 0 0 / 0.06), 0 2px 4px rgb(0 0 0 / 0.03);
+  }
+
+  .shadow-lg-soft {
+    box-shadow: 0 8px 24px rgb(0 0 0 / 0.08), 0 4px 8px rgb(0 0 0 / 0.04);
+  }
+
+  .border-gradient {
+    position: relative;
+    border: 1px solid transparent;
+    background-clip: padding-box;
+    background-image: linear-gradient(135deg, rgba(217, 72, 15, 0.2), rgba(29, 127, 58, 0.15));
   }
 }
