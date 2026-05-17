@@ -15,6 +15,17 @@ export interface BackendFoodResult {
   description: string;
   matchScore: number;
   locations?: FoodLocation[];
+  // Enhanced metadata
+  image?: string;
+  cookingTime?: number; // in minutes
+  difficulty?: "easy" | "medium" | "hard";
+  servings?: number;
+  calories?: number;
+  protein?: number;
+  carbs?: number;
+  fat?: number;
+  tags?: string[]; // e.g., ["vegetarian", "low-carb", "quick"]
+  reason?: string; // why this recipe was recommended
 }
 
 export interface FoodLocation {

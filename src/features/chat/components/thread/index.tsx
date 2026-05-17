@@ -34,6 +34,7 @@ import { useMediaQuery } from "@/shared/hooks/use-media-query";
 import { Header } from "./header";
 import { ComposerAttachment, InputArea } from "./input-area";
 import { MapInsightPanel } from "./map-insight-panel";
+import { FoodCard } from "../food-card";
 import type {
   BackendFoodResult,
   ChatFeedback,
@@ -188,52 +189,7 @@ function FoodRecommendationCard({
   index: number;
   onOpenLocations: (food: BackendFoodResult) => void;
 }) {
-  const score = Math.max(0, Math.min(100, food.matchScore));
-  const locationCount = food.locations?.length ?? 0;
-  const scoreLabel = new Intl.NumberFormat("vi-VN", {
-    maximumFractionDigits: 1,
-  }).format(score);
-
-  return (
-    <Box sx={styles.foodResultCardStyles}>
-      <Box sx={styles.foodResultIconStyles}>
-        <Typography as="span">{index + 1}</Typography>
-      </Box>
-      <Box sx={styles.foodResultContentStyles}>
-        <Box sx={styles.foodResultHeaderStyles}>
-          <Box sx={{ minWidth: 0 }}>
-            <Typography as="span" sx={styles.foodResultMetaStyles}>
-              Gợi ý món phù hợp
-            </Typography>
-            <Typography as="h4" sx={styles.foodResultTitleStyles}>
-              {food.name}
-            </Typography>
-          </Box>
-          <Typography as="span" sx={styles.scorePillStyles}>
-            {scoreLabel}% hợp
-          </Typography>
-        </Box>
-        <Typography as="p" sx={styles.foodResultDescriptionStyles}>
-          {food.description}
-        </Typography>
-        <Box sx={styles.foodResultScoreTrackStyles}>
-          <Box sx={styles.foodResultScoreFillStyles(score)} />
-        </Box>
-        {locationCount > 0 && (
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            sx={styles.foodLocationButtonStyles}
-            onClick={() => onOpenLocations(food)}
-          >
-            <MapPinned className="size-4" />
-            <span>{locationCount} quán gần bạn</span>
-          </Button>
-        )}
-      </Box>
-    </Box>
-  );
+  return <FoodCard food={food} index={index} onOpenLocations={onOpenLocations} />;
 }
 
 function StickyToBottomContent(props: {

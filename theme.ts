@@ -98,6 +98,14 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           borderRadius: 'calc(var(--radius) - 2px)',
+          textTransform: 'none',
+          fontWeight: 500,
+        },
+        contained: {
+          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)',
+          '&:hover': {
+            boxShadow: '0 4px 16px rgba(0, 0, 0, 0.12)',
+          },
         },
       },
     },
@@ -105,6 +113,28 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           borderRadius: 'var(--radius)',
+          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02)',
+          border: '1px solid hsl(var(--border))',
+          transition: 'all 0.2s ease-in-out',
+          '&:hover': {
+            boxShadow: '0 4px 16px rgba(0, 0, 0, 0.06)',
+          },
+        },
+      },
+    },
+    MuiPaper: {
+      styleOverrides: {
+        root: {
+          backgroundImage: 'none',
+        },
+        elevation0: {
+          boxShadow: 'none',
+        },
+        elevation1: {
+          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02)',
+        },
+        elevation2: {
+          boxShadow: '0 4px 16px rgba(0, 0, 0, 0.06), 0 2px 4px rgba(0, 0, 0, 0.03)',
         },
       },
     },
