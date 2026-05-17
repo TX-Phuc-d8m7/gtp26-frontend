@@ -15,30 +15,30 @@ const emptyStateConfig = {
     defaultTitle: "Không tìm thấy kết quả",
     defaultDescription:
       "Hãy thử điều chỉnh tìm kiếm của bạn hoặc cung cấp thêm thông tin về sở thích.",
-    color: "text-blue-600",
-    bg: "bg-blue-50",
+    color: "#2563eb",
+    bg: "rgba(37, 99, 235, 0.08)",
   },
   error: {
     icon: AlertCircle,
     defaultTitle: "Có lỗi xảy ra",
     defaultDescription: "Chúng tôi gặp sự cố trong khi xử lý yêu cầu của bạn.",
-    color: "text-red-600",
-    bg: "bg-red-50",
+    color: "#dc2626",
+    bg: "rgba(220, 38, 38, 0.08)",
   },
   "no-history": {
     icon: Plus,
     defaultTitle: "Chưa có lịch sử chat",
     defaultDescription:
       "Bắt đầu một cuộc trò chuyện mới để nhận gợi ý món ăn được cá nhân hóa.",
-    color: "text-green-600",
-    bg: "bg-green-50",
+    color: "#16a34a",
+    bg: "rgba(22, 163, 74, 0.08)",
   },
   "loading-failed": {
     icon: AlertCircle,
     defaultTitle: "Không thể tải dữ liệu",
     defaultDescription: "Vui lòng kiểm tra kết nối của bạn và thử lại.",
-    color: "text-orange-600",
-    bg: "bg-orange-50",
+    color: "#ea580c",
+    bg: "rgba(234, 88, 12, 0.08)",
   },
 };
 
@@ -53,34 +53,55 @@ export function EmptyState({
   const IconComponent = config.icon;
 
   return (
-    <Box className={`${config.bg} rounded-lg p-8 text-center`}>
-      <div className="flex justify-center mb-4">
-        <div className="p-4 rounded-full bg-white/50">
-          <IconComponent className={`w-8 h-8 ${config.color}`} />
-        </div>
-      </div>
+    <Box
+      sx={{
+        backgroundColor: config.bg,
+        borderRadius: 2,
+        p: 4,
+        textAlign: "center",
+      }}
+    >
+      <Box sx={{ display: "flex", justifyContent: "center", mb: 2 }}>
+        <Box
+          sx={{
+            p: 2,
+            borderRadius: "999px",
+            backgroundColor: "rgba(255, 255, 255, 0.5)",
+          }}
+        >
+          <IconComponent size={32} style={{ color: config.color }} />
+        </Box>
+      </Box>
 
       <Typography
         variant="h6"
-        className={`!font-bold !mb-2 ${config.color.replace(
-          "text-",
-          "!text-"
-        )}`}
+        sx={{ fontWeight: 700, mb: 1, color: config.color }}
       >
         {title || config.defaultTitle}
       </Typography>
 
-      <Typography className="!text-muted-foreground !mb-6 max-w-md mx-auto">
+      <Typography
+        sx={{
+          color: "var(--muted-foreground)",
+          mb: 3,
+          maxWidth: 448,
+          mx: "auto",
+        }}
+      >
         {description || config.defaultDescription}
       </Typography>
 
       {(onRetry || onStartNew) && (
-        <div className="flex gap-3 justify-center flex-wrap">
+        <Box sx={{ display: "flex", gap: 1.5, justifyContent: "center", flexWrap: "wrap" }}>
           {onRetry && (
             <Button
               variant="outlined"
               onClick={onRetry}
-              className="!border-gray-300 !text-foreground"
+              sx={{
+                borderColor: "rgba(15, 23, 42, 0.16)",
+                color: "var(--foreground)",
+                textTransform: "none",
+              }}
             >
               Thử lại
             </Button>
@@ -89,12 +110,17 @@ export function EmptyState({
             <Button
               variant="contained"
               onClick={onStartNew}
-              className="!bg-orange-600 hover:!bg-orange-700"
+              sx={{
+                backgroundColor: "#ea580c",
+                color: "#fff",
+                textTransform: "none",
+                "&:hover": { backgroundColor: "#c2410c" },
+              }}
             >
               Bắt đầu cuộc trò chuyện mới
             </Button>
           )}
-        </div>
+        </Box>
       )}
     </Box>
   );

@@ -51,7 +51,7 @@ function formatUpdatedAt(value: string) {
 function ThreadHistoryEmpty() {
   return (
     <Box sx={styles.historyEmptyStyles}>
-      <MessageSquareText className="size-5" />
+      <MessageSquareText size={20} />
       <Typography as="span" sx={{ fontWeight: 700 }}>
         Chưa có cuộc trò chuyện
       </Typography>
@@ -111,7 +111,7 @@ function ThreadList({
         const isEditing = editingId === thread.id;
 
         return (
-          <Box key={thread.id} className="history-item" sx={{ width: "100%" }}>
+          <Box key={thread.id} sx={{ width: "100%" }}>
             <Box
               role="button"
               tabIndex={0}
@@ -155,7 +155,7 @@ function ThreadList({
                     sx={styles.historyActionButtonStyles}
                     aria-label="Lưu tên cuộc trò chuyện"
                   >
-                    <Check className="size-4" />
+                    <Check size={16} />
                   </Box>
                   <Box
                     component="button"
@@ -164,7 +164,7 @@ function ThreadList({
                     onClick={() => setEditingId(null)}
                     aria-label="Hủy đổi tên"
                   >
-                    <X className="size-4" />
+                    <X size={16} />
                   </Box>
                 </Box>
               ) : (
@@ -194,7 +194,7 @@ function ThreadList({
                       onClick={() => startRename(thread)}
                       aria-label="Đổi tên cuộc trò chuyện"
                     >
-                      <Pencil className="size-3.5" />
+                      <Pencil size={14} />
                     </Box>
                     <Box
                       component="button"
@@ -203,7 +203,7 @@ function ThreadList({
                       onClick={() => handleDelete(thread.id)}
                       aria-label="Xóa cuộc trò chuyện"
                     >
-                      <Trash2 className="size-3.5" />
+                      <Trash2 size={14} />
                     </Box>
                   </Box>
                 </>
@@ -220,7 +220,10 @@ function ThreadHistoryLoading() {
   return (
     <Box sx={styles.historyListStyles}>
       {Array.from({ length: 8 }).map((_, i) => (
-        <Skeleton key={`skeleton-${i}`} className="w-full h-14 rounded-2xl" />
+        <Skeleton
+          key={`skeleton-${i}`}
+          sx={{ width: "100%", height: 56, borderRadius: 4 }}
+        />
       ))}
     </Box>
   );
@@ -271,9 +274,9 @@ export default function ThreadHistory() {
               aria-label="Thu gọn lịch sử"
             >
               {chatHistoryOpen ? (
-                <PanelRightOpen className="size-5" />
+                <PanelRightOpen size={20} />
               ) : (
-                <PanelRightClose className="size-5" />
+                <PanelRightClose size={20} />
               )}
             </Button>
           </Box>
@@ -284,7 +287,7 @@ export default function ThreadHistory() {
           )}
         </Box>
       </Box>
-      <div className="lg:hidden">
+      <Box sx={{ display: { xs: "block", lg: "none" } }}>
         <Sheet
           open={!!chatHistoryOpen && !isLargeScreen}
           onOpenChange={(open) => {
@@ -292,7 +295,10 @@ export default function ThreadHistory() {
             setChatHistoryOpen(open);
           }}
         >
-          <SheetContent side="left" className="lg:hidden flex">
+          <SheetContent
+            side="left"
+            sx={{ display: { xs: "flex", lg: "none" } }}
+          >
             <SheetHeader>
               <SheetTitle>Bếp trò chuyện</SheetTitle>
             </SheetHeader>
@@ -306,7 +312,7 @@ export default function ThreadHistory() {
             )}
           </SheetContent>
         </Sheet>
-      </div>
+      </Box>
     </>
   );
 }

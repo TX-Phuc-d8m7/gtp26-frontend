@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import React, { ReactNode } from "react";
 import { Box, Card, CardContent, Typography, Button } from "@mui/material";
 import { AlertTriangle, RefreshCw } from "lucide-react";
 
@@ -40,29 +40,42 @@ export class ErrorBoundary extends React.Component<
     if (this.state.hasError) {
       return (
         this.props.fallback || (
-          <Card className="!border-red-200 !bg-red-50">
-            <CardContent className="p-6">
-              <Box className="flex gap-4">
-                <div className="flex-shrink-0">
-                  <AlertTriangle className="w-6 h-6 text-red-600" />
-                </div>
-                <div className="flex-1">
-                  <Typography variant="h6" className="!font-bold !text-red-900 !mb-2">
+          <Card
+            sx={{
+              border: "1px solid rgba(220, 38, 38, 0.24)",
+              backgroundColor: "rgba(220, 38, 38, 0.08)",
+            }}
+          >
+            <CardContent sx={{ p: 3 }}>
+              <Box sx={{ display: "flex", gap: 2 }}>
+                <Box sx={{ flexShrink: 0 }}>
+                  <AlertTriangle size={24} style={{ color: "#dc2626" }} />
+                </Box>
+                <Box sx={{ flex: 1 }}>
+                  <Typography
+                    variant="h6"
+                    sx={{ fontWeight: 700, color: "#7f1d1d", mb: 1 }}
+                  >
                     Có lỗi xảy ra
                   </Typography>
-                  <Typography className="!text-red-800 !text-sm !mb-4">
+                  <Typography sx={{ color: "#991b1b", fontSize: 14, mb: 2 }}>
                     {this.state.error?.message ||
                       "Có sự cố không mong muốn. Vui lòng thử lại."}
                   </Typography>
                   <Button
                     variant="contained"
-                    startIcon={<RefreshCw className="w-4 h-4" />}
+                    startIcon={<RefreshCw size={16} />}
                     onClick={this.handleReset}
-                    className="!bg-red-600 hover:!bg-red-700 !text-white"
+                    sx={{
+                      backgroundColor: "#dc2626",
+                      color: "#fff",
+                      textTransform: "none",
+                      "&:hover": { backgroundColor: "#b91c1c" },
+                    }}
                   >
                     Thử lại
                   </Button>
-                </div>
+                </Box>
               </Box>
             </CardContent>
           </Card>
@@ -77,7 +90,7 @@ export class ErrorBoundary extends React.Component<
 // Functional wrapper for error handling
 export function withErrorBoundary<P extends object>(
   Component: React.ComponentType<P>,
-  fallback?: ReactNode
+  fallback?: ReactNode,
 ) {
   return function WithErrorBoundaryComponent(props: P) {
     return (

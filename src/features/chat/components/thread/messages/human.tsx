@@ -2,7 +2,6 @@ import { useStreamContext } from "@/features/chat/providers/stream-provider";
 import { Message } from "@langchain/langgraph-sdk";
 import { useState } from "react";
 import { getContentString } from "../utils";
-import { cn } from "@/shared/lib/utils";
 import { Textarea } from "@/shared/components/ui/textarea/index";
 import { BranchSwitcher, CommandBar } from "./shared";
 import { Box } from "@mui/material";
@@ -30,7 +29,12 @@ function EditableContent({
       value={value}
       onChange={(e) => setValue(e.target.value)}
       onKeyDown={handleKeyDown}
-      className="focus-visible:ring-0"
+      sx={{
+        "&:focus-visible": {
+          outline: "none",
+          boxShadow: "none",
+        },
+      }}
     />
   );
 }
@@ -74,10 +78,12 @@ export function HumanMessage({
 
   return (
     <Box
-      className={cn("group", isEditing && "w-full")}
       sx={{
         ...styles.langchainHumanGroupStyles,
         ...(isEditing ? { width: "100%" } : {}),
+        "&:hover [data-command-bar], &:focus-within [data-command-bar]": {
+          opacity: 1,
+        },
       }}
     >
       <Box
@@ -103,11 +109,15 @@ export function HumanMessage({
         )}
 
         <Box
-          className={cn(
-            "flex gap-2 items-center ml-auto transition-opacity",
-            "opacity-0 group-focus-within:opacity-100 group-hover:opacity-100",
-            isEditing && "opacity-100",
-          )}
+          data-command-bar
+          sx={{
+            display: "flex",
+            gap: 1,
+            alignItems: "center",
+            ml: "auto",
+            opacity: isEditing ? 1 : 0,
+            transition: "opacity 180ms ease",
+          }}
         >
           <BranchSwitcher
             branch={meta?.branch}

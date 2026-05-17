@@ -1,6 +1,7 @@
 "use client";
 
 import { forwardRef } from "react";
+import { Box } from "@mui/material";
 
 import {
   Tooltip,
@@ -9,7 +10,6 @@ import {
   TooltipTrigger,
 } from "@/shared/components/ui/tooltip/index";
 import { Button, ButtonProps } from "@/shared/components/ui/button/index";
-import { cn } from "@/shared/lib/utils";
 
 export type TooltipIconButtonProps = ButtonProps & {
   tooltip: string;
@@ -19,7 +19,7 @@ export type TooltipIconButtonProps = ButtonProps & {
 export const TooltipIconButton = forwardRef<
   HTMLButtonElement,
   TooltipIconButtonProps
->(({ children, tooltip, side = "bottom", className, ...rest }, ref) => {
+>(({ children, tooltip, side = "bottom", sx, ...rest }, ref) => {
   return (
     <TooltipProvider>
       <Tooltip>
@@ -28,11 +28,33 @@ export const TooltipIconButton = forwardRef<
             variant="ghost"
             size="icon"
             {...rest}
-            className={cn("size-6 p-1", className)}
+            sx={[
+              {
+                width: 24,
+                height: 24,
+                p: 0.5,
+              },
+              ...(Array.isArray(sx) ? sx : sx ? [sx] : []),
+            ]}
             ref={ref}
           >
             {children}
-            <span className="sr-only">{tooltip}</span>
+            <Box
+              component="span"
+              sx={{
+                position: "absolute",
+                width: 1,
+                height: 1,
+                p: 0,
+                m: -1,
+                overflow: "hidden",
+                clip: "rect(0, 0, 0, 0)",
+                whiteSpace: "nowrap",
+                border: 0,
+              }}
+            >
+              {tooltip}
+            </Box>
           </Button>
         </TooltipTrigger>
         <TooltipContent side={side}>{tooltip}</TooltipContent>

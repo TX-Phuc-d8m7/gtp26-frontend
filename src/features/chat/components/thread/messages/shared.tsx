@@ -12,6 +12,7 @@ import { TooltipIconButton } from "../tooltip-icon-button";
 import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
 import { Button } from "@/shared/components/ui/button/index";
+import { Box, Typography } from "@mui/material";
 
 function ContentCopyable({
   content,
@@ -45,7 +46,7 @@ function ContentCopyable({
             exit={{ opacity: 0, scale: 0.8 }}
             transition={{ duration: 0.15 }}
           >
-            <CopyCheck className="text-green-500" />
+            <CopyCheck color="#22c55e" />
           </motion.div>
         ) : (
           <motion.div
@@ -78,11 +79,11 @@ export function BranchSwitcher({
   const index = branchOptions.indexOf(branch);
 
   return (
-    <div className="flex items-center gap-2">
+    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
       <Button
         variant="ghost"
         size="icon"
-        className="size-6 p-1"
+        sx={{ width: 24, height: 24, p: 0.5 }}
         onClick={() => {
           const prevBranch = branchOptions[index - 1];
           if (!prevBranch) return;
@@ -92,13 +93,13 @@ export function BranchSwitcher({
       >
         <ChevronLeft />
       </Button>
-      <span className="text-sm">
+      <Typography component="span" sx={{ fontSize: 14 }}>
         {index + 1} / {branchOptions.length}
-      </span>
+      </Typography>
       <Button
         variant="ghost"
         size="icon"
-        className="size-6 p-1"
+        sx={{ width: 24, height: 24, p: 0.5 }}
         onClick={() => {
           const nextBranch = branchOptions[index + 1];
           if (!nextBranch) return;
@@ -108,7 +109,7 @@ export function BranchSwitcher({
       >
         <ChevronRight />
       </Button>
-    </div>
+    </Box>
   );
 }
 
@@ -162,7 +163,7 @@ export function CommandBar({
 
   if (isHumanMessage && isEditing && !!setIsEditing && !!handleSubmitEdit) {
     return (
-      <div className="flex items-center gap-2">
+      <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
         <TooltipIconButton
           disabled={isLoading}
           tooltip="Cancel edit"
@@ -181,12 +182,12 @@ export function CommandBar({
         >
           <SendHorizontal />
         </TooltipIconButton>
-      </div>
+      </Box>
     );
   }
 
   return (
-    <div className="flex items-center gap-2">
+    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
       <ContentCopyable content={content} disabled={isLoading} />
       {isAiMessage && !!handleRegenerate && (
         <TooltipIconButton
@@ -210,6 +211,6 @@ export function CommandBar({
           <Pencil />
         </TooltipIconButton>
       )}
-    </div>
+    </Box>
   );
 }

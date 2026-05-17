@@ -29,36 +29,56 @@ const features = [
 
 export function FeaturesSection() {
   return (
-    <section className="py-20 px-4 bg-white">
-      <div className="max-w-6xl mx-auto">
-        <div className="text-center mb-16">
-          <h2 className="text-4xl font-bold text-foreground mb-4">
+    <Box component="section" sx={{ py: 10, px: 2, backgroundColor: "#fff" }}>
+      <Box sx={{ maxWidth: 1152, mx: "auto" }}>
+        <Box sx={{ textAlign: "center", mb: 8 }}>
+          <Typography
+            component="h2"
+            sx={{
+              fontSize: 36,
+              fontWeight: 800,
+              color: "var(--foreground)",
+              mb: 2,
+            }}
+          >
             Why Choose FoodHealth AI?
-          </h2>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+          </Typography>
+          <Typography sx={{ fontSize: 20, color: "var(--muted-foreground)", maxWidth: 672, mx: "auto" }}>
             Experience the perfect blend of nutrition science and culinary expertise
-          </p>
-        </div>
+          </Typography>
+        </Box>
 
-        <div className="grid md:grid-cols-2 gap-8">
+        <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "repeat(2, 1fr)" }, gap: 4 }}>
           {features.map((feature, index) => (
             <Card
               key={index}
-              className="!shadow-soft hover:!shadow-elevated transition-shadow"
+              sx={{
+                boxShadow: "0 12px 32px rgba(15, 23, 42, 0.08)",
+                transition: "box-shadow 180ms ease, transform 180ms ease",
+                "&:hover": {
+                  boxShadow: "0 20px 48px rgba(15, 23, 42, 0.12)",
+                  transform: "translateY(-2px)",
+                },
+              }}
             >
-              <CardContent className="p-8">
-                <div className="text-5xl mb-4">{feature.icon}</div>
-                <Typography variant="h6" className="font-semibold mb-3 !text-foreground">
+              <CardContent sx={{ p: 4 }}>
+                <Typography sx={{ fontSize: 48, mb: 2, lineHeight: 1 }}>
+                  {feature.icon}
+                </Typography>
+                <Typography
+                  variant="h6"
+                  sx={{ fontWeight: 700, mb: 1.5, color: "var(--foreground)" }}
+                >
                   {feature.title}
                 </Typography>
-                <Typography className="!text-muted-foreground">
+                <Typography sx={{ color: "var(--muted-foreground)" }}>
                   {feature.description}
                 </Typography>
               </CardContent>
             </Card>
           ))}
-        </div>
-      </div>
-    </section>
+        </Box>
+      </Box>
+    </Box>
   );
 }

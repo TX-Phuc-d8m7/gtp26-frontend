@@ -1,25 +1,48 @@
-import { Button } from "@mui/material";
+import { Box, Button, Typography } from "@mui/material";
 import Link from "next/link";
 
 export function CtaSection() {
   return (
-    <section className="py-20 px-4 bg-gradient-to-r from-orange-50 via-white to-green-50">
-      <div className="max-w-3xl mx-auto text-center space-y-8">
-        <div className="space-y-4">
-          <h2 className="text-4xl font-bold text-foreground">
+    <Box
+      component="section"
+      sx={{
+        py: 10,
+        px: 2,
+        background: "linear-gradient(90deg, #fff7ed, #fff, #f0fdf4)",
+      }}
+    >
+      <Box sx={{ maxWidth: 768, mx: "auto", textAlign: "center", display: "grid", gap: 4 }}>
+        <Box sx={{ display: "grid", gap: 2 }}>
+          <Typography
+            component="h2"
+            sx={{
+              fontSize: 36,
+              fontWeight: 800,
+              color: "var(--foreground)",
+            }}
+          >
             Ready to Transform Your Eating Habits?
-          </h2>
-          <p className="text-xl text-muted-foreground">
+          </Typography>
+          <Typography sx={{ fontSize: 20, color: "var(--muted-foreground)" }}>
             Join thousands of users discovering meals that make them feel amazing. Start chatting with your personal food health coach today.
-          </p>
-        </div>
+          </Typography>
+        </Box>
 
-        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+        <Box sx={{ display: "flex", flexDirection: { xs: "column", sm: "row" }, gap: 2, justifyContent: "center" }}>
           <Link href="/chat">
             <Button
               variant="contained"
               size="large"
-              className="!bg-orange-600 hover:!bg-orange-700 !text-white !px-8 !py-3 !text-lg !w-full sm:!w-auto"
+              sx={{
+                width: { xs: "100%", sm: "auto" },
+                backgroundColor: "#ea580c",
+                color: "#fff",
+                px: 4,
+                py: 1.5,
+                fontSize: 18,
+                textTransform: "none",
+                "&:hover": { backgroundColor: "#c2410c" },
+              }}
             >
               Get Started Free
             </Button>
@@ -27,16 +50,25 @@ export function CtaSection() {
           <Button
             variant="outlined"
             size="large"
-            className="!border-orange-600 !text-orange-600 hover:!bg-orange-50 !px-8 !py-3 !text-lg !w-full sm:!w-auto"
+            sx={{
+              width: { xs: "100%", sm: "auto" },
+              borderColor: "#ea580c",
+              color: "#ea580c",
+              px: 4,
+              py: 1.5,
+              fontSize: 18,
+              textTransform: "none",
+              "&:hover": { backgroundColor: "#fff7ed", borderColor: "#ea580c" },
+            }}
           >
             View Examples
           </Button>
-        </div>
+        </Box>
 
-        <p className="text-sm text-muted-foreground">
+        <Typography sx={{ fontSize: 14, color: "var(--muted-foreground)" }}>
           No credit card required. Start getting personalized meal suggestions instantly.
-        </p>
-      </div>
-    </section>
+        </Typography>
+      </Box>
+    </Box>
   );
 }

@@ -1,29 +1,23 @@
+/*
+ * Copyright (c) 2026 GTP26
+ * All rights reserved.
+ */
+import { useState } from "react";
 import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Button,
-  TextField,
   Box,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  TextField,
   Typography,
 } from "@mui/material";
-import { StarRating } from "./star-rating";
-import { useState } from "react";
 
-interface RecipeFeedbackDialogProps {
-  open: boolean;
-  recipeName: string;
-  onClose: () => void;
-  onSubmit: (feedback: {
-    rating: number;
-    comment: string;
-    tried: boolean;
-  }) => void;
-  isLoading?: boolean;
-}
+import { StarRating } from "../star-rating";
+import { RecipeFeedbackDialogProps, styles } from ".";
 
-export function RecipeFeedbackDialog({
+export default function RecipeFeedbackDialog({
   open,
   recipeName,
   onClose,
@@ -34,32 +28,40 @@ export function RecipeFeedbackDialog({
   const [comment, setComment] = useState("");
   const [tried, setTried] = useState(false);
 
+  const resetForm = () => {
+    setRating(0);
+    setComment("");
+    setTried(false);
+  };
+
   const handleSubmit = () => {
     if (rating === 0) {
       alert("Vui lòng chọn số sao");
       return;
     }
     onSubmit({ rating, comment, tried });
-    setRating(0);
-    setComment("");
-    setTried(false);
+    resetForm();
   };
 
   const handleClose = () => {
-    setRating(0);
-    setComment("");
-    setTried(false);
+    resetForm();
     onClose();
   };
 
   return (
-    <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
-      <DialogTitle className="!font-bold !text-lg">
-        Đánh giá: {recipeName}
-      </DialogTitle>
-      <DialogContent className="!py-6">
-        <Box className="space-y-6">
-          {/* Rating Section */}
+    <Dialog
+      open={open}
+      onClose={handleClose}
+      maxWidth="sm"
+      fullWidth
+      slotProps={{
+        paper: { sx: styles.paperSx },
+        backdrop: { sx: styles.backdropSx },
+      }}
+    >
+      <DialogTitle sx={styles.titleSx}>Đánh giá: {recipeName}</DialogTitle>
+      <DialogContent sx={styles.contentSx}>
+        <Box sx={styles.stackSx}>
           <Box>
             <StarRating
               onRate={setRating}
@@ -68,17 +70,16 @@ export function RecipeFeedbackDialog({
             />
           </Box>
 
-          {/* Tried Section */}
           <Box>
-            <Typography variant="subtitle2" className="!font-semibold !text-muted-foreground !text-xs !mb-3">
+            <Typography variant="subtitle2" sx={styles.fieldLabelSx}>
               Bạn đã nấu món này chưa?
             </Typography>
-            <Box className="flex gap-2">
+            <Box sx={styles.triedRowSx}>
               <Button
                 variant={tried ? "contained" : "outlined"}
                 size="small"
                 onClick={() => setTried(true)}
-                className={tried ? "!bg-orange-600" : ""}
+                sx={styles.getTriedButtonSx(tried)}
               >
                 Đã nấu
               </Button>
@@ -86,15 +87,15 @@ export function RecipeFeedbackDialog({
                 variant={!tried ? "contained" : "outlined"}
                 size="small"
                 onClick={() => setTried(false)}
+                sx={styles.getTriedButtonSx(!tried)}
               >
                 Chưa nấu
               </Button>
             </Box>
           </Box>
 
-          {/* Comment Section */}
           <Box>
-            <Typography variant="subtitle2" className="!font-semibold !text-muted-foreground !text-xs !mb-2">
+            <Typography variant="subtitle2" sx={styles.fieldLabelSx}>
               Bình luận (tùy chọn)
             </Typography>
             <TextField
@@ -106,19 +107,24 @@ export function RecipeFeedbackDialog({
               onChange={(e) => setComment(e.target.value)}
               variant="outlined"
               size="small"
+              sx={styles.textFieldSx}
             />
           </Box>
         </Box>
       </DialogContent>
-      <DialogActions className="!p-4">
-        <Button onClick={handleClose} disabled={isLoading}>
+      <DialogActions sx={styles.actionsSx}>
+        <Button
+          onClick={handleClose}
+          disabled={isLoading}
+          sx={styles.cancelButtonSx}
+        >
           Hủy
         </Button>
         <Button
           onClick={handleSubmit}
           variant="contained"
-          className="!bg-orange-600 hover:!bg-orange-700"
           disabled={isLoading || rating === 0}
+          sx={styles.submitButtonSx}
         >
           {isLoading ? "Đang gửi..." : "Gửi đánh giá"}
         </Button>

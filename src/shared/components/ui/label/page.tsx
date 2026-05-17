@@ -6,6 +6,7 @@ import * as LabelPrimitive from "@radix-ui/react-label";
 import { Box as MuiBox } from "@mui/material";
 
 import { LabelProps, styles } from ".";
+import { mergeSx } from "@/shared/shared.styles";
 import { cn } from "@/shared/lib/utils";
 
 function Label({ className, sx, ...props }: LabelProps) {
@@ -13,8 +14,8 @@ function Label({ className, sx, ...props }: LabelProps) {
     <MuiBox
       component={LabelPrimitive.Root}
       data-slot="label"
-      className={cn(styles.labelClassName, className)}
-      sx={sx}
+      className={cn(className)}
+      sx={mergeSx(styles.labelStyles, sx)}
       {...props}
     />
   );

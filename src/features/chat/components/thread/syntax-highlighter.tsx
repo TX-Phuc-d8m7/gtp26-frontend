@@ -14,13 +14,11 @@ SyntaxHighlighterPrism.registerLanguage("python", python);
 interface SyntaxHighlighterProps {
   children: string;
   language: string;
-  className?: string;
 }
 
 export const SyntaxHighlighter: FC<SyntaxHighlighterProps> = ({
   children,
   language,
-  className,
 }) => {
   return (
     <SyntaxHighlighterPrism
@@ -32,7 +30,6 @@ export const SyntaxHighlighter: FC<SyntaxHighlighterProps> = ({
         background: "transparent",
         padding: "1.5rem 1rem",
       }}
-      className={className}
     >
       {children}
     </SyntaxHighlighterPrism>

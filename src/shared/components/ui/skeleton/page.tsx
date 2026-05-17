@@ -2,14 +2,18 @@
  * Copyright (c) 2026 GTP26
  * All rights reserved.
  */
+import { Box as MuiBox } from "@mui/material";
+
 import { SkeletonProps, styles } from ".";
+import { mergeSx } from "@/shared/shared.styles";
 import { cn } from "@/shared/lib/utils";
 
-function Skeleton({ className, ...props }: SkeletonProps) {
+function Skeleton({ className, sx, ...props }: SkeletonProps) {
   return (
-    <div
+    <MuiBox
       data-slot="skeleton"
-      className={cn(styles.skeletonClassName, className)}
+      className={cn(className)}
+      sx={mergeSx(styles.skeletonStyles, sx)}
       {...props}
     />
   );

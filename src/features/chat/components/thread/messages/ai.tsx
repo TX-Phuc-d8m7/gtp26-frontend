@@ -5,7 +5,6 @@ import { getContentString } from "../utils";
 import { BranchSwitcher, CommandBar } from "./shared";
 import { MarkdownText } from "../markdown-text";
 import { LoadExternalComponent } from "@langchain/langgraph-sdk/react-ui";
-import { cn } from "@/shared/lib/utils";
 import { ToolCalls, ToolResult } from "./tool-calls";
 import { MessageContentComplex } from "@langchain/core/messages";
 import { Fragment } from "react/jsx-runtime";
@@ -116,9 +115,16 @@ export function AssistantMessage({
   }
 
   return (
-    <Box className="group" sx={styles.langchainAssistantRowStyles}>
+    <Box
+      sx={{
+        ...styles.langchainAssistantRowStyles,
+        "&:hover [data-command-bar], &:focus-within [data-command-bar]": {
+          opacity: 1,
+        },
+      }}
+    >
       <Box sx={styles.assistantAvatarStyles}>
-        <GeminiSparkleSVG width={18} height={18} className="text-orange-500" />
+        <GeminiSparkleSVG width={18} height={18} color="#f97316" />
       </Box>
       {isToolResult ? (
         <ToolResult message={message} />
@@ -160,10 +166,15 @@ export function AssistantMessage({
             <GenericInterruptView interrupt={threadInterrupt.value} />
           ) : null}
           <Box
-            className={cn(
-              "flex gap-2 items-center mr-auto transition-opacity",
-              "opacity-0 group-focus-within:opacity-100 group-hover:opacity-100",
-            )}
+            data-command-bar
+            sx={{
+              display: "flex",
+              gap: 1,
+              alignItems: "center",
+              mr: "auto",
+              opacity: 0,
+              transition: "opacity 180ms ease",
+            }}
           >
             <BranchSwitcher
               branch={meta?.branch}
@@ -195,7 +206,7 @@ export function AssistantMessageLoading() {
           animation: "pulse 1.5s ease-in-out infinite",
         }}
       >
-        <GeminiSparkleSVG width={18} height={18} className="text-orange-500" />
+        <GeminiSparkleSVG width={18} height={18} color="#f97316" />
       </Box>
     </Box>
   );

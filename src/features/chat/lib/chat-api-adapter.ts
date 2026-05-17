@@ -5,6 +5,7 @@
 import { v4 as uuidv4 } from "uuid";
 
 import type {
+  BackendFoodResult,
   BackendSearchResponse,
   ChatApiAdapter,
   ChatFeedback,
@@ -19,6 +20,102 @@ const FOOD_AI_API_URL =
   process.env.NEXT_PUBLIC_FOOD_AI_API_URL ?? "http://localhost:8000";
 const STORAGE_KEY = "foodie-suggest:chat-store:v1";
 const SEARCH_API_TIMEOUT_MS = 30000;
+
+const FALLBACK_FOOD_IMAGES = [
+  "https://images.unsplash.com/photo-1555126634-323283e090fa?auto=format&fit=crop&q=80&w=900",
+  "https://images.unsplash.com/photo-1582878826629-29b7ad1cb431?auto=format&fit=crop&q=80&w=900",
+  "https://images.unsplash.com/photo-1626804475297-4160ebbaea4b?auto=format&fit=crop&q=80&w=900",
+  "https://images.unsplash.com/photo-1529692236671-f1f6cf9683ba?auto=format&fit=crop&q=80&w=900",
+  "https://images.unsplash.com/photo-1603046891744-1f76eb10aec4?auto=format&fit=crop&q=80&w=900",
+] as const;
+
+const MOCK_FOOD_METADATA: Record<
+  string,
+  Pick<
+    BackendFoodResult,
+    | "image"
+    | "cookingTime"
+    | "difficulty"
+    | "servings"
+    | "calories"
+    | "protein"
+    | "carbs"
+    | "fat"
+    | "tags"
+    | "reason"
+  >
+> = {
+  "mì quảng": {
+    image:
+      "https://images.unsplash.com/photo-1555126634-323283e090fa?auto=format&fit=crop&q=80&w=900",
+    cookingTime: 25,
+    difficulty: "medium",
+    servings: 1,
+    calories: 520,
+    protein: 26,
+    carbs: 68,
+    fat: 16,
+    tags: ["đậm vị", "đặc sản", "bữa trưa"],
+    reason:
+      "Mì Quảng được đưa vào danh sách demo vì có hương vị đặc trưng Đà Nẵng, no lâu và có thể điều chỉnh topping theo dị ứng hoặc khẩu vị.",
+  },
+  "bún chả cá": {
+    image:
+      "https://images.unsplash.com/photo-1582878826629-29b7ad1cb431?auto=format&fit=crop&q=80&w=900",
+    cookingTime: 18,
+    difficulty: "easy",
+    servings: 1,
+    calories: 430,
+    protein: 24,
+    carbs: 58,
+    fat: 10,
+    tags: ["ít dầu", "món nước", "bữa sáng"],
+    reason:
+      "Bún chả cá hợp để demo gợi ý món nhẹ hơn vì nước dùng thanh, ít dầu và dễ ăn vào buổi sáng hoặc khi cần món dễ tiêu.",
+  },
+  "bánh xèo": {
+    image:
+      "https://images.unsplash.com/photo-1626804475297-4160ebbaea4b?auto=format&fit=crop&q=80&w=900",
+    cookingTime: 30,
+    difficulty: "medium",
+    servings: 2,
+    calories: 640,
+    protein: 22,
+    carbs: 54,
+    fat: 34,
+    tags: ["ăn nhóm", "giòn", "món chiên"],
+    reason:
+      "Bánh xèo phù hợp khi người dùng muốn món trải nghiệm hoặc ăn nhóm, nhưng UI vẫn hiển thị cảnh báo dinh dưỡng vì món này nhiều dầu hơn.",
+  },
+  "bánh tráng cuốn thịt heo": {
+    image:
+      "https://images.unsplash.com/photo-1529692236671-f1f6cf9683ba?auto=format&fit=crop&q=80&w=900",
+    cookingTime: 20,
+    difficulty: "easy",
+    servings: 2,
+    calories: 480,
+    protein: 30,
+    carbs: 42,
+    fat: 18,
+    tags: ["nhiều rau", "món cuốn", "ít dầu"],
+    reason:
+      "Món cuốn này được dùng làm dummy recommendation vì có nhiều rau, dễ chia sẻ và cân bằng hơn so với các món chiên.",
+  },
+  "bánh mì": {
+    image:
+      "https://images.unsplash.com/photo-1603046891744-1f76eb10aec4?auto=format&fit=crop&q=80&w=900",
+    cookingTime: 8,
+    difficulty: "easy",
+    servings: 1,
+    calories: 390,
+    protein: 18,
+    carbs: 52,
+    fat: 14,
+    tags: ["ăn nhanh", "giá rẻ", "mang đi"],
+    reason:
+      "Bánh mì là lựa chọn demo tốt cho tình huống cần món nhanh, rẻ và tiện mang đi trong lúc di chuyển.",
+  },
+};
 
 const MOCK_FOOD_LOCATIONS: Record<string, Omit<FoodLocation, "foodId">[]> = {
   "mì quảng": [
@@ -133,6 +230,29 @@ const MOCK_FOOD_LOCATIONS: Record<string, Omit<FoodLocation, "foodId">[]> = {
   ],
 };
 
+const DEFAULT_MOCK_LOCATIONS: Omit<FoodLocation, "foodId">[] = [
+  {
+    id: "demo-location-hai-chau",
+    name: "Quán địa phương gần bạn",
+    address: "Trung tâm Hải Châu, Đà Nẵng",
+    lat: 16.06778,
+    lng: 108.22083,
+    distanceMeters: 850,
+    rating: 4.3,
+    openingHours: "06:30 - 21:30",
+  },
+  {
+    id: "demo-location-thanh-khe",
+    name: "Điểm ăn gợi ý Foodie Suggest",
+    address: "Thanh Khê, Đà Nẵng",
+    lat: 16.07062,
+    lng: 108.21018,
+    distanceMeters: 1600,
+    rating: 4.1,
+    openingHours: "07:00 - 22:00",
+  },
+];
+
 interface ChatStorageState {
   threads: ChatThread[];
   messagesByThreadId: Record<string, ChatMessage[]>;
@@ -231,17 +351,85 @@ function buildAssistantContent(data: BackendSearchResponse) {
   return `${warningText ? `${warningText}\n\n` : ""}${adviceText}${suggestionText}`;
 }
 
-function attachMockLocations(results: BackendSearchResponse["results"]) {
-  return (results ?? []).map((food) => {
+function getMatchedFoodKey(foodName: string) {
+  const normalizedName = foodName.toLowerCase();
+  return Object.keys({
+    ...MOCK_FOOD_METADATA,
+    ...MOCK_FOOD_LOCATIONS,
+  }).find((key) => normalizedName.includes(key));
+}
+
+function buildFallbackMetadata(
+  food: BackendFoodResult,
+  index: number,
+): Required<
+  Pick<
+    BackendFoodResult,
+    | "image"
+    | "cookingTime"
+    | "difficulty"
+    | "servings"
+    | "calories"
+    | "protein"
+    | "carbs"
+    | "fat"
+    | "tags"
+    | "reason"
+  >
+> {
+  return {
+    image: FALLBACK_FOOD_IMAGES[index % FALLBACK_FOOD_IMAGES.length],
+    cookingTime: 12 + (index % 4) * 6,
+    difficulty: index % 3 === 0 ? "easy" : index % 3 === 1 ? "medium" : "hard",
+    servings: index % 2 === 0 ? 1 : 2,
+    calories: 360 + (index % 5) * 55,
+    protein: 16 + (index % 4) * 4,
+    carbs: 42 + (index % 5) * 6,
+    fat: 9 + (index % 4) * 5,
+    tags: ["demo", "phù hợp", index % 2 === 0 ? "ít dầu" : "đậm vị"],
+    reason: `Dữ liệu demo: ${food.name} được hiển thị để kiểm tra UI giải thích gợi ý. Khi backend trả reason thật, nội dung này sẽ tự được thay thế.`,
+  };
+}
+
+function enhanceMockFoodResults(results: BackendSearchResponse["results"]) {
+  return (results ?? []).map((food, index) => {
     const normalizedName = food.name.toLowerCase();
-    const matchedKey = Object.keys(MOCK_FOOD_LOCATIONS).find((key) =>
+    const matchedLocationKey = Object.keys(MOCK_FOOD_LOCATIONS).find((key) =>
       normalizedName.includes(key),
     );
-    if (!matchedKey) return food;
+    const matchedMetadataKey = getMatchedFoodKey(food.name);
+    const metadata = matchedMetadataKey
+      ? MOCK_FOOD_METADATA[matchedMetadataKey]
+      : undefined;
+    const fallbackMetadata = buildFallbackMetadata(food, index);
+    const sourceLocations = matchedLocationKey
+      ? MOCK_FOOD_LOCATIONS[matchedLocationKey]
+      : DEFAULT_MOCK_LOCATIONS;
 
     return {
       ...food,
-      locations: MOCK_FOOD_LOCATIONS[matchedKey].map((location) => ({
+      image: food.image ?? metadata?.image ?? fallbackMetadata.image,
+      cookingTime:
+        food.cookingTime ??
+        metadata?.cookingTime ??
+        fallbackMetadata.cookingTime,
+      difficulty:
+        food.difficulty ?? metadata?.difficulty ?? fallbackMetadata.difficulty,
+      servings:
+        food.servings ?? metadata?.servings ?? fallbackMetadata.servings,
+      calories:
+        food.calories ?? metadata?.calories ?? fallbackMetadata.calories,
+      protein: food.protein ?? metadata?.protein ?? fallbackMetadata.protein,
+      carbs: food.carbs ?? metadata?.carbs ?? fallbackMetadata.carbs,
+      fat: food.fat ?? metadata?.fat ?? fallbackMetadata.fat,
+      tags: food.tags?.length
+        ? food.tags
+        : (metadata?.tags ?? fallbackMetadata.tags),
+      reason: food.reason ?? metadata?.reason ?? fallbackMetadata.reason,
+      locations: (food.locations?.length
+        ? food.locations
+        : sourceLocations
+      ).map((location) => ({
         ...location,
         foodId: food.id,
         mapUrl:
@@ -250,6 +438,17 @@ function attachMockLocations(results: BackendSearchResponse["results"]) {
       })),
     };
   });
+}
+
+function enhanceStoredMessages(messages: ChatMessage[]) {
+  return messages.map((message) =>
+    message.foods?.length
+      ? {
+          ...message,
+          foods: enhanceMockFoodResults(message.foods),
+        }
+      : message,
+  );
 }
 
 async function requestFoodSearch(payload: ChatSendPayload) {
@@ -288,7 +487,7 @@ function buildAssistantMessage(
     threadId: payload.threadId,
     role: "assistant",
     content: buildAssistantContent(response),
-    foods: attachMockLocations(response.results),
+    foods: enhanceMockFoodResults(response.results),
     aiInsight: response.ai_insight,
     status: "complete",
     sourceQuery: payload.content,
@@ -348,7 +547,9 @@ export const localChatApiAdapter: ChatApiAdapter = {
   },
 
   async getMessages(threadId) {
-    return readStore().messagesByThreadId[threadId] ?? [];
+    return enhanceStoredMessages(
+      readStore().messagesByThreadId[threadId] ?? [],
+    );
   },
 
   async sendMessage(payload): Promise<ChatSendResponse> {

@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { Box } from "@mui/material";
 import { Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 import { Button } from "@/shared/components/ui/button/index";
@@ -41,14 +42,51 @@ export const ThemeToggle = React.forwardRef<
               color: "#fed7aa",
             },
           },
+          "& [data-theme-icon='sun'], & [data-theme-icon='moon']": {
+            width: "1.2rem",
+            height: "1.2rem",
+            transition: "transform 180ms ease, opacity 180ms ease",
+          },
+          "& [data-theme-icon='sun']": {
+            transform: "rotate(0deg) scale(1)",
+            opacity: 1,
+          },
+          "& [data-theme-icon='moon']": {
+            position: "absolute",
+            transform: "rotate(90deg) scale(0)",
+            opacity: 0,
+          },
+          ".dark & [data-theme-icon='sun']": {
+            transform: "rotate(-90deg) scale(0)",
+            opacity: 0,
+          },
+          ".dark & [data-theme-icon='moon']": {
+            transform: "rotate(0deg) scale(1)",
+            opacity: 1,
+          },
         },
         ...(Array.isArray(sx) ? sx : sx ? [sx] : []),
       ]}
       aria-label={props["aria-label"] ?? "Đổi giao diện sáng tối"}
     >
-      <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-      <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
-      <span className="sr-only">Toggle theme</span>
+      <Sun data-theme-icon="sun" />
+      <Moon data-theme-icon="moon" />
+      <Box
+        component="span"
+        sx={{
+          position: "absolute",
+          width: 1,
+          height: 1,
+          padding: 0,
+          margin: -1,
+          overflow: "hidden",
+          clip: "rect(0, 0, 0, 0)",
+          whiteSpace: "nowrap",
+          border: 0,
+        }}
+      >
+        Toggle theme
+      </Box>
     </Button>
   );
 });

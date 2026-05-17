@@ -69,7 +69,7 @@ export function Header({
                 onClick={onToggleChatHistory}
                 aria-label="Mở lịch sử trò chuyện"
               >
-                <Menu className="size-5" />
+                <Menu size={20} />
               </Button>
             )}
 
@@ -83,7 +83,7 @@ export function Header({
                     onClick={() => setIsSearchOpen(true)}
                     aria-label="Tra cứu món ăn"
                   >
-                    <Search className="size-5" />
+                    <Search size={20} />
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent side="bottom">
@@ -96,14 +96,13 @@ export function Header({
           <motion.button
             type="button"
             style={{ minWidth: 0 }}
-            className="group"
             onClick={onNewThread}
             animate={{ marginLeft: chatStarted && chatHistoryOpen ? 8 : 0 }}
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
           >
             <Box sx={styles.brandButtonStyles}>
               <Box sx={styles.brandMarkStyles}>
-                <Soup className="size-4" />
+                <Soup size={16} />
               </Box>
               <Box sx={styles.brandTextStyles}>
                 <Typography as="span" sx={styles.brandTitleStyles}>
@@ -126,7 +125,7 @@ export function Header({
                     onClick={onNewThread}
                     aria-label="Cuộc hội thoại mới"
                   >
-                    <SquarePen className="size-5" />
+                    <SquarePen size={20} />
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent side="bottom">
@@ -184,7 +183,7 @@ export function Header({
                     onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
                     aria-label="Tài khoản"
                   >
-                    <User className="size-5" />
+                    <User size={20} />
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent side="bottom">
@@ -223,9 +222,9 @@ export function Header({
                             py: 1.2,
                             mb: 0.5,
                           }}
-                        >
+                          >
                           <Box sx={styles.assistantAvatarStyles}>
-                            <User className="size-4" />
+                            <User size={16} />
                           </Box>
                           <Box
                             sx={{
@@ -263,7 +262,7 @@ export function Header({
                           ]}
                           onClick={() => setIsUserMenuOpen(false)}
                         >
-                          <Settings className="size-4 text-muted-foreground" />
+                          <Settings size={16} color="var(--muted-foreground)" />
                           Quản lý tài khoản
                         </Box>
                         <Box
@@ -278,7 +277,7 @@ export function Header({
                           ]}
                           onClick={handleLogout}
                         >
-                          <LogOut className="size-4" />
+                          <LogOut size={16} />
                           Đăng xuất
                         </Box>
                       </>
@@ -309,7 +308,7 @@ export function Header({
                           ]}
                           onClick={() => setIsUserMenuOpen(false)}
                         >
-                          <LogIn className="size-4 text-muted-foreground" />
+                          <LogIn size={16} color="var(--muted-foreground)" />
                           Đăng nhập
                         </Box>
                         <Box
@@ -324,7 +323,7 @@ export function Header({
                           ]}
                           onClick={() => setIsUserMenuOpen(false)}
                         >
-                          <User className="size-4 text-muted-foreground" />
+                          <User size={16} color="var(--muted-foreground)" />
                           Đăng ký
                         </Box>
                       </>

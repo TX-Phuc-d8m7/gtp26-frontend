@@ -35,6 +35,7 @@ import { Header } from "./header";
 import { ComposerAttachment, InputArea } from "./input-area";
 import { MapInsightPanel } from "./map-insight-panel";
 import { FoodCard } from "../food-card";
+import { RecipeFeedbackDialog } from "../recipe-feedback-dialog";
 import type {
   BackendFoodResult,
   ChatFeedback,
@@ -184,12 +185,21 @@ function FoodRecommendationCard({
   food,
   index,
   onOpenLocations,
+  onOpenFeedback,
 }: {
   food: BackendFoodResult;
   index: number;
   onOpenLocations: (food: BackendFoodResult) => void;
+  onOpenFeedback: (food: BackendFoodResult) => void;
 }) {
-  return <FoodCard food={food} index={index} onOpenLocations={onOpenLocations} />;
+  return (
+    <FoodCard
+      food={food}
+      index={index}
+      onOpenFeedback={onOpenFeedback}
+      onOpenLocations={onOpenLocations}
+    />
+  );
 }
 
 function StickyToBottomContent(props: {
@@ -241,6 +251,9 @@ export function Thread() {
   const [firstTokenReceived, setFirstTokenReceived] = useState(false);
   const [attachments, setAttachments] = useState<ComposerAttachment[]>([]);
   const [mapFood, setMapFood] = useState<BackendFoodResult | null>(null);
+  const [feedbackFood, setFeedbackFood] = useState<BackendFoodResult | null>(
+    null,
+  );
   const isLargeScreen = useMediaQuery("(min-width: 1024px)");
   const shouldReduceMotion = useReducedMotion();
   const backendAbortController = useRef<AbortController | null>(null);
@@ -685,6 +698,7 @@ export function Thread() {
                                       key={food.id}
                                       food={food}
                                       index={index}
+                                      onOpenFeedback={setFeedbackFood}
                                       onOpenLocations={setMapFood}
                                     />
                                   ))}
@@ -755,6 +769,19 @@ export function Thread() {
         </Box>
       </Box>
       <MapInsightPanel food={mapFood} onClose={() => setMapFood(null)} />
+      <RecipeFeedbackDialog
+        open={Boolean(feedbackFood)}
+        recipeName={feedbackFood?.name ?? ""}
+        onClose={() => setFeedbackFood(null)}
+        onSubmit={(feedback) => {
+          setFeedbackFood(null);
+          toast.success("Đã ghi nhận đánh giá gợi ý.", {
+            description: `${feedback.rating}/5 sao${
+              feedback.comment ? ` · ${feedback.comment}` : ""
+            }`,
+          });
+        }}
+      />
     </Box>
   );
 }

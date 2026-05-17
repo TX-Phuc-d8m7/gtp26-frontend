@@ -56,42 +56,54 @@ export function OnboardingStepsFlow({
   const selectedCount = (answers[step.id] || []).length;
 
   return (
-    <Card className="w-full max-w-2xl mx-auto">
-      <CardContent className="p-8">
+    <Card sx={{ width: "100%", maxWidth: 672, mx: "auto" }}>
+      <CardContent sx={{ p: 4 }}>
         {/* Progress Bar */}
-        <Box className="mb-8">
-          <div className="flex justify-between items-center mb-2">
-            <Typography variant="caption" className="!text-muted-foreground">
+        <Box sx={{ mb: 4 }}>
+          <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 1 }}>
+            <Typography variant="caption" sx={{ color: "var(--muted-foreground)" }}>
               Bước {currentStep + 1}/{steps.length}
             </Typography>
-            <Typography variant="caption" className="!text-muted-foreground">
+            <Typography variant="caption" sx={{ color: "var(--muted-foreground)" }}>
               {Math.round(progress)}%
             </Typography>
-          </div>
-          <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
-            <div
-              className="h-full bg-gradient-to-r from-orange-500 to-orange-600 transition-all duration-500"
-              style={{ width: `${progress}%` }}
+          </Box>
+          <Box
+            sx={{
+              width: "100%",
+              height: 8,
+              backgroundColor: "#e5e7eb",
+              borderRadius: "999px",
+              overflow: "hidden",
+            }}
+          >
+            <Box
+              sx={{
+                height: "100%",
+                width: `${progress}%`,
+                background: "linear-gradient(90deg, #f97316, #ea580c)",
+                transition: "width 500ms ease",
+              }}
             />
-          </div>
+          </Box>
         </Box>
 
         {/* Step Header */}
-        <Box className="mb-8 text-center">
+        <Box sx={{ mb: 4, textAlign: "center" }}>
           <Typography
             variant="h5"
-            className="!font-bold !text-foreground !mb-3"
+            sx={{ fontWeight: 700, color: "var(--foreground)", mb: 1.5 }}
           >
             {step.title}
           </Typography>
-          <Typography className="!text-muted-foreground !text-sm">
+          <Typography sx={{ color: "var(--muted-foreground)", fontSize: 14 }}>
             {step.description}
           </Typography>
         </Box>
 
         {/* Step Content */}
-        <Box className="mb-8 min-h-[200px]">
-          <div className="space-y-3">
+        <Box sx={{ mb: 4, minHeight: 200 }}>
+          <Box sx={{ display: "grid", gap: 1.5 }}>
             {step.options.map((option) => {
               const isSelected = (answers[step.id] || []).includes(
                 option.value
@@ -101,67 +113,85 @@ export function OnboardingStepsFlow({
                   key={option.value}
                   type="button"
                   onClick={() => handleSelect(option.value)}
-                  className={`w-full p-4 rounded-lg border-2 transition-all text-left ${
-                    isSelected
-                      ? "border-orange-600 bg-orange-50"
-                      : "border-gray-200 bg-white hover:border-orange-400"
-                  }`}
+                  style={{
+                    width: "100%",
+                    padding: 16,
+                    borderRadius: 8,
+                    border: `2px solid ${isSelected ? "#ea580c" : "#e5e7eb"}`,
+                    backgroundColor: isSelected ? "#fff7ed" : "#ffffff",
+                    textAlign: "left",
+                    transition: "border-color 180ms ease, background-color 180ms ease",
+                    cursor: "pointer",
+                  }}
                 >
-                  <div className="flex items-center gap-3">
-                    <div
-                      className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-colors ${
-                        isSelected
-                          ? "bg-orange-600 border-orange-600"
-                          : "border-gray-300"
-                      }`}
+                  <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+                    <Box
+                      sx={{
+                        width: 20,
+                        height: 20,
+                        borderRadius: 1,
+                        border: `2px solid ${isSelected ? "#ea580c" : "#d1d5db"}`,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        backgroundColor: isSelected ? "#ea580c" : "transparent",
+                        transition: "border-color 180ms ease, background-color 180ms ease",
+                      }}
                     >
-                      {isSelected && (
-                        <CheckCircle className="w-4 h-4 text-white" />
-                      )}
-                    </div>
-                    <span
-                      className={`font-medium ${
-                        isSelected
-                          ? "text-orange-600"
-                          : "text-foreground"
-                      }`}
+                      {isSelected && <CheckCircle size={16} color="#fff" />}
+                    </Box>
+                    <Box
+                      component="span"
+                      sx={{
+                        fontWeight: 600,
+                        color: isSelected ? "#ea580c" : "var(--foreground)",
+                      }}
                     >
                       {option.label}
-                    </span>
-                  </div>
+                    </Box>
+                  </Box>
                 </button>
               );
             })}
-          </div>
+          </Box>
         </Box>
 
         {/* Selection Count */}
         {selectedCount > 0 && (
-          <Box className="mb-6 text-center">
+          <Box sx={{ mb: 3, textAlign: "center" }}>
             <Chip
               label={`${selectedCount} mục được chọn`}
               color="primary"
-              className="!bg-orange-100 !text-orange-700"
+              sx={{ backgroundColor: "#ffedd5", color: "#c2410c" }}
             />
           </Box>
         )}
 
         {/* Navigation Buttons */}
-        <Box className="flex gap-3 justify-between">
+        <Box sx={{ display: "flex", gap: 1.5, justifyContent: "space-between" }}>
           <Button
             variant="outlined"
             onClick={handleBack}
             disabled={currentStep === 0 || isLoading}
-            className="!border-gray-300 !text-foreground"
+            sx={{
+              borderColor: "#d1d5db",
+              color: "var(--foreground)",
+              textTransform: "none",
+            }}
           >
             Quay lại
           </Button>
           <Button
             variant="contained"
             onClick={handleNext}
-            endIcon={<ArrowRight className="w-4 h-4" />}
+            endIcon={<ArrowRight size={16} />}
             disabled={isLoading}
-            className="!bg-orange-600 hover:!bg-orange-700 !text-white"
+            sx={{
+              backgroundColor: "#ea580c",
+              color: "#fff",
+              textTransform: "none",
+              "&:hover": { backgroundColor: "#c2410c" },
+            }}
           >
             {isLoading ? "Đang xử lý..." : isLastStep ? "Hoàn thành" : "Tiếp tục"}
           </Button>

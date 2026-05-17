@@ -85,21 +85,21 @@ export function InputArea({
       label: "Bữa tối nhanh",
       meta: "15 phút · ít dầu mỡ",
       icon: Clock3,
-      color: "text-orange-600",
+      color: "#ea580c",
     },
     {
       prompt: "Lên thực đơn 3 ngày ít dầu mỡ",
       label: "Nhẹ bụng hơn",
       meta: "3 ngày · dịu vị",
       icon: Leaf,
-      color: "text-green-600",
+      color: "#16a34a",
     },
     {
       prompt: "Tìm món phù hợp cho người đang ăn kiêng",
       label: "Ăn kiêng lành mạnh",
       meta: "cao đạm · ít calo",
       icon: Flame,
-      color: "text-red-600",
+      color: "#dc2626",
     },
   ];
 
@@ -146,7 +146,7 @@ export function InputArea({
               <Box sx={styles.attachmentRowStyles}>
                 {attachments.map((attachment) => (
                   <Box key={attachment.id} sx={styles.attachmentChipStyles}>
-                    <FileText className="size-4 text-orange-500" />
+                    <FileText size={16} color="#f97316" />
                     <Typography
                       as="span"
                       sx={{
@@ -185,7 +185,7 @@ export function InputArea({
                       }}
                       aria-label={`Xóa ${attachment.name}`}
                     >
-                      <X className="size-3.5" />
+                      <X size={14} />
                     </Box>
                   </Box>
                 ))}
@@ -225,7 +225,7 @@ export function InputArea({
                   type="file"
                   multiple
                   aria-label="Chọn tệp đính kèm"
-                  className="hidden"
+                  style={{ display: "none" }}
                   onChange={(e) => handleFilesSelected(e.target.files)}
                 />
                 <Button
@@ -237,7 +237,7 @@ export function InputArea({
                   disabled={isLoading}
                   aria-label="Đính kèm tệp"
                 >
-                  <Paperclip className="size-4" />
+                  <Paperclip size={16} />
                 </Button>
                 <Box ref={toolsRef} sx={{ position: "relative" }}>
                   <Button
@@ -249,7 +249,7 @@ export function InputArea({
                     disabled={isLoading}
                     aria-label="Mở công cụ"
                   >
-                    <SlidersHorizontal className="size-4" />
+                    <SlidersHorizontal size={16} />
                   </Button>
 
                   {toolsOpen && (
@@ -294,7 +294,7 @@ export function InputArea({
                                 setToolsOpen(false);
                               }}
                             >
-                              <IconComponent className={`size-5 ${item.color}`} />
+                              <IconComponent size={20} color={item.color} />
                               <Box sx={{ textAlign: "left", flex: 1 }}>
                                 <Typography
                                   as="div"
@@ -339,7 +339,10 @@ export function InputArea({
                         >
                           <Label
                             htmlFor="show-recommendation-analysis"
-                            className="text-sm text-foreground cursor-pointer"
+                            sx={{
+                              color: "var(--foreground)",
+                              cursor: "pointer",
+                            }}
                           >
                             Hiện phân tích gợi ý
                           </Label>
@@ -369,7 +372,7 @@ export function InputArea({
                   />
                   <Label
                     htmlFor="show-recommendation-analysis-inline"
-                    className="cursor-pointer"
+                    sx={{ cursor: "pointer" }}
                   >
                     Hiện phân tích gợi ý
                   </Label>
@@ -384,8 +387,13 @@ export function InputArea({
                   size="sm"
                   sx={{ borderRadius: "999px" }}
                 >
-                  <LoaderCircle className="w-4 h-4 animate-spin" />
-                  <span className="ml-2">Dừng</span>
+                  <LoaderCircle
+                    size={16}
+                    style={{ animation: "spin 1s linear infinite" }}
+                  />
+                  <Box component="span" sx={{ ml: 1 }}>
+                    Dừng
+                  </Box>
                 </Button>
               ) : (
                 <Button
@@ -395,7 +403,7 @@ export function InputArea({
                   sx={styles.sendButtonStyles}
                   aria-label="Gửi tin nhắn"
                 >
-                  <ArrowUp className="size-4" />
+                  <ArrowUp size={16} />
                 </Button>
               )}
             </Box>

@@ -3,5 +3,8 @@
  * All rights reserved.
  */
 import type * as React from "react";
+import type { SxProps, Theme } from "@mui/material/styles";
 
-export type SkeletonProps = React.ComponentProps<"div">;
+export type SkeletonProps = React.ComponentProps<"div"> & {
+  sx?: SxProps<Theme>;
+};

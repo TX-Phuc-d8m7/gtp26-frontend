@@ -51,12 +51,12 @@ export function RecommendationInsight({
         marginBottom: "16px",
       }}
     >
-      <div className="flex gap-3">
+      <Box sx={{ display: "flex", gap: 1.5 }}>
         <IconComponent
-          className="w-5 h-5 flex-shrink-0 mt-0.5"
-          style={{ color: config.color }}
+          size={20}
+          style={{ color: config.color, flexShrink: 0, marginTop: 2 }}
         />
-        <div className="flex-1">
+        <Box sx={{ flex: 1 }}>
           <Typography
             variant="subtitle2"
             sx={{
@@ -67,24 +67,42 @@ export function RecommendationInsight({
           >
             {title}
           </Typography>
-          <ul className="space-y-2">
+          <Box component="ul" sx={{ display: "grid", gap: 1, m: 0, p: 0 }}>
             {items.map((item, index) => (
-              <li key={index} className="flex gap-2 text-sm">
-                <span
-                  className="inline-flex items-center justify-center w-5 h-5 rounded-full flex-shrink-0 text-xs font-semibold"
-                  style={{
+              <Box
+                component="li"
+                key={index}
+                sx={{
+                  display: "flex",
+                  gap: 1,
+                  fontSize: 14,
+                  listStyle: "none",
+                }}
+              >
+                <Box
+                  component="span"
+                  sx={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    width: 20,
+                    height: 20,
+                    borderRadius: "999px",
+                    flexShrink: 0,
+                    fontSize: 12,
+                    fontWeight: 700,
                     backgroundColor: config.color,
                     color: "white",
                   }}
                 >
                   {index + 1}
-                </span>
+                </Box>
                 <span style={{ color: config.textColor }}>{item}</span>
-              </li>
+              </Box>
             ))}
-          </ul>
-        </div>
-      </div>
+          </Box>
+        </Box>
+      </Box>
     </Box>
   );
 }

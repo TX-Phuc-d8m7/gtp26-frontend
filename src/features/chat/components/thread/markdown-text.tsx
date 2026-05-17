@@ -1,7 +1,5 @@
 "use client";
 
-import "./markdown-styles.css";
-
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeKatex from "rehype-katex";
@@ -9,9 +7,9 @@ import remarkMath from "remark-math";
 import { FC, memo, useState } from "react";
 import { CheckIcon, CopyIcon } from "lucide-react";
 import { SyntaxHighlighter } from "@/features/chat/components/thread/syntax-highlighter";
+import { Box } from "@mui/material";
 
 import { TooltipIconButton } from "@/features/chat/components/thread/tooltip-icon-button";
-import { cn } from "@/shared/lib/utils";
 
 import "katex/dist/katex.min.css";
 
@@ -47,152 +45,129 @@ const CodeHeader: FC<CodeHeaderProps> = ({ language, code }) => {
   };
 
   return (
-    <div className="flex items-center justify-between gap-4 rounded-t-lg bg-zinc-900 px-4 py-2 text-sm font-semibold text-white">
-      <span className="lowercase [&>span]:text-xs">{language}</span>
+    <Box
+      sx={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        gap: 2,
+        borderTopLeftRadius: 8,
+        borderTopRightRadius: 8,
+        backgroundColor: "#18181b",
+        px: 2,
+        py: 1,
+        color: "#fff",
+        fontSize: 14,
+        fontWeight: 700,
+      }}
+    >
+      <Box component="span" sx={{ textTransform: "lowercase", "& > span": { fontSize: 12 } }}>
+        {language}
+      </Box>
       <TooltipIconButton tooltip="Copy" onClick={onCopy}>
         {!isCopied && <CopyIcon />}
         {isCopied && <CheckIcon />}
       </TooltipIconButton>
-    </div>
+    </Box>
   );
 };
 
 const defaultComponents: any = {
-  h1: ({ className, ...props }: { className?: string }) => (
-    <h1
-      className={cn(
-        "mb-8 scroll-m-20 text-4xl font-extrabold tracking-tight last:mb-0",
-        className,
-      )}
+  h1: (props: { className?: string }) => (
+    <Box
+      component="h1"
+      sx={{ mb: 4, scrollMargin: 80, fontSize: 36, fontWeight: 800, letterSpacing: 0, "&:last-child": { mb: 0 } }}
       {...props}
     />
   ),
-  h2: ({ className, ...props }: { className?: string }) => (
-    <h2
-      className={cn(
-        "mb-4 mt-8 scroll-m-20 text-3xl font-semibold tracking-tight first:mt-0 last:mb-0",
-        className,
-      )}
+  h2: (props: { className?: string }) => (
+    <Box
+      component="h2"
+      sx={{ mb: 2, mt: 4, scrollMargin: 80, fontSize: 30, fontWeight: 700, letterSpacing: 0, "&:first-of-type": { mt: 0 }, "&:last-child": { mb: 0 } }}
       {...props}
     />
   ),
-  h3: ({ className, ...props }: { className?: string }) => (
-    <h3
-      className={cn(
-        "mb-4 mt-6 scroll-m-20 text-2xl font-semibold tracking-tight first:mt-0 last:mb-0",
-        className,
-      )}
+  h3: (props: { className?: string }) => (
+    <Box
+      component="h3"
+      sx={{ mb: 2, mt: 3, scrollMargin: 80, fontSize: 24, fontWeight: 700, letterSpacing: 0, "&:first-of-type": { mt: 0 }, "&:last-child": { mb: 0 } }}
       {...props}
     />
   ),
-  h4: ({ className, ...props }: { className?: string }) => (
-    <h4
-      className={cn(
-        "mb-4 mt-6 scroll-m-20 text-xl font-semibold tracking-tight first:mt-0 last:mb-0",
-        className,
-      )}
+  h4: (props: { className?: string }) => (
+    <Box
+      component="h4"
+      sx={{ mb: 2, mt: 3, scrollMargin: 80, fontSize: 20, fontWeight: 700, letterSpacing: 0, "&:first-of-type": { mt: 0 }, "&:last-child": { mb: 0 } }}
       {...props}
     />
   ),
-  h5: ({ className, ...props }: { className?: string }) => (
-    <h5
-      className={cn(
-        "my-4 text-lg font-semibold first:mt-0 last:mb-0",
-        className,
-      )}
+  h5: (props: { className?: string }) => (
+    <Box
+      component="h5"
+      sx={{ my: 2, fontSize: 18, fontWeight: 700, "&:first-of-type": { mt: 0 }, "&:last-child": { mb: 0 } }}
       {...props}
     />
   ),
-  h6: ({ className, ...props }: { className?: string }) => (
-    <h6
-      className={cn("my-4 font-semibold first:mt-0 last:mb-0", className)}
+  h6: (props: { className?: string }) => (
+    <Box component="h6" sx={{ my: 2, fontWeight: 700, "&:first-of-type": { mt: 0 }, "&:last-child": { mb: 0 } }} {...props} />
+  ),
+  p: (props: { className?: string }) => (
+    <Box component="p" sx={{ mb: 2.5, mt: 2.5, lineHeight: 1.75, "&:first-of-type": { mt: 0 }, "&:last-child": { mb: 0 } }} {...props} />
+  ),
+  a: (props: { className?: string }) => (
+    <Box
+      component="a"
+      sx={{ color: "var(--primary)", fontWeight: 600, textDecoration: "underline", textUnderlineOffset: 4 }}
       {...props}
     />
   ),
-  p: ({ className, ...props }: { className?: string }) => (
-    <p
-      className={cn("mb-5 mt-5 leading-7 first:mt-0 last:mb-0", className)}
+  blockquote: (props: { className?: string }) => (
+    <Box component="blockquote" sx={{ borderLeft: "2px solid var(--border)", pl: 3, fontStyle: "italic" }} {...props} />
+  ),
+  ul: (props: { className?: string }) => (
+    <Box component="ul" sx={{ my: 2.5, ml: 3, listStyleType: "disc", "& > li": { mt: 1 } }} {...props} />
+  ),
+  ol: (props: { className?: string }) => (
+    <Box component="ol" sx={{ my: 2.5, ml: 3, listStyleType: "decimal", "& > li": { mt: 1 } }} {...props} />
+  ),
+  hr: (props: { className?: string }) => (
+    <Box component="hr" sx={{ my: 2.5, border: 0, borderBottom: "1px solid var(--border)" }} {...props} />
+  ),
+  table: (props: { className?: string }) => (
+    <Box
+      component="table"
+      sx={{ my: 2.5, width: "100%", borderCollapse: "separate", borderSpacing: 0, overflowY: "auto" }}
       {...props}
     />
   ),
-  a: ({ className, ...props }: { className?: string }) => (
-    <a
-      className={cn(
-        "text-primary font-medium underline underline-offset-4",
-        className,
-      )}
+  th: (props: { className?: string }) => (
+    <Box
+      component="th"
+      sx={{ backgroundColor: "var(--muted)", px: 2, py: 1, textAlign: "left", fontWeight: 700, "&:first-of-type": { borderTopLeftRadius: 8 }, "&:last-of-type": { borderTopRightRadius: 8 }, "&[align='center']": { textAlign: "center" }, "&[align='right']": { textAlign: "right" } }}
       {...props}
     />
   ),
-  blockquote: ({ className, ...props }: { className?: string }) => (
-    <blockquote
-      className={cn("border-l-2 pl-6 italic", className)}
+  td: (props: { className?: string }) => (
+    <Box
+      component="td"
+      sx={{ borderBottom: "1px solid var(--border)", borderLeft: "1px solid var(--border)", px: 2, py: 1, textAlign: "left", "&:last-of-type": { borderRight: "1px solid var(--border)" }, "&[align='center']": { textAlign: "center" }, "&[align='right']": { textAlign: "right" } }}
       {...props}
     />
   ),
-  ul: ({ className, ...props }: { className?: string }) => (
-    <ul
-      className={cn("my-5 ml-6 list-disc [&>li]:mt-2", className)}
+  tr: (props: { className?: string }) => (
+    <Box
+      component="tr"
+      sx={{ m: 0, p: 0, borderBottom: "1px solid var(--border)", "&:first-of-type": { borderTop: "1px solid var(--border)" }, "&:last-child > td:first-of-type": { borderBottomLeftRadius: 8 }, "&:last-child > td:last-of-type": { borderBottomRightRadius: 8 } }}
       {...props}
     />
   ),
-  ol: ({ className, ...props }: { className?: string }) => (
-    <ol
-      className={cn("my-5 ml-6 list-decimal [&>li]:mt-2", className)}
-      {...props}
-    />
+  sup: (props: { className?: string }) => (
+    <Box component="sup" sx={{ "& > a": { fontSize: 12, textDecoration: "none" } }} {...props} />
   ),
-  hr: ({ className, ...props }: { className?: string }) => (
-    <hr className={cn("my-5 border-b", className)} {...props} />
-  ),
-  table: ({ className, ...props }: { className?: string }) => (
-    <table
-      className={cn(
-        "my-5 w-full border-separate border-spacing-0 overflow-y-auto",
-        className,
-      )}
-      {...props}
-    />
-  ),
-  th: ({ className, ...props }: { className?: string }) => (
-    <th
-      className={cn(
-        "bg-muted px-4 py-2 text-left font-bold first:rounded-tl-lg last:rounded-tr-lg [&[align=center]]:text-center [&[align=right]]:text-right",
-        className,
-      )}
-      {...props}
-    />
-  ),
-  td: ({ className, ...props }: { className?: string }) => (
-    <td
-      className={cn(
-        "border-b border-l px-4 py-2 text-left last:border-r [&[align=center]]:text-center [&[align=right]]:text-right",
-        className,
-      )}
-      {...props}
-    />
-  ),
-  tr: ({ className, ...props }: { className?: string }) => (
-    <tr
-      className={cn(
-        "m-0 border-b p-0 first:border-t [&:last-child>td:first-child]:rounded-bl-lg [&:last-child>td:last-child]:rounded-br-lg",
-        className,
-      )}
-      {...props}
-    />
-  ),
-  sup: ({ className, ...props }: { className?: string }) => (
-    <sup
-      className={cn("[&>a]:text-xs [&>a]:no-underline", className)}
-      {...props}
-    />
-  ),
-  pre: ({ className, ...props }: { className?: string }) => (
-    <pre
-      className={cn(
-        "overflow-x-auto rounded-lg bg-black text-white max-w-4xl",
-        className,
-      )}
+  pre: (props: { className?: string }) => (
+    <Box
+      component="pre"
+      sx={{ overflowX: "auto", borderRadius: 2, backgroundColor: "#000", color: "#fff", maxWidth: 896 }}
       {...props}
     />
   ),
@@ -213,7 +188,7 @@ const defaultComponents: any = {
       return (
         <>
           <CodeHeader language={language} code={code} />
-          <SyntaxHighlighter language={language} className={className}>
+          <SyntaxHighlighter language={language}>
             {code}
           </SyntaxHighlighter>
         </>
@@ -221,16 +196,16 @@ const defaultComponents: any = {
     }
 
     return (
-      <code className={cn("rounded font-semibold", className)} {...props}>
+      <Box component="code" sx={{ borderRadius: 1, fontWeight: 700 }} {...props}>
         {children}
-      </code>
+      </Box>
     );
   },
 };
 
 const MarkdownTextImpl: FC<{ children: string }> = ({ children }) => {
   return (
-    <div className="markdown-content">
+    <Box>
       <ReactMarkdown
         remarkPlugins={[remarkGfm, remarkMath]}
         rehypePlugins={[rehypeKatex]}
@@ -238,7 +213,7 @@ const MarkdownTextImpl: FC<{ children: string }> = ({ children }) => {
       >
         {children}
       </ReactMarkdown>
-    </div>
+    </Box>
   );
 };
 

@@ -6,7 +6,7 @@
 ────────────────────────────────────────────────────────────────────────────────
 Landing Page        http://localhost:3000
 Chat Interface      http://localhost:3000/chat
-Onboarding          http://localhost:3000/(auth)/onboarding
+Onboarding          http://localhost:3000/onboarding
 Profile             http://localhost:3000/profile
 
 ════════════════════════════════════════════════════════════════════════════════
