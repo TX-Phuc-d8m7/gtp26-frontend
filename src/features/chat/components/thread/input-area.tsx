@@ -11,6 +11,10 @@ import {
   SlidersHorizontal,
   Sparkles,
   X,
+  Clock3,
+  Leaf,
+  Flame,
+  Users,
 } from "lucide-react";
 import { FormEvent, useEffect, useRef, useState } from "react";
 import { styles } from "../../_styles";
@@ -76,9 +80,27 @@ export function InputArea({
   }, [toolsOpen]);
 
   const quickPrompts = [
-    "Gợi ý bữa tối nhẹ bụng trong 15 phút",
-    "Lên thực đơn 3 ngày ít dầu mỡ",
-    "Tìm món phù hợp cho người đang ăn kiêng",
+    {
+      prompt: "Gợi ý bữa tối nhẹ bụng trong 15 phút",
+      label: "Bữa tối nhanh",
+      meta: "15 phút · ít dầu mỡ",
+      icon: Clock3,
+      color: "text-orange-600",
+    },
+    {
+      prompt: "Lên thực đơn 3 ngày ít dầu mỡ",
+      label: "Nhẹ bụng hơn",
+      meta: "3 ngày · dịu vị",
+      icon: Leaf,
+      color: "text-green-600",
+    },
+    {
+      prompt: "Tìm món phù hợp cho người đang ăn kiêng",
+      label: "Ăn kiêng lành mạnh",
+      meta: "cao đạm · ít calo",
+      icon: Flame,
+      color: "text-red-600",
+    },
   ];
 
   const formatSize = (bytes: number) => {
@@ -252,21 +274,51 @@ export function InputArea({
                           gap: 0.4,
                         }}
                       >
-                        {quickPrompts.map((prompt) => (
-                          <Box
-                            key={prompt}
-                            component="button"
-                            type="button"
-                            sx={styles.quickPromptButtonStyles}
-                            onClick={() => {
-                              onPromptSelect?.(prompt);
-                              setToolsOpen(false);
-                            }}
-                          >
-                            <Sparkles className="size-4 text-orange-500" />
-                            <span>{prompt}</span>
-                          </Box>
-                        ))}
+                        {quickPrompts.map((item) => {
+                          const IconComponent = item.icon;
+                          return (
+                            <Box
+                              key={item.prompt}
+                              component="button"
+                              type="button"
+                              sx={{
+                                ...styles.quickPromptButtonStyles,
+                                display: "flex",
+                                alignItems: "center",
+                                gap: 2,
+                                py: 2,
+                                px: 2,
+                              }}
+                              onClick={() => {
+                                onPromptSelect?.(item.prompt);
+                                setToolsOpen(false);
+                              }}
+                            >
+                              <IconComponent className={`size-5 ${item.color}`} />
+                              <Box sx={{ textAlign: "left", flex: 1 }}>
+                                <Typography
+                                  as="div"
+                                  sx={{
+                                    fontWeight: 600,
+                                    fontSize: "0.875rem",
+                                    color: "var(--foreground)",
+                                  }}
+                                >
+                                  {item.label}
+                                </Typography>
+                                <Typography
+                                  as="div"
+                                  sx={{
+                                    fontSize: "0.75rem",
+                                    color: "var(--muted-foreground)",
+                                  }}
+                                >
+                                  {item.meta}
+                                </Typography>
+                              </Box>
+                            </Box>
+                          );
+                        })}
                       </Box>
                       <Box
                         sx={{

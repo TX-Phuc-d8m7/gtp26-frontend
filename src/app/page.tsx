@@ -1,7 +1,7 @@
 "use client";
 
-import { Chat } from "@/features/chat";
+import { LandingPage } from "@/features/landing";
 
-export default function DemoPage() {
-  return <Chat />;
+export default function HomePage() {
+  return <LandingPage />;
 }
