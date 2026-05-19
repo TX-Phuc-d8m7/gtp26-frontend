@@ -1,58 +1,68 @@
-import { Box, Card, CardContent, Typography } from "@mui/material";
+import { Box, Card, CardContent, Typography, alpha } from "@mui/material";
 
 const features = [
   {
     icon: "🎯",
-    title: "Personalized Recommendations",
+    title: "Gợi Ý Được Cá Nhân Hóa",
     description:
-      "AI learns your preferences and suggests recipes perfectly matched to your health goals and dietary needs.",
+      "AI tìm hiểu sở thích của bạn và gợi ý công thức nấu ăn hoàn hảo phù hợp với mục tiêu sức khỏe và nhu cầu dinh dưỡng.",
   },
   {
     icon: "⚡",
-    title: "Instant Answers",
+    title: "Trả Lời Tức Thì",
     description:
-      "Chat with our AI to get recipe suggestions, cooking tips, and nutrition advice in real-time.",
+      "Chat với AI của chúng tôi để nhận gợi ý công thức nấu ăn, mẹo nấu ăn và lời khuyên dinh dưỡng theo thời gian thực.",
   },
   {
     icon: "❤️",
-    title: "Health-Focused",
+    title: "Tập Trung Vào Sức Khỏe",
     description:
-      "Every recommendation considers your wellness goals—whether it's weight loss, muscle gain, or managing health conditions.",
+      "Mỗi gợi ý đều xem xét mục tiêu wellness của bạn—dù là giảm cân, tăng cơ hay kiểm soát các tình trạng sức khỏe.",
   },
   {
     icon: "👨‍🍳",
-    title: "Easy to Cook",
+    title: "Dễ Nấu",
     description:
-      "From quick 15-minute meals to elaborate feasts, find recipes that match your cooking skill and available time.",
+      "Từ những bữa ăn 15 phút nhanh gọn đến những bữa ăn hoành tráng, tìm công thức phù hợp với kỹ năng nấu ăn của bạn.",
   },
 ];
 
 export function FeaturesSection() {
   return (
-    <Box component="section" sx={{ py: 10, px: 2, backgroundColor: "#fff" }}>
-      <Box sx={{ maxWidth: 1152, mx: "auto" }}>
+    <Box
+      component="section"
+      sx={{
+        py: 10,
+        px: 2,
+        background: `
+          linear-gradient(180deg, #0C0A09 0%, #151110 50%, #0C0A09 100%)
+        `,
+        position: "relative",
+      }}
+    >
+      <Box sx={{ maxWidth: 1152, mx: "auto", position: "relative", zIndex: 1 }}>
         <Box sx={{ textAlign: "center", mb: 8 }}>
           <Typography
             component="h2"
             sx={{
               fontSize: 36,
               fontWeight: 800,
-              color: "var(--foreground)",
+              color: "#FFF7ED",
               mb: 2,
             }}
           >
-            Why Choose FoodHealth AI?
+            Tại Sao Chọn FoodHealth AI?
           </Typography>
           <Typography
             sx={{
-              fontSize: 20,
-              color: "var(--muted-foreground)",
+              fontSize: 18,
+              color: alpha("#FFF7ED", 0.6),
               maxWidth: 672,
               mx: "auto",
             }}
           >
-            Experience the perfect blend of nutrition science and culinary
-            expertise
+            Trải nghiệm sự kết hợp hoàn hảo giữa khoa học dinh dưỡng và chuyên
+            môn ẩm thực
           </Typography>
         </Box>
 
@@ -67,11 +77,22 @@ export function FeaturesSection() {
             <Card
               key={index}
               sx={{
-                boxShadow: "0 12px 32px rgba(15, 23, 42, 0.08)",
-                transition: "box-shadow 180ms ease, transform 180ms ease",
+                background: `linear-gradient(135deg, ${alpha(
+                  "#1C1917",
+                  0.5,
+                )} 0%, ${alpha("#292524", 0.4)} 100%)`,
+                border: `1px solid ${alpha("#FFF7ED", 0.1)}`,
+                backdropFilter: "blur(18px)",
+                transition: "all 200ms ease-in-out",
+                cursor: "pointer",
                 "&:hover": {
-                  boxShadow: "0 20px 48px rgba(15, 23, 42, 0.12)",
-                  transform: "translateY(-2px)",
+                  transform: "translateY(-4px)",
+                  background: `linear-gradient(135deg, ${alpha(
+                    "#1C1917",
+                    0.65,
+                  )} 0%, ${alpha("#292524", 0.55)} 100%)`,
+                  borderColor: alpha("#FFF7ED", 0.2),
+                  boxShadow: `0 20px 48px ${alpha("#000000", 0.32)}`,
                 },
               }}
             >
@@ -81,11 +102,15 @@ export function FeaturesSection() {
                 </Typography>
                 <Typography
                   variant="h6"
-                  sx={{ fontWeight: 700, mb: 1.5, color: "var(--foreground)" }}
+                  sx={{
+                    fontWeight: 700,
+                    mb: 1.5,
+                    color: "#FFF7ED",
+                  }}
                 >
                   {feature.title}
                 </Typography>
-                <Typography sx={{ color: "var(--muted-foreground)" }}>
+                <Typography sx={{ color: alpha("#FFF7ED", 0.6) }}>
                   {feature.description}
                 </Typography>
               </CardContent>
