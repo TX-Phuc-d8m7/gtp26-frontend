@@ -1,5 +1,6 @@
 import { Box, Button, Typography, alpha, Container } from "@mui/material";
 import Link from "next/link";
+import { landingColors, gradients } from "../theme-colors";
 
 export function HeroSection() {
   return (
@@ -14,9 +15,9 @@ export function HeroSection() {
         px: 2,
         py: { xs: 8, md: 10 },
         background: `
-          radial-gradient(circle at 20% 80%, ${alpha("#F97316", 0.08)} 0%, transparent 40%),
-          radial-gradient(circle at 80% 20%, ${alpha("#F97316", 0.06)} 0%, transparent 50%),
-          linear-gradient(180deg, #0C0A09 0%, #151110 50%, #0C0A09 100%)
+          radial-gradient(circle at 20% 80%, ${alpha(landingColors.dark.primary, 0.08)} 0%, transparent 40%),
+          radial-gradient(circle at 80% 20%, ${alpha(landingColors.dark.secondary, 0.06)} 0%, transparent 50%),
+          linear-gradient(180deg, ${landingColors.dark.bg.primary} 0%, ${landingColors.dark.bg.secondary} 50%, ${landingColors.dark.bg.primary} 100%)
         `,
         position: "relative",
         overflow: "hidden",
@@ -28,7 +29,7 @@ export function HeroSection() {
           position: "absolute",
           inset: 0,
           backgroundImage: `
-            radial-gradient(circle at 1px 1px, ${alpha("#FFF7ED", 0.03)} 1px, transparent 1px)
+            radial-gradient(circle at 1px 1px, ${alpha(landingColors.dark.text.primary, 0.03)} 1px, transparent 1px)
           `,
           backgroundSize: "40px 40px",
           pointerEvents: "none",
@@ -52,7 +53,7 @@ export function HeroSection() {
                 sx={{
                   fontSize: 13,
                   fontWeight: 700,
-                  color: "#FB923C",
+                  color: landingColors.dark.secondary,
                   textTransform: "uppercase",
                   letterSpacing: "0.1em",
                 }}
@@ -66,7 +67,7 @@ export function HeroSection() {
               sx={{
                 fontSize: { xs: 44, sm: 52, md: 60, lg: 64 },
                 fontWeight: 800,
-                color: "#FFF7ED",
+                color: landingColors.dark.text.primary,
                 lineHeight: 1.1,
               }}
             >
@@ -74,8 +75,7 @@ export function HeroSection() {
               <Box
                 component="span"
                 sx={{
-                  background:
-                    "linear-gradient(135deg, #FFB25C 0%, #FF8A1F 54%, #F26608 100%)",
+                  background: gradients.dark.primary,
                   backgroundClip: "text",
                   WebkitBackgroundClip: "text",
                   WebkitTextFillColor: "transparent",
@@ -89,7 +89,7 @@ export function HeroSection() {
             <Typography
               sx={{
                 fontSize: { xs: 16, md: 18 },
-                color: alpha("#FFF7ED", 0.6),
+                color: landingColors.dark.text.secondary,
                 lineHeight: 1.7,
                 maxWidth: 520,
               }}
@@ -106,48 +106,47 @@ export function HeroSection() {
               }}
             >
               <Link href="/chat" style={{ textDecoration: "none", flex: { xs: 1, sm: "auto" } }}>
-                <Button
-                  variant="contained"
-                  size="large"
-                  fullWidth
-                  sx={{
-                    background:
-                      "linear-gradient(135deg, #FFB25C 0%, #FF8A1F 54%, #F26608 100%)",
-                    color: "#FFF",
-                    px: 4,
-                    py: 1.5,
-                    fontSize: 16,
-                    fontWeight: 600,
-                    textTransform: "none",
-                    transition: "all 200ms ease-in-out",
-                    boxShadow: `0 0 0 0 ${alpha("#F97316", 0.3)}`,
-                    "&:hover": {
-                      transform: "translateY(-2px)",
-                      boxShadow: `0 12px 24px ${alpha("#F97316", 0.3)}`,
-                    },
-                  }}
-                >
-                  Bắt Đầu Miễn Phí
-                </Button>
+              <Button
+                variant="contained"
+                size="large"
+                fullWidth
+                sx={{
+                  background: gradients.dark.primary,
+                  color: "#FFF",
+                  px: 4,
+                  py: 1.5,
+                  fontSize: 16,
+                  fontWeight: 600,
+                  textTransform: "none",
+                  transition: "all 200ms ease-in-out",
+                  boxShadow: `0 0 0 0 ${alpha(landingColors.dark.primary, 0.3)}`,
+                  "&:hover": {
+                    transform: "translateY(-2px)",
+                    boxShadow: `0 12px 24px ${alpha(landingColors.dark.primary, 0.3)}`,
+                  },
+                }}
+              >
+                Bắt Đầu Miễn Phí
+              </Button>
               </Link>
               <Button
                 variant="outlined"
                 size="large"
                 fullWidth
                 sx={{
-                  borderColor: alpha("#FFF7ED", 0.2),
-                  color: "#FFF7ED",
+                  borderColor: alpha(landingColors.dark.text.primary, 0.2),
+                  color: landingColors.dark.text.primary,
                   px: 4,
                   py: 1.5,
                   fontSize: 16,
                   fontWeight: 600,
                   textTransform: "none",
                   backdropFilter: "blur(18px)",
-                  backgroundColor: alpha("#1C1917", 0.6),
+                  backgroundColor: alpha(landingColors.dark.bg.secondary, 0.6),
                   transition: "all 200ms ease-in-out",
                   "&:hover": {
-                    backgroundColor: alpha("#1C1917", 0.8),
-                    borderColor: alpha("#FFF7ED", 0.3),
+                    backgroundColor: alpha(landingColors.dark.bg.secondary, 0.8),
+                    borderColor: alpha(landingColors.dark.text.primary, 0.3),
                     transform: "translateY(-2px)",
                   },
                 }}
@@ -170,12 +169,12 @@ export function HeroSection() {
                   sx={{
                     fontSize: 20,
                     fontWeight: 700,
-                    color: "#FFF7ED",
+                    color: landingColors.dark.text.primary,
                   }}
                 >
                   10K+
                 </Typography>
-                <Typography sx={{ fontSize: 13, color: alpha("#FFF7ED", 0.5) }}>
+                <Typography sx={{ fontSize: 13, color: landingColors.dark.text.muted }}>
                   Người dùng
                 </Typography>
               </Box>
@@ -184,12 +183,12 @@ export function HeroSection() {
                   sx={{
                     fontSize: 20,
                     fontWeight: 700,
-                    color: "#FFF7ED",
+                    color: landingColors.dark.text.primary,
                   }}
                 >
                   4.8/5
                 </Typography>
-                <Typography sx={{ fontSize: 13, color: alpha("#FFF7ED", 0.5) }}>
+                <Typography sx={{ fontSize: 13, color: landingColors.dark.text.muted }}>
                   Xếp hạng
                 </Typography>
               </Box>
@@ -198,12 +197,12 @@ export function HeroSection() {
                   sx={{
                     fontSize: 20,
                     fontWeight: 700,
-                    color: "#FFF7ED",
+                    color: landingColors.dark.text.primary,
                   }}
                 >
                   24/7
                 </Typography>
-                <Typography sx={{ fontSize: 13, color: alpha("#FFF7ED", 0.5) }}>
+                <Typography sx={{ fontSize: 13, color: landingColors.dark.text.muted }}>
                   Hỗ trợ
                 </Typography>
               </Box>
@@ -237,13 +236,13 @@ export function HeroSection() {
                   width: 280,
                   borderRadius: "16px",
                   background: `linear-gradient(135deg, ${alpha(
-                    "#1C1917",
+                    landingColors.dark.bg.secondary,
                     0.6,
-                  )} 0%, ${alpha("#292524", 0.5)} 100%)`,
-                  border: `1px solid ${alpha("#FFF7ED", 0.1)}`,
+                  )} 0%, ${alpha(landingColors.dark.bg.tertiary, 0.5)} 100%)`,
+                  border: `1px solid ${landingColors.dark.border.secondary}`,
                   backdropFilter: "blur(20px)",
                   padding: "20px",
-                  boxShadow: `0 8px 32px ${alpha("#000000", 0.3)}`,
+                  boxShadow: `0 8px 32px ${alpha(landingColors.dark.shadow, 0.3)}`,
                   animation: "float1 4s ease-in-out infinite",
                   "@keyframes float1": {
                     "0%, 100%": { transform: "translateY(0px)" },
@@ -254,7 +253,7 @@ export function HeroSection() {
                 <Typography
                   sx={{
                     fontSize: 12,
-                    color: "#FB923C",
+                    color: landingColors.dark.secondary,
                     fontWeight: 600,
                     textTransform: "uppercase",
                     mb: 1,
@@ -265,7 +264,7 @@ export function HeroSection() {
                 <Typography
                   sx={{
                     fontSize: 14,
-                    color: "#FFF7ED",
+                    color: landingColors.dark.text.primary,
                     mb: 2,
                   }}
                 >
@@ -282,13 +281,13 @@ export function HeroSection() {
                     <Typography
                       sx={{
                         fontSize: 12,
-                        color: alpha("#FFF7ED", 0.5),
+                        color: landingColors.dark.text.muted,
                         mb: 0.5,
                       }}
                     >
                       Protein
                     </Typography>
-                    <Typography sx={{ fontSize: 14, color: "#FFB25C" }}>
+                    <Typography sx={{ fontSize: 14, color: landingColors.dark.secondary }}>
                       45g
                     </Typography>
                   </Box>
@@ -296,13 +295,13 @@ export function HeroSection() {
                     <Typography
                       sx={{
                         fontSize: 12,
-                        color: alpha("#FFF7ED", 0.5),
+                        color: landingColors.dark.text.muted,
                         mb: 0.5,
                       }}
                     >
                       Calories
                     </Typography>
-                    <Typography sx={{ fontSize: 14, color: "#FFB25C" }}>
+                    <Typography sx={{ fontSize: 14, color: landingColors.dark.secondary }}>
                       650kcal
                     </Typography>
                   </Box>
@@ -318,13 +317,13 @@ export function HeroSection() {
                   width: 260,
                   borderRadius: "16px",
                   background: `linear-gradient(135deg, ${alpha(
-                    "#1C1917",
+                    landingColors.dark.bg.secondary,
                     0.6,
-                  )} 0%, ${alpha("#292524", 0.5)} 100%)`,
-                  border: `1px solid ${alpha("#FFF7ED", 0.1)}`,
+                  )} 0%, ${alpha(landingColors.dark.bg.tertiary, 0.5)} 100%)`,
+                  border: `1px solid ${landingColors.dark.border.secondary}`,
                   backdropFilter: "blur(20px)",
                   padding: "20px",
-                  boxShadow: `0 8px 32px ${alpha("#000000", 0.3)}`,
+                  boxShadow: `0 8px 32px ${alpha(landingColors.dark.shadow, 0.3)}`,
                   animation: "float2 5s ease-in-out infinite",
                   "@keyframes float2": {
                     "0%, 100%": { transform: "translateY(0px)" },
@@ -335,7 +334,7 @@ export function HeroSection() {
                 <Typography
                   sx={{
                     fontSize: 12,
-                    color: "#FB923C",
+                    color: landingColors.dark.secondary,
                     fontWeight: 600,
                     textTransform: "uppercase",
                     mb: 2,
@@ -355,7 +354,7 @@ export function HeroSection() {
                       <Typography
                         sx={{
                           fontSize: 12,
-                          color: alpha("#FFF7ED", 0.6),
+                          color: landingColors.dark.text.secondary,
                         }}
                       >
                         Mục tiêu
@@ -363,12 +362,28 @@ export function HeroSection() {
                       <Typography
                         sx={{
                           fontSize: 12,
-                          color: "#FFB25C",
+                          color: landingColors.dark.secondary,
                           fontWeight: 600,
                         }}
                       >
                         85%
                       </Typography>
+                    </Box>
+                    <Box
+                      sx={{
+                        height: 4,
+                        borderRadius: "2px",
+                        background: landingColors.dark.border.secondary,
+                        overflow: "hidden",
+                      }}
+                    >
+                      <Box
+                        sx={{
+                          height: "100%",
+                          width: "85%",
+                          background: gradients.dark.secondary,
+                        }}
+                      />
                     </Box>
                     <Box
                       sx={{
@@ -402,7 +417,7 @@ export function HeroSection() {
                   height: 200,
                   borderRadius: "50%",
                   background: `radial-gradient(circle, ${alpha(
-                    "#F97316",
+                    landingColors.dark.primary,
                     0.15,
                   )} 0%, transparent 70%)`,
                   filter: "blur(40px)",

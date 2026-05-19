@@ -1,5 +1,6 @@
 import { Box, Button, Typography, alpha, Container } from "@mui/material";
 import Link from "next/link";
+import { landingColors, gradients } from "../theme-colors";
 
 export function CtaSection() {
   return (
@@ -9,9 +10,9 @@ export function CtaSection() {
         py: { xs: 8, md: 12 },
         px: 2,
         background: `
-          radial-gradient(circle at 30% 70%, ${alpha("#F97316", 0.06)} 0%, transparent 40%),
-          radial-gradient(circle at 70% 30%, ${alpha("#F97316", 0.04)} 0%, transparent 50%),
-          linear-gradient(180deg, #151110 0%, #0C0A09 100%)
+          radial-gradient(circle at 30% 70%, ${alpha(landingColors.dark.secondary, 0.06)} 0%, transparent 40%),
+          radial-gradient(circle at 70% 30%, ${alpha(landingColors.dark.secondary, 0.04)} 0%, transparent 50%),
+          linear-gradient(180deg, ${landingColors.dark.bg.secondary} 0%, ${landingColors.dark.bg.primary} 100%)
         `,
         position: "relative",
       }}
@@ -30,10 +31,10 @@ export function CtaSection() {
               display: "grid",
               gap: 3,
               background: `linear-gradient(135deg, ${alpha(
-                "#1C1917",
+                landingColors.dark.bg.secondary,
                 0.5,
-              )} 0%, ${alpha("#292524", 0.4)} 100%)`,
-              border: `1px solid ${alpha("#FFF7ED", 0.1)}`,
+              )} 0%, ${alpha(landingColors.dark.bg.tertiary, 0.4)} 100%)`,
+              border: `1px solid ${landingColors.dark.border.secondary}`,
               backdropFilter: "blur(24px)",
               borderRadius: "24px",
               p: { xs: 4, md: 8 },
@@ -44,7 +45,7 @@ export function CtaSection() {
               sx={{
                 fontSize: { xs: 32, md: 44 },
                 fontWeight: 800,
-                color: "#FFF7ED",
+                color: landingColors.dark.text.primary,
               }}
             >
               Hãy Bắt Đầu Sống Khỏe Mạnh Ngay Hôm Nay
@@ -52,7 +53,7 @@ export function CtaSection() {
             <Typography
               sx={{
                 fontSize: { xs: 16, md: 18 },
-                color: alpha("#FFF7ED", 0.6),
+                color: landingColors.dark.text.secondary,
                 maxWidth: 600,
                 mx: "auto",
               }}
@@ -75,8 +76,7 @@ export function CtaSection() {
                   size="large"
                   fullWidth
                   sx={{
-                    background:
-                      "linear-gradient(135deg, #FFB25C 0%, #FF8A1F 54%, #F26608 100%)",
+                    background: gradients.dark.primary,
                     color: "#fff",
                     px: { xs: 3, sm: 4 },
                     py: 1.5,
@@ -86,7 +86,7 @@ export function CtaSection() {
                     transition: "all 200ms ease-in-out",
                     "&:hover": {
                       transform: "translateY(-2px)",
-                      boxShadow: `0 12px 24px ${alpha("#F97316", 0.3)}`,
+                      boxShadow: `0 12px 24px ${alpha(landingColors.dark.primary, 0.3)}`,
                     },
                   }}
                 >
@@ -98,19 +98,19 @@ export function CtaSection() {
                 size="large"
                 fullWidth
                 sx={{
-                  borderColor: alpha("#FFF7ED", 0.2),
-                  color: "#FFF7ED",
+                  borderColor: alpha(landingColors.dark.text.primary, 0.2),
+                  color: landingColors.dark.text.primary,
                   px: { xs: 3, sm: 4 },
                   py: 1.5,
                   fontSize: 16,
                   textTransform: "none",
                   fontWeight: 600,
                   backdropFilter: "blur(18px)",
-                  backgroundColor: alpha("#1C1917", 0.6),
+                  backgroundColor: alpha(landingColors.dark.bg.secondary, 0.6),
                   transition: "all 200ms ease-in-out",
                   "&:hover": {
-                    backgroundColor: alpha("#1C1917", 0.8),
-                    borderColor: alpha("#FFF7ED", 0.3),
+                    backgroundColor: alpha(landingColors.dark.bg.secondary, 0.8),
+                    borderColor: alpha(landingColors.dark.text.primary, 0.3),
                     transform: "translateY(-2px)",
                   },
                 }}
@@ -135,13 +135,13 @@ export function CtaSection() {
                 sx={{
                   fontSize: 24,
                   fontWeight: 700,
-                  color: "#FFF7ED",
+                  color: landingColors.dark.text.primary,
                   mb: 0.5,
                 }}
               >
                 10K+
               </Typography>
-              <Typography sx={{ fontSize: 13, color: alpha("#FFF7ED", 0.5) }}>
+              <Typography sx={{ fontSize: 13, color: landingColors.dark.text.muted }}>
                 Người dùng
               </Typography>
             </Box>
@@ -150,13 +150,13 @@ export function CtaSection() {
                 sx={{
                   fontSize: 24,
                   fontWeight: 700,
-                  color: "#FFF7ED",
+                  color: landingColors.dark.text.primary,
                   mb: 0.5,
                 }}
               >
                 95%
               </Typography>
-              <Typography sx={{ fontSize: 13, color: alpha("#FFF7ED", 0.5) }}>
+              <Typography sx={{ fontSize: 13, color: landingColors.dark.text.muted }}>
                 Hài lòng
               </Typography>
             </Box>
@@ -165,13 +165,13 @@ export function CtaSection() {
                 sx={{
                   fontSize: 24,
                   fontWeight: 700,
-                  color: "#FFF7ED",
+                  color: landingColors.dark.text.primary,
                   mb: 0.5,
                 }}
               >
                 30 ngày
               </Typography>
-              <Typography sx={{ fontSize: 13, color: alpha("#FFF7ED", 0.5) }}>
+              <Typography sx={{ fontSize: 13, color: landingColors.dark.text.muted }}>
                 Hoàn tiền
               </Typography>
             </Box>

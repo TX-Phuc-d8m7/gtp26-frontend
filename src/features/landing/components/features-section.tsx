@@ -1,4 +1,5 @@
 import { Box, Card, CardContent, Typography, alpha, Container } from "@mui/material";
+import { landingColors } from "../theme-colors";
 
 const mainFeatures = [
   {
@@ -6,28 +7,28 @@ const mainFeatures = [
     title: "Theo Dõi Dinh Dưỡng Thông Minh",
     description:
       "Tự động ghi lại thực phẩm và theo dõi macro, vitamin, chất xơ theo thời gian thực.",
-    color: "#FFB25C",
+    color: landingColors.dark.secondary,
   },
   {
     icon: "💪",
     title: "Lập Kế Hoạch Tập Luyện",
     description:
       "Nhận bài tập được tùy chỉnh dựa trên mục tiêu fitness và trình độ của bạn.",
-    color: "#FFB25C",
+    color: landingColors.dark.secondary,
   },
   {
     icon: "🏥",
     title: "Lời Khuyên Y Tế",
     description:
       "Nhận gợi ý từ AI được huấn luyện bởi các chuyên gia y tế và dinh dưỡng.",
-    color: "#FFB25C",
+    color: landingColors.dark.secondary,
   },
   {
     icon: "📈",
     title: "Phân Tích Sâu Sắc",
     description:
       "Xem biểu đồ chi tiết về tiến độ sức khỏe, thói quen ăn uống hàng tuần và hàng tháng.",
-    color: "#FFB25C",
+    color: landingColors.dark.secondary,
   },
 ];
 
@@ -39,7 +40,7 @@ export function FeaturesSection() {
         py: { xs: 8, md: 12 },
         px: 2,
         background: `
-          linear-gradient(180deg, #0C0A09 0%, #151110 50%, #0C0A09 100%)
+          linear-gradient(180deg, ${landingColors.dark.bg.primary} 0%, ${landingColors.dark.bg.secondary} 50%, ${landingColors.dark.bg.primary} 100%)
         `,
         position: "relative",
       }}
@@ -52,7 +53,7 @@ export function FeaturesSection() {
             sx={{
               fontSize: { xs: 36, md: 48 },
               fontWeight: 800,
-              color: "#FFF7ED",
+              color: landingColors.dark.text.primary,
               mb: 3,
             }}
           >
@@ -61,7 +62,7 @@ export function FeaturesSection() {
           <Typography
             sx={{
               fontSize: { xs: 16, md: 18 },
-              color: alpha("#FFF7ED", 0.6),
+              color: landingColors.dark.text.secondary,
               maxWidth: 600,
               mx: "auto",
             }}
@@ -84,10 +85,10 @@ export function FeaturesSection() {
               key={index}
               sx={{
                 background: `linear-gradient(135deg, ${alpha(
-                  "#1C1917",
+                  landingColors.dark.bg.secondary,
                   0.5,
-                )} 0%, ${alpha("#292524", 0.4)} 100%)`,
-                border: `1px solid ${alpha("#FFF7ED", 0.1)}`,
+                )} 0%, ${alpha(landingColors.dark.bg.tertiary, 0.4)} 100%)`,
+                border: `1px solid ${landingColors.dark.border.secondary}`,
                 backdropFilter: "blur(18px)",
                 transition: "all 300ms ease-in-out",
                 cursor: "pointer",
@@ -95,11 +96,11 @@ export function FeaturesSection() {
                 "&:hover": {
                   transform: "translateY(-8px)",
                   background: `linear-gradient(135deg, ${alpha(
-                    "#1C1917",
+                    landingColors.dark.bg.secondary,
                     0.65,
-                  )} 0%, ${alpha("#292524", 0.55)} 100%)`,
-                  borderColor: alpha("#FFF7ED", 0.2),
-                  boxShadow: `0 20px 48px ${alpha("#000000", 0.32)}, 0 0 0 2px ${alpha(
+                  )} 0%, ${alpha(landingColors.dark.bg.tertiary, 0.55)} 100%)`,
+                  borderColor: alpha(landingColors.dark.text.primary, 0.2),
+                  boxShadow: `0 20px 48px ${alpha(landingColors.dark.shadow, 0.32)}, 0 0 0 2px ${alpha(
                     feature.color,
                     0.2,
                   )}`,
@@ -114,13 +115,13 @@ export function FeaturesSection() {
                   variant="h6"
                   sx={{
                     fontWeight: 700,
-                    color: "#FFF7ED",
+                    color: landingColors.dark.text.primary,
                     fontSize: 18,
                   }}
                 >
                   {feature.title}
                 </Typography>
-                <Typography sx={{ color: alpha("#FFF7ED", 0.6), fontSize: 14 }}>
+                <Typography sx={{ color: landingColors.dark.text.secondary, fontSize: 14 }}>
                   {feature.description}
                 </Typography>
               </CardContent>
@@ -131,7 +132,7 @@ export function FeaturesSection() {
         {/* Key benefits section */}
         <Box
           sx={{
-            borderTop: `1px solid ${alpha("#FFF7ED", 0.1)}`,
+            borderTop: `1px solid ${landingColors.dark.border.secondary}`,
             pt: { xs: 8, md: 10 },
           }}
         >
@@ -141,7 +142,7 @@ export function FeaturesSection() {
               sx={{
                 fontSize: { xs: 28, md: 36 },
                 fontWeight: 800,
-                color: "#FFF7ED",
+                color: landingColors.dark.text.primary,
                 mb: 2,
               }}
             >
@@ -182,10 +183,10 @@ export function FeaturesSection() {
                   p: 4,
                   borderRadius: "16px",
                   background: `linear-gradient(135deg, ${alpha(
-                    "#1C1917",
+                    landingColors.dark.bg.secondary,
                     0.4,
-                  )} 0%, ${alpha("#292524", 0.3)} 100%)`,
-                  border: `1px solid ${alpha("#FFF7ED", 0.08)}`,
+                  )} 0%, ${alpha(landingColors.dark.bg.tertiary, 0.3)} 100%)`,
+                  border: `1px solid ${landingColors.dark.border.secondary}`,
                   backdropFilter: "blur(12px)",
                   display: "grid",
                   gap: 2,
@@ -195,7 +196,7 @@ export function FeaturesSection() {
                   sx={{
                     fontSize: 28,
                     fontWeight: 700,
-                    color: "#FFB25C",
+                    color: landingColors.dark.secondary,
                   }}
                 >
                   {benefit.stat}
@@ -204,7 +205,7 @@ export function FeaturesSection() {
                   sx={{
                     fontSize: 18,
                     fontWeight: 700,
-                    color: "#FFF7ED",
+                    color: landingColors.dark.text.primary,
                   }}
                 >
                   {benefit.title}
@@ -212,7 +213,7 @@ export function FeaturesSection() {
                 <Typography
                   sx={{
                     fontSize: 14,
-                    color: alpha("#FFF7ED", 0.6),
+                    color: landingColors.dark.text.secondary,
                   }}
                 >
                   {benefit.description}
