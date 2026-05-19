@@ -1,4 +1,4 @@
-import { Box, Button, Typography, alpha } from "@mui/material";
+import { Box, Button, Typography, alpha, Container } from "@mui/material";
 import Link from "next/link";
 
 export function CtaSection() {
@@ -6,7 +6,7 @@ export function CtaSection() {
     <Box
       component="section"
       sx={{
-        py: 10,
+        py: { xs: 8, md: 12 },
         px: 2,
         background: `
           radial-gradient(circle at 30% 70%, ${alpha("#F97316", 0.06)} 0%, transparent 40%),
@@ -16,121 +16,168 @@ export function CtaSection() {
         position: "relative",
       }}
     >
-      <Box
-        sx={{
-          maxWidth: 768,
-          mx: "auto",
-          textAlign: "center",
-          display: "grid",
-          gap: 4,
-          position: "relative",
-          zIndex: 1,
-        }}
-      >
+      <Container maxWidth="lg" sx={{ position: "relative", zIndex: 1 }}>
         <Box
           sx={{
             display: "grid",
-            gap: 2,
-            background: `linear-gradient(135deg, ${alpha(
-              "#1C1917",
-              0.5,
-            )} 0%, ${alpha("#292524", 0.4)} 100%)`,
-            border: `1px solid ${alpha("#FFF7ED", 0.1)}`,
-            backdropFilter: "blur(24px)",
-            borderRadius: "24px",
-            p: 6,
+            gap: 4,
+            textAlign: "center",
           }}
         >
-          <Typography
-            component="h2"
+          {/* Main CTA box */}
+          <Box
             sx={{
-              fontSize: 36,
-              fontWeight: 800,
-              color: "#FFF7ED",
+              display: "grid",
+              gap: 3,
+              background: `linear-gradient(135deg, ${alpha(
+                "#1C1917",
+                0.5,
+              )} 0%, ${alpha("#292524", 0.4)} 100%)`,
+              border: `1px solid ${alpha("#FFF7ED", 0.1)}`,
+              backdropFilter: "blur(24px)",
+              borderRadius: "24px",
+              p: { xs: 4, md: 8 },
             }}
           >
-            Sẵn Sàng Thay Đổi Thói Quen Ăn Uống Của Bạn?
-          </Typography>
-          <Typography
-            sx={{
-              fontSize: 18,
-              color: alpha("#FFF7ED", 0.6),
-            }}
-          >
-            Tham gia hàng ngàn người dùng đang khám phá những bữa ăn giúp họ cảm
-            thấy tuyệt vời. Hãy bắt đầu trò chuyện với trợ lý sức khỏe thực phẩm
-            cá nhân của bạn ngay hôm nay.
-          </Typography>
-        </Box>
-
-        <Box
-          sx={{
-            display: "flex",
-            flexDirection: { xs: "column", sm: "row" },
-            gap: 2,
-            justifyContent: "center",
-          }}
-        >
-          <Link href="/chat" style={{ textDecoration: "none" }}>
-            <Button
-              variant="contained"
-              size="large"
+            <Typography
+              component="h2"
               sx={{
-                width: { xs: "100%", sm: "auto" },
-                background:
-                  "linear-gradient(135deg, #FFB25C 0%, #FF8A1F 54%, #F26608 100%)",
-                color: "#fff",
-                px: 4,
-                py: 1.5,
-                fontSize: 18,
-                textTransform: "none",
-                fontWeight: 600,
-                transition: "all 200ms ease-in-out",
-                "&:hover": {
-                  transform: "translateY(-2px)",
-                  boxShadow: `0 12px 24px ${alpha("#F97316", 0.3)}`,
-                },
+                fontSize: { xs: 32, md: 44 },
+                fontWeight: 800,
+                color: "#FFF7ED",
               }}
             >
-              Bắt Đầu Miễn Phí
-            </Button>
-          </Link>
-          <Button
-            variant="outlined"
-            size="large"
+              Hãy Bắt Đầu Sống Khỏe Mạnh Ngay Hôm Nay
+            </Typography>
+            <Typography
+              sx={{
+                fontSize: { xs: 16, md: 18 },
+                color: alpha("#FFF7ED", 0.6),
+                maxWidth: 600,
+                mx: "auto",
+              }}
+            >
+              Không cần thẻ tín dụng. Không cần đăng ký phức tạp. Chỉ cần 2 phút để bắt đầu nhận lời khuyên sức khỏe được tùy chỉnh.
+            </Typography>
+
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: { xs: "column", sm: "row" },
+                gap: 2,
+                justifyContent: "center",
+                pt: 2,
+              }}
+            >
+              <Link href="/chat" style={{ textDecoration: "none", flex: { xs: 1, sm: "auto" } }}>
+                <Button
+                  variant="contained"
+                  size="large"
+                  fullWidth
+                  sx={{
+                    background:
+                      "linear-gradient(135deg, #FFB25C 0%, #FF8A1F 54%, #F26608 100%)",
+                    color: "#fff",
+                    px: { xs: 3, sm: 4 },
+                    py: 1.5,
+                    fontSize: 16,
+                    textTransform: "none",
+                    fontWeight: 600,
+                    transition: "all 200ms ease-in-out",
+                    "&:hover": {
+                      transform: "translateY(-2px)",
+                      boxShadow: `0 12px 24px ${alpha("#F97316", 0.3)}`,
+                    },
+                  }}
+                >
+                  Bắt Đầu Miễn Phí
+                </Button>
+              </Link>
+              <Button
+                variant="outlined"
+                size="large"
+                fullWidth
+                sx={{
+                  borderColor: alpha("#FFF7ED", 0.2),
+                  color: "#FFF7ED",
+                  px: { xs: 3, sm: 4 },
+                  py: 1.5,
+                  fontSize: 16,
+                  textTransform: "none",
+                  fontWeight: 600,
+                  backdropFilter: "blur(18px)",
+                  backgroundColor: alpha("#1C1917", 0.6),
+                  transition: "all 200ms ease-in-out",
+                  "&:hover": {
+                    backgroundColor: alpha("#1C1917", 0.8),
+                    borderColor: alpha("#FFF7ED", 0.3),
+                    transform: "translateY(-2px)",
+                  },
+                }}
+              >
+                Xem Demo
+              </Button>
+            </Box>
+          </Box>
+
+          {/* Trust indicators */}
+          <Box
             sx={{
-              width: { xs: "100%", sm: "auto" },
-              borderColor: alpha("#FFF7ED", 0.2),
-              color: "#FFF7ED",
-              px: 4,
-              py: 1.5,
-              fontSize: 18,
-              textTransform: "none",
-              fontWeight: 600,
-              backdropFilter: "blur(18px)",
-              backgroundColor: alpha("#1C1917", 0.6),
-              transition: "all 200ms ease-in-out",
-              "&:hover": {
-                backgroundColor: alpha("#1C1917", 0.8),
-                borderColor: alpha("#FFF7ED", 0.3),
-                transform: "translateY(-2px)",
-              },
+              display: "flex",
+              flexWrap: "wrap",
+              gap: { xs: 2, md: 4 },
+              justifyContent: "center",
+              mt: 2,
             }}
           >
-            Xem Ví Dụ
-          </Button>
+            <Box sx={{ textAlign: "center" }}>
+              <Typography
+                sx={{
+                  fontSize: 24,
+                  fontWeight: 700,
+                  color: "#FFF7ED",
+                  mb: 0.5,
+                }}
+              >
+                10K+
+              </Typography>
+              <Typography sx={{ fontSize: 13, color: alpha("#FFF7ED", 0.5) }}>
+                Người dùng
+              </Typography>
+            </Box>
+            <Box sx={{ textAlign: "center" }}>
+              <Typography
+                sx={{
+                  fontSize: 24,
+                  fontWeight: 700,
+                  color: "#FFF7ED",
+                  mb: 0.5,
+                }}
+              >
+                95%
+              </Typography>
+              <Typography sx={{ fontSize: 13, color: alpha("#FFF7ED", 0.5) }}>
+                Hài lòng
+              </Typography>
+            </Box>
+            <Box sx={{ textAlign: "center" }}>
+              <Typography
+                sx={{
+                  fontSize: 24,
+                  fontWeight: 700,
+                  color: "#FFF7ED",
+                  mb: 0.5,
+                }}
+              >
+                30 ngày
+              </Typography>
+              <Typography sx={{ fontSize: 13, color: alpha("#FFF7ED", 0.5) }}>
+                Hoàn tiền
+              </Typography>
+            </Box>
+          </Box>
         </Box>
-
-        <Typography
-          sx={{
-            fontSize: 14,
-            color: alpha("#FFF7ED", 0.5),
-          }}
-        >
-          Không cần thẻ tín dụng. Bắt đầu nhận gợi ý bữa ăn được cá nhân hóa ngay
-          lập tức.
-        </Typography>
-      </Box>
+      </Container>
     </Box>
   );
 }
