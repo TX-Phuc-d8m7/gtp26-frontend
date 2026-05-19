@@ -1,15 +1,43 @@
+"use client";
+
 import { Box } from "@mui/material";
+import { useLandingTheme } from "./landing-theme-context";
 
 import { HeroSection } from "./components/hero-section";
 import { FeaturesSection } from "./components/features-section";
+import { ShowcaseSection } from "./components/showcase-section";
+import { TestimonialsSection } from "./components/testimonials-section";
 import { CtaSection } from "./components/cta-section";
+import { HeroSectionLight } from "./components/hero-section-light";
+import { FeaturesSectionLight } from "./components/features-section-light";
+import { ShowcaseSectionLight } from "./components/showcase-section-light";
+import { TestimonialsSectionLight } from "./components/testimonials-section-light";
+import { CtaSectionLight } from "./components/cta-section-light";
+import { ThemeSwitcher } from "./components/theme-switcher";
 
 export function LandingPage() {
+  const { isDark, toggleTheme } = useLandingTheme();
+
   return (
     <Box sx={{ width: "100%" }}>
-      <HeroSection />
-      <FeaturesSection />
-      <CtaSection />
+      <ThemeSwitcher isDark={isDark} onToggle={toggleTheme} />
+      {isDark ? (
+        <>
+          <HeroSection />
+          <FeaturesSection />
+          <ShowcaseSection />
+          <TestimonialsSection />
+          <CtaSection />
+        </>
+      ) : (
+        <>
+          <HeroSectionLight />
+          <FeaturesSectionLight />
+          <ShowcaseSectionLight />
+          <TestimonialsSectionLight />
+          <CtaSectionLight />
+        </>
+      )}
     </Box>
   );
 }
