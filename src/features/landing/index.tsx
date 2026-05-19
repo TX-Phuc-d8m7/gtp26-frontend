@@ -9,6 +9,8 @@ import { TestimonialsSection } from "./components/testimonials-section";
 import { CtaSection } from "./components/cta-section";
 import { HeroSectionLight } from "./components/hero-section-light";
 import { FeaturesSectionLight } from "./components/features-section-light";
+import { ShowcaseSectionLight } from "./components/showcase-section-light";
+import { TestimonialsSectionLight } from "./components/testimonials-section-light";
 import { CtaSectionLight } from "./components/cta-section-light";
 import { ThemeSwitcher } from "./components/theme-switcher";
 import { useLandingTheme } from "./landing-theme-context";
@@ -31,8 +33,8 @@ function LandingPageContent() {
         <>
           <HeroSectionLight />
           <FeaturesSectionLight />
-          <ShowcaseSection />
-          <TestimonialsSection />
+          <ShowcaseSectionLight />
+          <TestimonialsSectionLight />
           <CtaSectionLight />
         </>
       )}

@@ -1,29 +1,33 @@
-import { Box, Card, CardContent, Typography, alpha } from "@mui/material";
+import { Box, Card, CardContent, Typography, alpha, Container } from "@mui/material";
 
-const features = [
+const mainFeatures = [
   {
-    icon: "🎯",
-    title: "Gợi Ý Được Cá Nhân Hóa",
+    icon: "📊",
+    title: "Theo Dõi Dinh Dưỡng Thông Minh",
     description:
-      "AI tìm hiểu sở thích của bạn và gợi ý công thức nấu ăn hoàn hảo phù hợp với mục tiêu sức khỏe và nhu cầu dinh dưỡng.",
+      "Tự động ghi lại thực phẩm và theo dõi macro, vitamin, chất xơ theo thời gian thực.",
+    color: "#EA580C",
   },
   {
-    icon: "⚡",
-    title: "Trả Lời Tức Thì",
+    icon: "💪",
+    title: "Lập Kế Hoạch Tập Luyện",
     description:
-      "Chat với AI của chúng tôi để nhận gợi ý công thức nấu ăn, mẹo nấu ăn và lời khuyên dinh dưỡng theo thời gian thực.",
+      "Nhận bài tập được tùy chỉnh dựa trên mục tiêu fitness và trình độ của bạn.",
+    color: "#EA580C",
   },
   {
-    icon: "❤️",
-    title: "Tập Trung Vào Sức Khỏe",
+    icon: "🏥",
+    title: "Lời Khuyên Y Tế",
     description:
-      "Mỗi gợi ý đều xem xét mục tiêu wellness của bạn—dù là giảm cân, tăng cơ hay kiểm soát các tình trạng sức khỏe.",
+      "Nhận gợi ý từ AI được huấn luyện bởi các chuyên gia y tế và dinh dưỡng.",
+    color: "#EA580C",
   },
   {
-    icon: "👨‍🍳",
-    title: "Dễ Nấu",
+    icon: "📈",
+    title: "Phân Tích Sâu Sắc",
     description:
-      "Từ những bữa ăn 15 phút nhanh gọn đến những bữa ăn hoành tráng, tìm công thức phù hợp với kỹ năng nấu ăn của bạn.",
+      "Xem biểu đồ chi tiết về tiến độ sức khỏe, thói quen ăn uống hàng tuần và hàng tháng.",
+    color: "#EA580C",
   },
 ];
 
@@ -32,7 +36,7 @@ export function FeaturesSectionLight() {
     <Box
       component="section"
       sx={{
-        py: 10,
+        py: { xs: 8, md: 12 },
         px: 2,
         background: `
           linear-gradient(180deg, #F5F3F0 0%, #FAFAF8 50%, #F5F3F0 100%)
@@ -40,40 +44,42 @@ export function FeaturesSectionLight() {
         position: "relative",
       }}
     >
-      <Box sx={{ maxWidth: 1152, mx: "auto", position: "relative", zIndex: 1 }}>
-        <Box sx={{ textAlign: "center", mb: 8 }}>
+      <Container maxWidth="lg" sx={{ position: "relative", zIndex: 1 }}>
+        {/* Section header */}
+        <Box sx={{ textAlign: "center", mb: { xs: 8, md: 10 } }}>
           <Typography
             component="h2"
             sx={{
-              fontSize: 36,
+              fontSize: { xs: 36, md: 48 },
               fontWeight: 800,
               color: "#27251F",
-              mb: 2,
+              mb: 3,
             }}
           >
-            Tại Sao Chọn FoodHealth AI?
+            Tính Năng Nổi Bật
           </Typography>
           <Typography
             sx={{
-              fontSize: 18,
+              fontSize: { xs: 16, md: 18 },
               color: alpha("#27251F", 0.65),
-              maxWidth: 672,
+              maxWidth: 600,
               mx: "auto",
             }}
           >
-            Trải nghiệm sự kết hợp hoàn hảo giữa khoa học dinh dưỡng và chuyên
-            môn ẩm thực
+            Công cụ mạnh mẽ để giúp bạn đạt mục tiêu sức khỏe
           </Typography>
         </Box>
 
+        {/* Features grid */}
         <Box
           sx={{
             display: "grid",
-            gridTemplateColumns: { xs: "1fr", md: "repeat(2, 1fr)" },
+            gridTemplateColumns: { xs: "1fr", md: "repeat(2, 1fr)", lg: "repeat(4, 1fr)" },
             gap: 4,
+            mb: 12,
           }}
         >
-          {features.map((feature, index) => (
+          {mainFeatures.map((feature, index) => (
             <Card
               key={index}
               sx={{
@@ -83,41 +89,139 @@ export function FeaturesSectionLight() {
                 )} 0%, ${alpha("#F5F3F0", 0.5)} 100%)`,
                 border: `1px solid ${alpha("#27251F", 0.08)}`,
                 backdropFilter: "blur(18px)",
-                transition: "all 200ms ease-in-out",
+                transition: "all 300ms ease-in-out",
                 cursor: "pointer",
+                height: "100%",
                 "&:hover": {
-                  transform: "translateY(-4px)",
+                  transform: "translateY(-8px)",
                   background: `linear-gradient(135deg, ${alpha(
                     "#FAFAF8",
                     0.8,
                   )} 0%, ${alpha("#F5F3F0", 0.7)} 100%)`,
                   borderColor: alpha("#27251F", 0.12),
-                  boxShadow: `0 20px 48px ${alpha("#000000", 0.06)}`,
+                  boxShadow: `0 20px 48px ${alpha("#000000", 0.06)}, 0 0 0 2px ${alpha(
+                    feature.color,
+                    0.15,
+                  )}`,
                 },
               }}
             >
-              <CardContent sx={{ p: 4 }}>
-                <Typography sx={{ fontSize: 48, mb: 2, lineHeight: 1 }}>
+              <CardContent sx={{ p: 4, display: "grid", gap: 2 }}>
+                <Typography sx={{ fontSize: 40, lineHeight: 1 }}>
                   {feature.icon}
                 </Typography>
                 <Typography
                   variant="h6"
                   sx={{
                     fontWeight: 700,
-                    mb: 1.5,
                     color: "#27251F",
+                    fontSize: 18,
                   }}
                 >
                   {feature.title}
                 </Typography>
-                <Typography sx={{ color: alpha("#27251F", 0.65) }}>
+                <Typography sx={{ color: alpha("#27251F", 0.65), fontSize: 14 }}>
                   {feature.description}
                 </Typography>
               </CardContent>
             </Card>
           ))}
         </Box>
-      </Box>
+
+        {/* Key benefits section */}
+        <Box
+          sx={{
+            borderTop: `1px solid ${alpha("#27251F", 0.08)}`,
+            pt: { xs: 8, md: 10 },
+          }}
+        >
+          <Box sx={{ textAlign: "center", mb: 8 }}>
+            <Typography
+              component="h3"
+              sx={{
+                fontSize: { xs: 28, md: 36 },
+                fontWeight: 800,
+                color: "#27251F",
+                mb: 2,
+              }}
+            >
+              Tại Sao Người Dùng Yêu Thích Chúng Tôi
+            </Typography>
+          </Box>
+
+          <Box
+            sx={{
+              display: "grid",
+              gridTemplateColumns: { xs: "1fr", md: "repeat(3, 1fr)" },
+              gap: 4,
+            }}
+          >
+            {[
+              {
+                title: "Kết Quả Thực Tế",
+                description:
+                  "Người dùng báo cáo cải thiện sức khỏe trong vòng 2-4 tuần.",
+                stat: "92%",
+              },
+              {
+                title: "Dễ Sử Dụng",
+                description:
+                  "Giao diện trực quan được thiết kế cho bất kỳ ai sử dụng.",
+                stat: "4.8★",
+              },
+              {
+                title: "Hỗ Trợ Tận Tâm",
+                description:
+                  "Đội hỗ trợ 24/7 sẵn sàng giúp bạn bất kỳ lúc nào.",
+                stat: "24/7",
+              },
+            ].map((benefit, index) => (
+              <Box
+                key={index}
+                sx={{
+                  p: 4,
+                  borderRadius: "16px",
+                  background: `linear-gradient(135deg, ${alpha(
+                    "#FAFAF8",
+                    0.5,
+                  )} 0%, ${alpha("#F5F3F0", 0.4)} 100%)`,
+                  border: `1px solid ${alpha("#27251F", 0.06)}`,
+                  backdropFilter: "blur(12px)",
+                  display: "grid",
+                  gap: 2,
+                }}
+              >
+                <Typography
+                  sx={{
+                    fontSize: 28,
+                    fontWeight: 700,
+                    color: "#EA580C",
+                  }}
+                >
+                  {benefit.stat}
+                </Typography>
+                <Typography
+                  sx={{
+                    fontSize: 18,
+                    fontWeight: 700,
+                    color: "#27251F",
+                  }}
+                >
+                  {benefit.title}
+                </Typography>
+                <Typography
+                  sx={{
+                    fontSize: 14,
+                    color: alpha("#27251F", 0.65),
+                  }}
+                >
+                  {benefit.description}
+                </Typography>
+              </Box>
+            ))}
+          </Box>
+        </Box>
+      </Container>
     </Box>
   );
 }
