@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useState, ReactNode } from "react";
+import { createContext, useContext, useState, ReactNode, useEffect } from "react";
 
 interface LandingThemeContextType {
   isDark: boolean;
@@ -13,10 +13,31 @@ const LandingThemeContext = createContext<LandingThemeContextType | undefined>(
 
 export function LandingThemeProvider({ children }: { children: ReactNode }) {
   const [isDark, setIsDark] = useState(true);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    // Get saved theme from localStorage
+    const savedTheme = typeof window !== "undefined" ? localStorage.getItem("landing-theme") : null;
+    if (savedTheme) {
+      setIsDark(savedTheme === "dark");
+    }
+    setMounted(true);
+  }, []);
 
   const toggleTheme = () => {
-    setIsDark((prev) => !prev);
+    setIsDark((prev) => {
+      const newValue = !prev;
+      if (typeof window !== "undefined") {
+        localStorage.setItem("landing-theme", newValue ? "dark" : "light");
+      }
+      return newValue;
+    });
   };
+
+  // Prevent hydration mismatch
+  if (!mounted) {
+    return <>{children}</>;
+  }
 
   return (
     <LandingThemeContext.Provider value={{ isDark, toggleTheme }}>

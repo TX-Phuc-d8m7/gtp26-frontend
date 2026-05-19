@@ -1,6 +1,7 @@
 "use client";
 
 import { Box } from "@mui/material";
+import { useLandingTheme } from "./landing-theme-context";
 
 import { HeroSection } from "./components/hero-section";
 import { FeaturesSection } from "./components/features-section";
@@ -13,9 +14,8 @@ import { ShowcaseSectionLight } from "./components/showcase-section-light";
 import { TestimonialsSectionLight } from "./components/testimonials-section-light";
 import { CtaSectionLight } from "./components/cta-section-light";
 import { ThemeSwitcher } from "./components/theme-switcher";
-import { useLandingTheme } from "./landing-theme-context";
 
-function LandingPageContent() {
+export function LandingPage() {
   const { isDark, toggleTheme } = useLandingTheme();
 
   return (
@@ -40,8 +40,4 @@ function LandingPageContent() {
       )}
     </Box>
   );
-}
-
-export function LandingPage() {
-  return <LandingPageContent />;
 }
