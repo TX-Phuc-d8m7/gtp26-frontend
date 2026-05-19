@@ -1,4 +1,11 @@
-import { Box, Card, CardContent, Button, Typography, Chip } from "@mui/material";
+import {
+  Box,
+  Card,
+  CardContent,
+  Button,
+  Typography,
+  Chip,
+} from "@mui/material";
 import { ArrowRight, CheckCircle } from "lucide-react";
 import { useState } from "react";
 
@@ -60,11 +67,24 @@ export function OnboardingStepsFlow({
       <CardContent sx={{ p: 4 }}>
         {/* Progress Bar */}
         <Box sx={{ mb: 4 }}>
-          <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 1 }}>
-            <Typography variant="caption" sx={{ color: "var(--muted-foreground)" }}>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              mb: 1,
+            }}
+          >
+            <Typography
+              variant="caption"
+              sx={{ color: "var(--muted-foreground)" }}
+            >
               Bước {currentStep + 1}/{steps.length}
             </Typography>
-            <Typography variant="caption" sx={{ color: "var(--muted-foreground)" }}>
+            <Typography
+              variant="caption"
+              sx={{ color: "var(--muted-foreground)" }}
+            >
               {Math.round(progress)}%
             </Typography>
           </Box>
@@ -106,7 +126,7 @@ export function OnboardingStepsFlow({
           <Box sx={{ display: "grid", gap: 1.5 }}>
             {step.options.map((option) => {
               const isSelected = (answers[step.id] || []).includes(
-                option.value
+                option.value,
               );
               return (
                 <button
@@ -120,7 +140,8 @@ export function OnboardingStepsFlow({
                     border: `2px solid ${isSelected ? "#ea580c" : "#e5e7eb"}`,
                     backgroundColor: isSelected ? "#fff7ed" : "#ffffff",
                     textAlign: "left",
-                    transition: "border-color 180ms ease, background-color 180ms ease",
+                    transition:
+                      "border-color 180ms ease, background-color 180ms ease",
                     cursor: "pointer",
                   }}
                 >
@@ -135,7 +156,8 @@ export function OnboardingStepsFlow({
                         alignItems: "center",
                         justifyContent: "center",
                         backgroundColor: isSelected ? "#ea580c" : "transparent",
-                        transition: "border-color 180ms ease, background-color 180ms ease",
+                        transition:
+                          "border-color 180ms ease, background-color 180ms ease",
                       }}
                     >
                       {isSelected && <CheckCircle size={16} color="#fff" />}
@@ -168,7 +190,9 @@ export function OnboardingStepsFlow({
         )}
 
         {/* Navigation Buttons */}
-        <Box sx={{ display: "flex", gap: 1.5, justifyContent: "space-between" }}>
+        <Box
+          sx={{ display: "flex", gap: 1.5, justifyContent: "space-between" }}
+        >
           <Button
             variant="outlined"
             onClick={handleBack}
@@ -193,7 +217,11 @@ export function OnboardingStepsFlow({
               "&:hover": { backgroundColor: "#c2410c" },
             }}
           >
-            {isLoading ? "Đang xử lý..." : isLastStep ? "Hoàn thành" : "Tiếp tục"}
+            {isLoading
+              ? "Đang xử lý..."
+              : isLastStep
+                ? "Hoàn thành"
+                : "Tiếp tục"}
           </Button>
         </Box>
       </CardContent>

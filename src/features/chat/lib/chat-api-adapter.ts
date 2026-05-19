@@ -489,6 +489,7 @@ function buildAssistantMessage(
     content: buildAssistantContent(response),
     foods: enhanceMockFoodResults(response.results),
     aiInsight: response.ai_insight,
+    disclaimer: response.disclaimer,
     status: "complete",
     sourceQuery: payload.content,
     createdAt: new Date().toISOString(),

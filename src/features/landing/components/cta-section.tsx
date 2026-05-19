@@ -11,7 +11,15 @@ export function CtaSection() {
         background: "linear-gradient(90deg, #fff7ed, #fff, #f0fdf4)",
       }}
     >
-      <Box sx={{ maxWidth: 768, mx: "auto", textAlign: "center", display: "grid", gap: 4 }}>
+      <Box
+        sx={{
+          maxWidth: 768,
+          mx: "auto",
+          textAlign: "center",
+          display: "grid",
+          gap: 4,
+        }}
+      >
         <Box sx={{ display: "grid", gap: 2 }}>
           <Typography
             component="h2"
@@ -24,11 +32,19 @@ export function CtaSection() {
             Ready to Transform Your Eating Habits?
           </Typography>
           <Typography sx={{ fontSize: 20, color: "var(--muted-foreground)" }}>
-            Join thousands of users discovering meals that make them feel amazing. Start chatting with your personal food health coach today.
+            Join thousands of users discovering meals that make them feel
+            amazing. Start chatting with your personal food health coach today.
           </Typography>
         </Box>
 
-        <Box sx={{ display: "flex", flexDirection: { xs: "column", sm: "row" }, gap: 2, justifyContent: "center" }}>
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: { xs: "column", sm: "row" },
+            gap: 2,
+            justifyContent: "center",
+          }}
+        >
           <Link href="/chat">
             <Button
               variant="contained"
@@ -66,7 +82,8 @@ export function CtaSection() {
         </Box>
 
         <Typography sx={{ fontSize: 14, color: "var(--muted-foreground)" }}>
-          No credit card required. Start getting personalized meal suggestions instantly.
+          No credit card required. Start getting personalized meal suggestions
+          instantly.
         </Typography>
       </Box>
     </Box>

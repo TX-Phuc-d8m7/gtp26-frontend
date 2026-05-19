@@ -43,6 +43,7 @@ export interface FoodLocation {
 
 export interface BackendSearchResponse {
   query: string;
+  disclaimer?: string | null;
   ai_insight?: {
     warning_message?: string | null;
     exclude?: string[];
@@ -78,6 +79,7 @@ export interface ChatMessage {
   createdAt: string;
   foods?: BackendFoodResult[];
   aiInsight?: BackendSearchResponse["ai_insight"];
+  disclaimer?: string | null;
   feedback?: ChatFeedback;
   attachments?: ComposerAttachment[];
   status: ChatMessageStatus;

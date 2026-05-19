@@ -639,6 +639,49 @@ export const localAssistantBubbleStyles = (theme: Theme) => ({
   },
 });
 
+export const disclaimerNoticeStyles = (theme: Theme) => ({
+  display: "flex",
+  alignItems: "flex-start",
+  gap: 1.25,
+  mb: 2,
+  border: "1px solid rgba(15, 23, 42, 0.12)",
+  borderRadius: "18px",
+  px: { xs: 1.5, sm: 1.75 },
+  py: { xs: 1.35, sm: 1.5 },
+  color: "rgba(15, 23, 42, 0.76)",
+  background:
+    "linear-gradient(135deg, rgba(241, 245, 249, 0.82) 0%, rgba(248, 250, 252, 0.62) 100%)",
+  boxShadow:
+    "0 12px 30px rgba(15, 23, 42, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.8)",
+  backdropFilter: "blur(18px) saturate(1.12)",
+  WebkitBackdropFilter: "blur(18px) saturate(1.12)",
+  ".dark &": {
+    borderColor: alpha("#FFF7ED", 0.16),
+    color: alpha("#FFF7ED", 0.74),
+    background:
+      "linear-gradient(135deg, rgba(41, 37, 36, 0.62) 0%, rgba(28, 25, 23, 0.48) 100%)",
+    boxShadow: `0 14px 34px ${alpha("#000", 0.28)}, inset 0 1px 0 ${alpha("#FFF7ED", 0.08)}`,
+  },
+});
+
+export const disclaimerIconStyles = (theme: Theme) => ({
+  width: 24,
+  height: 24,
+  mt: 0.1,
+  flexShrink: 0,
+  color: "rgba(15, 23, 42, 0.78)",
+  ".dark &": {
+    color: alpha("#FFF7ED", 0.82),
+  },
+});
+
+export const disclaimerTextStyles = {
+  m: 0,
+  fontSize: { xs: "0.88rem", sm: "0.92rem" },
+  lineHeight: 1.58,
+  fontWeight: 500,
+};
+
 export const foodResultCardStyles = (theme: Theme) => ({
   position: "relative",
   isolation: "isolate",
@@ -1465,6 +1508,10 @@ export const historyItemButtonStyles =
     "&:hover": {
       backgroundColor: alpha(colors.base.brand[100], 0.9),
     },
+    "&:hover [data-history-actions], &:focus-within [data-history-actions]": {
+      opacity: 1,
+      transform: "translateX(0)",
+    },
     "&:focus-visible": {
       boxShadow: effects.shadows.focus,
     },
@@ -1526,36 +1573,129 @@ export const historyItemActionsStyles = {
   display: "flex",
   flexShrink: 0,
   alignItems: "center",
-  gap: 0.2,
-  opacity: 0,
-  transition: "opacity 160ms ease",
-  ".history-item:hover &, .history-item:focus-within &": {
-    opacity: 1,
-  },
+  gap: 0.45,
+  opacity: { xs: 1, lg: 0 },
+  transform: { xs: "none", lg: "translateX(4px)" },
+  transition: "opacity 180ms ease, transform 180ms ease",
 };
 
-export const historyActionButtonStyles = (theme: Theme) => ({
-  display: "grid",
-  width: 28,
-  height: 28,
-  placeItems: "center",
-  border: 0,
-  borderRadius: "10px",
-  backgroundColor: "transparent",
-  color: "var(--muted-foreground)",
-  cursor: "pointer",
-  "&:hover": {
-    backgroundColor: alpha(colors.base.brand[500], 0.16),
-    color: colors.base.brand[600],
-  },
-  ".dark &": {
-    color: darkFoodChat.muted,
-    "&:hover": {
-      backgroundColor: alpha(colors.base.brand[500], 0.18),
-      color: darkFoodChat.orange,
-    },
-  },
-});
+type HistoryActionButtonVariant = "edit" | "delete" | "confirm" | "cancel";
+
+const getHistoryActionButtonPalette = (variant: HistoryActionButtonVariant) => {
+  switch (variant) {
+    case "delete":
+      return {
+        text: "#b91c1c",
+        border: alpha("#dc2626", 0.22),
+        background: alpha("#dc2626", 0.08),
+        hoverBackground: alpha("#dc2626", 0.14),
+        hoverBorder: alpha("#dc2626", 0.38),
+        shadow: alpha("#dc2626", 0.18),
+        darkText: "#fca5a5",
+        darkBorder: alpha("#f87171", 0.24),
+        darkBackground: alpha("#ef4444", 0.1),
+        darkHoverBackground: alpha("#ef4444", 0.16),
+        darkHoverBorder: alpha("#f87171", 0.42),
+        darkShadow: alpha("#ef4444", 0.14),
+      };
+    case "confirm":
+      return {
+        text: "#15803d",
+        border: alpha("#22c55e", 0.24),
+        background: alpha("#22c55e", 0.08),
+        hoverBackground: alpha("#22c55e", 0.14),
+        hoverBorder: alpha("#22c55e", 0.4),
+        shadow: alpha("#22c55e", 0.16),
+        darkText: "#86efac",
+        darkBorder: alpha("#86efac", 0.24),
+        darkBackground: alpha("#22c55e", 0.1),
+        darkHoverBackground: alpha("#22c55e", 0.16),
+        darkHoverBorder: alpha("#86efac", 0.38),
+        darkShadow: alpha("#22c55e", 0.12),
+      };
+    case "cancel":
+      return {
+        text: "#52525b",
+        border: alpha("#71717a", 0.22),
+        background: alpha("#71717a", 0.08),
+        hoverBackground: alpha("#71717a", 0.14),
+        hoverBorder: alpha("#71717a", 0.36),
+        shadow: alpha("#71717a", 0.12),
+        darkText: alpha("#FFF7ED", 0.72),
+        darkBorder: alpha("#FFF7ED", 0.16),
+        darkBackground: alpha("#FFF7ED", 0.06),
+        darkHoverBackground: alpha("#FFF7ED", 0.1),
+        darkHoverBorder: alpha("#FFF7ED", 0.28),
+        darkShadow: alpha("#000", 0.2),
+      };
+    case "edit":
+    default:
+      return {
+        text: colors.base.brand[700],
+        border: alpha(colors.base.brand[600], 0.24),
+        background: alpha(colors.base.brand[500], 0.08),
+        hoverBackground: alpha(colors.base.brand[500], 0.15),
+        hoverBorder: alpha(colors.base.brand[600], 0.4),
+        shadow: alpha(colors.base.brand[600], 0.18),
+        darkText: darkFoodChat.orange,
+        darkBorder: alpha(colors.base.brand[400], 0.24),
+        darkBackground: alpha(colors.base.brand[500], 0.1),
+        darkHoverBackground: alpha(colors.base.brand[500], 0.18),
+        darkHoverBorder: alpha(colors.base.brand[400], 0.42),
+        darkShadow: alpha(colors.base.brand[500], 0.14),
+      };
+  }
+};
+
+export const historyActionButtonStyles =
+  (variant: HistoryActionButtonVariant = "edit") =>
+  (theme: Theme) => {
+    const palette = getHistoryActionButtonPalette(variant);
+
+    return {
+      display: "grid",
+      width: 30,
+      height: 30,
+      placeItems: "center",
+      border: `1px solid ${palette.border}`,
+      borderRadius: "11px",
+      backgroundColor: palette.background,
+      color: palette.text,
+      boxShadow: `inset 0 1px 0 rgba(255, 255, 255, 0.55)`,
+      backdropFilter: "blur(12px) saturate(1.08)",
+      WebkitBackdropFilter: "blur(12px) saturate(1.08)",
+      cursor: "pointer",
+      transition:
+        "transform 160ms ease, border-color 160ms ease, background-color 160ms ease, color 160ms ease, box-shadow 160ms ease",
+      "&:hover": {
+        transform: "translateY(-1px)",
+        borderColor: palette.hoverBorder,
+        backgroundColor: palette.hoverBackground,
+        boxShadow: `0 10px 22px ${palette.shadow}, inset 0 1px 0 rgba(255, 255, 255, 0.68)`,
+      },
+      "&:focus-visible": {
+        outline: "none",
+        boxShadow: `${effects.shadows.focus}, 0 10px 22px ${palette.shadow}`,
+      },
+      ".dark &": {
+        color: palette.darkText,
+        borderColor: palette.darkBorder,
+        backgroundColor: palette.darkBackground,
+        boxShadow: `inset 0 1px 0 ${alpha("#FFF7ED", 0.08)}`,
+        "&:hover": {
+          borderColor: palette.darkHoverBorder,
+          backgroundColor: palette.darkHoverBackground,
+          boxShadow: `0 12px 24px ${palette.darkShadow}, inset 0 1px 0 ${alpha("#FFF7ED", 0.12)}`,
+        },
+        "&:focus-visible": {
+          boxShadow: `${effects.shadows.focus}, 0 12px 24px ${palette.darkShadow}`,
+        },
+      },
+      "&:active": {
+        transform: "translateY(0)",
+      },
+    };
+  };
 
 export const historyEmptyStyles = (theme: Theme) => ({
   display: "flex",
@@ -1713,6 +1853,9 @@ export const styles = {
   localAssistantGroupStyles,
   assistantAvatarStyles,
   localAssistantBubbleStyles,
+  disclaimerNoticeStyles,
+  disclaimerIconStyles,
+  disclaimerTextStyles,
   foodResultCardStyles,
   foodResultIconStyles,
   foodResultContentStyles,

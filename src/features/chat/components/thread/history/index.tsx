@@ -152,7 +152,7 @@ function ThreadList({
                   <Box
                     component="button"
                     type="submit"
-                    sx={styles.historyActionButtonStyles}
+                    sx={styles.historyActionButtonStyles("confirm")}
                     aria-label="Lưu tên cuộc trò chuyện"
                   >
                     <Check size={16} />
@@ -160,7 +160,7 @@ function ThreadList({
                   <Box
                     component="button"
                     type="button"
-                    sx={styles.historyActionButtonStyles}
+                    sx={styles.historyActionButtonStyles("cancel")}
                     onClick={() => setEditingId(null)}
                     aria-label="Hủy đổi tên"
                   >
@@ -184,13 +184,14 @@ function ThreadList({
                     {formatUpdatedAt(thread.updatedAt)}
                   </Typography>
                   <Box
+                    data-history-actions
                     sx={styles.historyItemActionsStyles}
                     onClick={(event) => event.stopPropagation()}
                   >
                     <Box
                       component="button"
                       type="button"
-                      sx={styles.historyActionButtonStyles}
+                      sx={styles.historyActionButtonStyles("edit")}
                       onClick={() => startRename(thread)}
                       aria-label="Đổi tên cuộc trò chuyện"
                     >
@@ -199,7 +200,7 @@ function ThreadList({
                     <Box
                       component="button"
                       type="button"
-                      sx={styles.historyActionButtonStyles}
+                      sx={styles.historyActionButtonStyles("delete")}
                       onClick={() => handleDelete(thread.id)}
                       aria-label="Xóa cuộc trò chuyện"
                     >

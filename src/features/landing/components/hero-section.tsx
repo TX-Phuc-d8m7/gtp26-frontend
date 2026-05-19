@@ -13,10 +13,19 @@ export function HeroSection() {
         justifyContent: "center",
         px: 2,
         py: 10,
-        background: "linear-gradient(180deg, #fff 0%, #fff7ed 54%, transparent 100%)",
+        background:
+          "linear-gradient(180deg, #fff 0%, #fff7ed 54%, transparent 100%)",
       }}
     >
-      <Box sx={{ maxWidth: 768, mx: "auto", textAlign: "center", display: "grid", gap: 3 }}>
+      <Box
+        sx={{
+          maxWidth: 768,
+          mx: "auto",
+          textAlign: "center",
+          display: "grid",
+          gap: 3,
+        }}
+      >
         <Box sx={{ display: "inline-block" }}>
           <Typography
             component="span"
@@ -47,11 +56,29 @@ export function HeroSection() {
           </Box>
         </Typography>
 
-        <Typography sx={{ fontSize: 20, color: "var(--muted-foreground)", maxWidth: 672, mx: "auto", lineHeight: 1.625 }}>
-          Get personalized recipe recommendations based on your health goals, dietary preferences, and nutritional needs. Our AI understands your lifestyle and suggests meals tailored just for you.
+        <Typography
+          sx={{
+            fontSize: 20,
+            color: "var(--muted-foreground)",
+            maxWidth: 672,
+            mx: "auto",
+            lineHeight: 1.625,
+          }}
+        >
+          Get personalized recipe recommendations based on your health goals,
+          dietary preferences, and nutritional needs. Our AI understands your
+          lifestyle and suggests meals tailored just for you.
         </Typography>
 
-        <Box sx={{ display: "flex", flexDirection: { xs: "column", sm: "row" }, gap: 2, justifyContent: "center", pt: 2 }}>
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: { xs: "column", sm: "row" },
+            gap: 2,
+            justifyContent: "center",
+            pt: 2,
+          }}
+        >
           <Link href="/chat">
             <Button
               variant="contained"
@@ -97,7 +124,15 @@ export function HeroSection() {
               boxShadow: "0 20px 40px rgba(15, 23, 42, 0.12)",
             }}
           >
-            <Box sx={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <Box
+              sx={{
+                position: "absolute",
+                inset: 0,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
               <Box sx={{ textAlign: "center", display: "grid", gap: 2 }}>
                 <Typography sx={{ fontSize: 60, lineHeight: 1 }}>🍽️</Typography>
                 <Typography sx={{ fontSize: 18, color: "#4b5563" }}>

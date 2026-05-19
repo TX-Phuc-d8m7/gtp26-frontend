@@ -92,7 +92,14 @@ export function EmptyState({
       </Typography>
 
       {(onRetry || onStartNew) && (
-        <Box sx={{ display: "flex", gap: 1.5, justifyContent: "center", flexWrap: "wrap" }}>
+        <Box
+          sx={{
+            display: "flex",
+            gap: 1.5,
+            justifyContent: "center",
+            flexWrap: "wrap",
+          }}
+        >
           {onRetry && (
             <Button
               variant="outlined"

@@ -43,12 +43,26 @@ export function FeaturesSection() {
           >
             Why Choose FoodHealth AI?
           </Typography>
-          <Typography sx={{ fontSize: 20, color: "var(--muted-foreground)", maxWidth: 672, mx: "auto" }}>
-            Experience the perfect blend of nutrition science and culinary expertise
+          <Typography
+            sx={{
+              fontSize: 20,
+              color: "var(--muted-foreground)",
+              maxWidth: 672,
+              mx: "auto",
+            }}
+          >
+            Experience the perfect blend of nutrition science and culinary
+            expertise
           </Typography>
         </Box>
 
-        <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "repeat(2, 1fr)" }, gap: 4 }}>
+        <Box
+          sx={{
+            display: "grid",
+            gridTemplateColumns: { xs: "1fr", md: "repeat(2, 1fr)" },
+            gap: 4,
+          }}
+        >
           {features.map((feature, index) => (
             <Card
               key={index}

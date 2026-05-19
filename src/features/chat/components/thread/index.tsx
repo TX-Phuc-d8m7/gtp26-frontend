@@ -13,6 +13,7 @@ import { HumanMessage } from "./messages/human";
 import { DO_NOT_RENDER_ID_PREFIX } from "@/features/chat/lib/ensure-tool-responses";
 import {
   ArrowDown,
+  CircleAlert,
   Clock3,
   Copy,
   CopyCheck,
@@ -673,7 +674,34 @@ export function Thread() {
                               gap: 0.75,
                             }}
                           >
+                            {message.disclaimer && (
+                              <Box sx={styles.disclaimerNoticeStyles}>
+                                <Box sx={styles.disclaimerIconStyles}>
+                                  <CircleAlert size={24} />
+                                </Box>
+                                <Typography
+                                  as="p"
+                                  sx={styles.disclaimerTextStyles}
+                                >
+                                  {message.disclaimer}
+                                </Typography>
+                              </Box>
+                            )}
                             <Box sx={styles.localAssistantBubbleStyles}>
+                              {/* {message.disclaimer && (
+                                <Box sx={styles.disclaimerNoticeStyles}>
+                                  <Box sx={styles.disclaimerIconStyles}>
+                                    <CircleAlert size={24} />
+                                  </Box>
+                                  <Typography
+                                    as="p"
+                                    sx={styles.disclaimerTextStyles}
+                                  >
+                                    {message.disclaimer}
+                                  </Typography>
+                                </Box>
+                              )} */}
+
                               <Typography
                                 as="p"
                                 sx={{ whiteSpace: "pre-wrap" }}
