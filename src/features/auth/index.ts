@@ -8,9 +8,6 @@ export * from "./_interface";
 export { Login, LoginForm, loginSchema, useLogin } from "./login";
 export type { LoginFormData } from "./login";
 export {
-  ALLERGY_OPTIONS,
-  DISLIKE_OPTIONS,
-  FAVORITE_OPTIONS,
   Onboarding,
   OnboardingForm,
   onboardingSchema,

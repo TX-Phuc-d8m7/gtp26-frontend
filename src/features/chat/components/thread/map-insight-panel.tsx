@@ -18,15 +18,16 @@ import type {
   BackendFoodResult,
   FoodLocation,
 } from "@/features/chat/_interface";
+import { lookupNearbyFoodPlaces } from "@/features/chat/lib/places-api";
 import { styles } from "@/features/chat/_styles";
 import { Button } from "@/shared/components/ui/button/index";
 import { Typography } from "@/shared/components/ui/typography/index";
 import { useMediaQuery } from "@/shared/hooks/use-media-query";
 
-const USER_LOCATION = {
+const DEFAULT_USER_LOCATION = {
   lat: 16.0609,
   lng: 108.221,
-  label: "Vị trí của bạn",
+  label: "Vị trí ước lượng",
 };
 
 function formatDistance(distanceMeters?: number) {
@@ -136,21 +137,64 @@ export function MapInsightPanel({
 }) {
   const shouldReduceMotion = useReducedMotion();
   const isDesktop = useMediaQuery("(min-width: 1024px)");
-  const locations = useMemo(() => food?.locations ?? [], [food?.locations]);
+  const [locations, setLocations] = useState<FoodLocation[]>([]);
+  const [isLoadingPlaces, setIsLoadingPlaces] = useState(false);
+  const [placesError, setPlacesError] = useState<string | null>(null);
+  const [usedGps, setUsedGps] = useState(false);
+  const [userLocation, setUserLocation] = useState(DEFAULT_USER_LOCATION);
   const [selectedLocationId, setSelectedLocationId] = useState<string | null>(
-    locations[0]?.id ?? null,
+    null,
   );
 
   useEffect(() => {
-    setSelectedLocationId(locations[0]?.id ?? null);
-  }, [food?.id, locations]);
+    let isMounted = true;
+    setLocations(food?.locations ?? []);
+    setSelectedLocationId(food?.locations?.[0]?.id ?? null);
+    setPlacesError(null);
+    setUsedGps(false);
+    setUserLocation(DEFAULT_USER_LOCATION);
+
+    if (!food) return;
+
+    setIsLoadingPlaces(true);
+    lookupNearbyFoodPlaces(food)
+      .then((result) => {
+        if (!isMounted) return;
+        setLocations(result.locations);
+        setSelectedLocationId(result.locations[0]?.id ?? null);
+        setUsedGps(result.usedGps);
+        if (result.userCoordinates) {
+          setUserLocation({
+            lat: result.userCoordinates.latitude,
+            lng: result.userCoordinates.longitude,
+            label: "Vị trí của bạn",
+          });
+        }
+        setPlacesError(null);
+      })
+      .catch((error) => {
+        if (!isMounted) return;
+        setPlacesError(
+          error instanceof Error
+            ? error.message
+            : "Không tải được danh sách quán gần bạn.",
+        );
+      })
+      .finally(() => {
+        if (isMounted) setIsLoadingPlaces(false);
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, [food]);
 
   const selectedLocation =
     locations.find((location) => location.id === selectedLocationId) ??
     locations[0];
 
   const bounds = useMemo(() => {
-    const points = [...locations, USER_LOCATION];
+    const points = [...locations, userLocation];
     const lats = points.map((point) => point.lat);
     const lngs = points.map((point) => point.lng);
 
@@ -160,7 +204,7 @@ export function MapInsightPanel({
       minLng: Math.min(...lngs) - 0.004,
       maxLng: Math.max(...lngs) + 0.004,
     };
-  }, [locations]);
+  }, [locations, userLocation]);
 
   return (
     <AnimatePresence>
@@ -198,7 +242,11 @@ export function MapInsightPanel({
                   {food.name}
                 </Typography>
                 <Typography as="p" sx={styles.mapPanelSubtitleStyles}>
-                  {locations.length} địa điểm mock, sắp xếp theo khoảng cách.
+                  {isLoadingPlaces
+                    ? "Đang tìm quán gần bạn..."
+                    : usedGps
+                      ? `${locations.length} địa điểm gần vị trí hiện tại.`
+                      : `${locations.length} địa điểm theo khu vực Đà Nẵng.`}
                 </Typography>
               </Box>
               <Button
@@ -217,8 +265,8 @@ export function MapInsightPanel({
               <Box sx={styles.mockMapGridStyles} />
               <Box
                 sx={styles.userMapMarkerStyles}
-                style={getMapPoint(USER_LOCATION, bounds)}
-                aria-label={USER_LOCATION.label}
+                style={getMapPoint(userLocation, bounds)}
+                aria-label={userLocation.label}
               >
                 <Navigation className="size-3.5" />
               </Box>
@@ -246,13 +294,28 @@ export function MapInsightPanel({
                   </Typography>
                   <Typography as="span">
                     {formatDistance(selectedLocation.distanceMeters)} từ vị trí
-                    mock
+                    {usedGps ? " của bạn" : " ước lượng"}
                   </Typography>
                 </Box>
               )}
             </Box>
 
             <Box sx={styles.mapLocationListStyles}>
+              {isLoadingPlaces && locations.length === 0 && (
+                <Typography as="p" sx={styles.mapLocationAddressStyles}>
+                  Đang tải danh sách quán gần bạn...
+                </Typography>
+              )}
+              {placesError && (
+                <Typography as="p" sx={styles.mapLocationAddressStyles}>
+                  {placesError}
+                </Typography>
+              )}
+              {!placesError && !isLoadingPlaces && locations.length === 0 && (
+                <Typography as="p" sx={styles.mapLocationAddressStyles}>
+                  Chưa tìm thấy quán phù hợp cho món này.
+                </Typography>
+              )}
               {locations.map((location) => (
                 <LocationRow
                   key={location.id}

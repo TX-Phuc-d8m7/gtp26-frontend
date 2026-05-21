@@ -13,7 +13,7 @@ interface OnboardingStep {
   id: string;
   title: string;
   description: string;
-  type: "allergies" | "favorites" | "dislikes" | "dietary";
+  type: "healthRisks" | "favorites" | "tastePreferences" | "dishTypes";
   options: Array<{ label: string; value: string; color?: string }>;
 }
 

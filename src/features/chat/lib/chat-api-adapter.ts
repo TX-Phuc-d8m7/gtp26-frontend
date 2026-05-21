@@ -4,12 +4,14 @@
  */
 import { v4 as uuidv4 } from "uuid";
 
+import { apiFetch, isLoggedIn } from "@/features/auth/_api";
 import type {
   BackendFoodResult,
   BackendSearchResponse,
   ChatApiAdapter,
   ChatFeedback,
   ChatMessage,
+  ChatRole,
   ChatSendPayload,
   ChatSendResponse,
   ChatThread,
@@ -393,18 +395,11 @@ function buildFallbackMetadata(
 
 function enhanceMockFoodResults(results: BackendSearchResponse["results"]) {
   return (results ?? []).map((food, index) => {
-    const normalizedName = food.name.toLowerCase();
-    const matchedLocationKey = Object.keys(MOCK_FOOD_LOCATIONS).find((key) =>
-      normalizedName.includes(key),
-    );
     const matchedMetadataKey = getMatchedFoodKey(food.name);
     const metadata = matchedMetadataKey
       ? MOCK_FOOD_METADATA[matchedMetadataKey]
       : undefined;
     const fallbackMetadata = buildFallbackMetadata(food, index);
-    const sourceLocations = matchedLocationKey
-      ? MOCK_FOOD_LOCATIONS[matchedLocationKey]
-      : DEFAULT_MOCK_LOCATIONS;
 
     return {
       ...food,
@@ -426,10 +421,7 @@ function enhanceMockFoodResults(results: BackendSearchResponse["results"]) {
         ? food.tags
         : (metadata?.tags ?? fallbackMetadata.tags),
       reason: food.reason ?? metadata?.reason ?? fallbackMetadata.reason,
-      locations: (food.locations?.length
-        ? food.locations
-        : sourceLocations
-      ).map((location) => ({
+      locations: (food.locations ?? []).map((location) => ({
         ...location,
         foodId: food.id,
         mapUrl:
@@ -461,8 +453,13 @@ async function requestFoodSearch(payload: ChatSendPayload) {
   payload.signal?.addEventListener("abort", abortFromPayload, { once: true });
 
   try {
+    const searchParams = new URLSearchParams({
+      q: payload.content,
+      skip_profile: payload.skipProfile ? "true" : "false",
+    });
+
     const response = await fetch(
-      `${FOOD_AI_API_URL}/foods/search?q=${encodeURIComponent(payload.content)}`,
+      `${FOOD_AI_API_URL}/foods/search?${searchParams.toString()}`,
       { signal: controller.signal },
     );
 
@@ -680,4 +677,277 @@ export const localChatApiAdapter: ChatApiAdapter = {
 
     return nextMessage;
   },
+};
+
+// ---------------------------------------------------------------------------
+// Remote adapter — dùng backend API thật khi user đã đăng nhập
+// ---------------------------------------------------------------------------
+
+/** Inline backend raw types (chỉ những field FE cần) */
+interface BEThread {
+  id: string;
+  title: string | null;
+  is_pinned: boolean;
+  created_at: string;
+  updated_at: string;
+  message_count: number;
+  last_message_at: string | null;
+}
+
+interface BEMessage {
+  id: string;
+  thread_id: string;
+  role: string; // "user" | "assistant"
+  content: string;
+  food_results: Record<string, unknown>[] | null;
+  feedback: string | null;
+  disclaimer?: string | null;
+  created_at: string;
+}
+
+interface BESendResponse {
+  user_message: BEMessage;
+  assistant_message: BEMessage;
+  search_result: {
+    query: string;
+    ai_insight: BackendSearchResponse["ai_insight"];
+    results: Record<string, unknown>[];
+    disclaimer: string;
+    ai_response?: string | null;
+  };
+}
+
+function beThreadToFE(t: BEThread): ChatThread {
+  return {
+    id: String(t.id),
+    title: t.title ?? "Cuộc trò chuyện mới",
+    createdAt: t.created_at,
+    updatedAt: t.updated_at,
+    lastMessagePreview: "Chưa có tin nhắn",
+    status: "idle",
+  };
+}
+
+function beFoodResultToFE(f: Record<string, unknown>): BackendFoodResult {
+  return {
+    id: String(f.id ?? ""),
+    name: String(f.name ?? ""),
+    description: String(f.description ?? ""),
+    matchScore:
+      typeof f.matchScore === "number"
+        ? f.matchScore
+        : typeof f.match_score === "number"
+          ? f.match_score
+          : 0,
+    image: (f.img_url as string | undefined) ?? (f.image as string | undefined),
+    tags: Array.isArray(f.soft_tags)
+      ? (f.soft_tags as string[])
+      : Array.isArray(f.tags)
+        ? (f.tags as string[])
+        : [],
+    reason: (f.reason as string | undefined) ?? undefined,
+  };
+}
+
+function beMessageToFE(m: BEMessage): ChatMessage {
+  const role: ChatRole = m.role === "user" ? "human" : (m.role as ChatRole);
+  return {
+    id: String(m.id),
+    threadId: String(m.thread_id),
+    role,
+    content: m.content,
+    createdAt: m.created_at,
+    foods: m.food_results ? m.food_results.map(beFoodResultToFE) : undefined,
+    feedback: (m.feedback ?? undefined) as ChatFeedback | undefined,
+    disclaimer: m.disclaimer ?? undefined,
+    status: "complete",
+  };
+}
+
+async function parseApiError(res: Response, fallback: string): Promise<string> {
+  try {
+    const body = await res.json();
+    if (typeof body.detail === "string") return body.detail;
+    if (Array.isArray(body.detail))
+      return body.detail.map((e: { msg: string }) => e.msg).join("; ");
+  } catch {
+    /* ignore */
+  }
+  return fallback;
+}
+
+export const remoteChatApiAdapter: ChatApiAdapter = {
+  async listThreads() {
+    const res = await apiFetch("/chat/threads?limit=100&pinned_first=true");
+    if (!res.ok)
+      throw new Error(await parseApiError(res, "Không tải được lịch sử chat."));
+    const data = await res.json();
+    return (data.items as BEThread[]).map(beThreadToFE);
+  },
+
+  async createThread(initialMessage) {
+    const title = initialMessage?.trim()
+      ? initialMessage.trim().slice(0, 100)
+      : undefined;
+    const res = await apiFetch("/chat/threads", {
+      method: "POST",
+      body: JSON.stringify({ title: title ?? null }),
+    });
+    if (!res.ok)
+      throw new Error(
+        await parseApiError(res, "Không tạo được cuộc trò chuyện."),
+      );
+    return beThreadToFE(await res.json());
+  },
+
+  async getMessages(threadId) {
+    const res = await apiFetch(`/chat/threads/${threadId}/messages?limit=200`);
+    if (!res.ok)
+      throw new Error(await parseApiError(res, "Không tải được tin nhắn."));
+    const data = await res.json();
+    return (data.items as BEMessage[]).map(beMessageToFE);
+  },
+
+  async sendMessage(payload) {
+    let res: Response;
+
+    if (payload.replaceMessageId) {
+      // Regenerate assistant message
+      res = await apiFetch(
+        `/chat/threads/${payload.threadId}/messages/${payload.replaceMessageId}/regenerate`,
+        {
+          method: "POST",
+          body: JSON.stringify({ skip_profile: payload.skipProfile ?? false }),
+        },
+      );
+    } else {
+      // New message
+      res = await apiFetch(`/chat/threads/${payload.threadId}/messages`, {
+        method: "POST",
+        body: JSON.stringify({
+          query: payload.content,
+          skip_profile: payload.skipProfile ?? false,
+        }),
+      });
+    }
+
+    if (!res.ok)
+      throw new Error(await parseApiError(res, "Không gửi được tin nhắn."));
+
+    const data: BESendResponse = await res.json();
+
+    // Build assistant message — enrich with search_result fields
+    const assistantMessage: ChatMessage = {
+      ...beMessageToFE(data.assistant_message),
+      foods: data.search_result.results.map(beFoodResultToFE),
+      aiInsight: data.search_result.ai_insight,
+      disclaimer: data.search_result.disclaimer,
+      sourceQuery: payload.content,
+    };
+
+    const userMessage = beMessageToFE(data.user_message);
+    const allMessages = payload.replaceMessageId
+      ? [assistantMessage]
+      : [userMessage, assistantMessage];
+
+    const thread: ChatThread = {
+      id: payload.threadId,
+      title: "Cuộc trò chuyện mới",
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      lastMessagePreview:
+        assistantMessage.content.length > 84
+          ? `${assistantMessage.content.slice(0, 81)}...`
+          : assistantMessage.content,
+      status: "idle",
+    };
+
+    return { thread, messages: allMessages, assistantMessage };
+  },
+
+  async renameThread(threadId, title) {
+    const res = await apiFetch(`/chat/threads/${threadId}`, {
+      method: "PATCH",
+      body: JSON.stringify({ title }),
+    });
+    if (!res.ok)
+      throw new Error(
+        await parseApiError(res, "Không đổi tên được cuộc trò chuyện."),
+      );
+    return beThreadToFE(await res.json());
+  },
+
+  async deleteThread(threadId) {
+    const res = await apiFetch(`/chat/threads/${threadId}`, {
+      method: "DELETE",
+    });
+    if (!res.ok && res.status !== 404)
+      throw new Error(
+        await parseApiError(res, "Không xóa được cuộc trò chuyện."),
+      );
+  },
+
+  async updateMessageFeedback(threadId, messageId, feedback) {
+    const res = await apiFetch(
+      `/chat/threads/${threadId}/messages/${messageId}/feedback`,
+      {
+        method: "PATCH",
+        body: JSON.stringify({ feedback: feedback ?? null }),
+      },
+    );
+    if (!res.ok)
+      throw new Error(
+        await parseApiError(res, "Không cập nhật được phản hồi."),
+      );
+    return beMessageToFE(await res.json());
+  },
+};
+
+// ---------------------------------------------------------------------------
+// Smart adapter — tự chọn remote (đã login) hoặc local (chưa login)
+// ---------------------------------------------------------------------------
+
+export const chatApiAdapter: ChatApiAdapter = {
+  listThreads: () =>
+    isLoggedIn()
+      ? remoteChatApiAdapter.listThreads()
+      : localChatApiAdapter.listThreads(),
+
+  createThread: (initialMessage) =>
+    isLoggedIn()
+      ? remoteChatApiAdapter.createThread(initialMessage)
+      : localChatApiAdapter.createThread(initialMessage),
+
+  getMessages: (threadId) =>
+    isLoggedIn()
+      ? remoteChatApiAdapter.getMessages(threadId)
+      : localChatApiAdapter.getMessages(threadId),
+
+  sendMessage: (payload) =>
+    isLoggedIn()
+      ? remoteChatApiAdapter.sendMessage(payload)
+      : localChatApiAdapter.sendMessage(payload),
+
+  renameThread: (threadId, title) =>
+    isLoggedIn()
+      ? remoteChatApiAdapter.renameThread(threadId, title)
+      : localChatApiAdapter.renameThread(threadId, title),
+
+  deleteThread: (threadId) =>
+    isLoggedIn()
+      ? remoteChatApiAdapter.deleteThread(threadId)
+      : localChatApiAdapter.deleteThread(threadId),
+
+  updateMessageFeedback: (threadId, messageId, feedback) =>
+    isLoggedIn()
+      ? remoteChatApiAdapter.updateMessageFeedback(
+          threadId,
+          messageId,
+          feedback,
+        )
+      : localChatApiAdapter.updateMessageFeedback(
+          threadId,
+          messageId,
+          feedback,
+        ),
 };

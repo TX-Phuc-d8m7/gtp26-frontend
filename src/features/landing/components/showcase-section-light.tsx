@@ -1,4 +1,5 @@
 import { Box, Typography, alpha, Container, Tabs, Tab } from "@mui/material";
+import Image from "next/image";
 import { useState } from "react";
 
 export function ShowcaseSectionLight() {
@@ -6,40 +7,46 @@ export function ShowcaseSectionLight() {
 
   const showcaseItems = [
     {
-      label: "AI Chat Assistant",
-      icon: "💬",
-      title: "Trò Chuyện Thông Minh Với AI",
+      label: "Gợi Ý AI",
+      icon: "🎯",
+      title: "Nhận Gợi Ý Món Ăn Phù Hợp Với Bạn",
       description:
-        "Đặt câu hỏi về dinh dưỡng, sức khỏe, công thức nấu ăn. AI sẽ đưa ra lời khuyên cá nhân hóa dựa trên hồ sơ của bạn.",
+        "Mô tả khẩu vị, nguyên liệu có sẵn, ngân sách hoặc tình trạng sức khỏe. AI phân tích hồ sơ của bạn và gợi ý món ăn Đà Nẵng tối ưu nhất.",
       features: [
-        "Phản hồi tức thì 24/7",
-        "Hiểu được ngữ cảnh cá nhân",
-        "Gợi ý dựa trên khoa học",
+        "Gợi ý dựa trên hồ sơ cá nhân hoá",
+        "Cảnh báo an toàn khi liên quan sức khỏe",
+        "Giải thích lý do gợi ý minh bạch",
       ],
+      image: "https://images.unsplash.com/photo-1631709497146-a239ef373cf1?w=600&h=500&q=80&auto=format&fit=crop",
+      imageAlt: "Phở bò Đà Nẵng",
     },
     {
-      label: "Nutrition Tracking",
-      icon: "📱",
-      title: "Theo Dõi Dinh Dưỡng Dễ Dàng",
+      label: "Tìm Kiếm Món",
+      icon: "🔍",
+      title: "Tìm Món Theo Tên, Nguyên Liệu Và Tag",
       description:
-        "Quét mã vạch hoặc tìm kiếm thực phẩm để ghi lại một cách nhanh chóng. Theo dõi tất cả chỉ số dinh dưỡng của bạn.",
+        "Tìm Mì Quảng, bún chả cá, bánh xèo hoặc lọc theo nhu cầu như ít dầu, dễ tiêu, giá rẻ — kết quả hiển thị bằng food cards đẹp mắt.",
       features: [
-        "Cơ sở dữ liệu 500K+ thực phẩm",
-        "Ghi lại nhanh bằng barcode",
-        "Phân tích macro thực tế",
+        "Tìm kiếm theo ngữ nghĩa và tag mềm",
+        "Đặc sản Đà Nẵng phong phú",
+        "Food cards với đầy đủ thông tin",
       ],
+      image: "https://images.unsplash.com/photo-1591814468924-caf88d1232e1?w=600&h=500&q=80&auto=format&fit=crop",
+      imageAlt: "Cơm tấm Đà Nẵng",
     },
     {
-      label: "Health Analytics",
-      icon: "📊",
-      title: "Phân Tích Sức Khỏe Chi Tiết",
+      label: "Quán Gần Bạn",
+      icon: "📍",
+      title: "Quán Ăn Gần Vị Trí Của Bạn",
       description:
-        "Xem biểu đồ tương tác về lịch sử sức khỏe, xu hướng, và thành tích hàng tháng.",
+        "Mỗi gợi ý món ăn đều đi kèm danh sách các quán bán gần bạn nhất, hiển thị trên bản đồ để dễ tìm đường.",
       features: [
-        "Biểu đồ xu hướng hàng ngày",
-        "So sánh tuần/tháng/năm",
-        "Báo cáo sức khỏe toàn diện",
+        "Danh sách quán gần bạn theo khoảng cách",
+        "Bản đồ tích hợp dễ xem",
+        "Thông tin giờ mở cửa và đánh giá",
       ],
+      image: "https://images.unsplash.com/photo-1562565652-a0d8f0c59eb4?w=600&h=500&q=80&auto=format&fit=crop",
+      imageAlt: "Gỏi cuốn tôm thịt",
     },
   ];
 
@@ -67,7 +74,7 @@ export function ShowcaseSectionLight() {
               mb: 2,
             }}
           >
-            Giao Diện Được Thiết Kế Cho Sức Khỏe
+            Trải Nghiệm Tìm Món Thông Minh
           </Typography>
           <Typography
             sx={{
@@ -77,7 +84,7 @@ export function ShowcaseSectionLight() {
               mx: "auto",
             }}
           >
-            Công cụ mạnh mẽ nhưng đơn giản để sử dụng hàng ngày
+            Từ câu hỏi tự nhiên đến món ăn, lý do gợi ý và địa điểm bán gần bạn
           </Typography>
         </Box>
 
@@ -115,10 +122,7 @@ export function ShowcaseSectionLight() {
             }}
           >
             {showcaseItems.map((item, index) => (
-              <Tab
-                key={index}
-                label={`${item.icon} ${item.label}`}
-              />
+              <Tab key={index} label={`${item.icon} ${item.label}`} />
             ))}
           </Tabs>
 
@@ -192,40 +196,48 @@ export function ShowcaseSectionLight() {
                 </Box>
               </Box>
 
-              {/* Right - Visual showcase */}
+              {/* Right - Food image */}
               <Box
                 sx={{
                   position: "relative",
-                  height: 400,
-                  borderRadius: "16px",
-                  background: `linear-gradient(135deg, ${alpha(
-                    "#FAFAF8",
-                    0.6,
-                  )} 0%, ${alpha("#F5F3F0", 0.5)} 100%)`,
-                  border: `1px solid ${alpha("#27251F", 0.08)}`,
-                  backdropFilter: "blur(20px)",
+                  height: 420,
+                  borderRadius: "20px",
                   overflow: "hidden",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
+                  boxShadow: `0 16px 48px ${alpha("#000000", 0.1)}`,
                 }}
               >
+                <Image
+                  src={item.image}
+                  alt={item.imageAlt}
+                  fill
+                  style={{ objectFit: "cover" }}
+                />
                 <Box
                   sx={{
-                    textAlign: "center",
-                    display: "grid",
-                    gap: 2,
+                    position: "absolute",
+                    inset: 0,
+                    background:
+                      "linear-gradient(180deg,transparent 55%,rgba(0,0,0,0.3))",
+                  }}
+                />
+                <Box
+                  sx={{
+                    position: "absolute",
+                    bottom: 20,
+                    left: 20,
+                    borderRadius: "12px",
+                    background: "rgba(255,255,255,0.88)",
+                    backdropFilter: "blur(12px)",
+                    px: 2,
+                    py: 1.5,
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 1,
                   }}
                 >
-                  <Typography sx={{ fontSize: 80, lineHeight: 1 }}>
-                    {item.icon}
-                  </Typography>
+                  <Typography sx={{ fontSize: 18 }}>{item.icon}</Typography>
                   <Typography
-                    sx={{
-                      fontSize: 16,
-                      color: alpha("#27251F", 0.6),
-                      fontWeight: 500,
-                    }}
+                    sx={{ fontSize: 13, fontWeight: 700, color: "#27251F" }}
                   >
                     {item.label}
                   </Typography>

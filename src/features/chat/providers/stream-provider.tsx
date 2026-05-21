@@ -1,57 +1,26 @@
 import React, { createContext, useContext, ReactNode, useState } from "react";
-import { useStream } from "@langchain/langgraph-sdk/react";
 import { type Message } from "@langchain/langgraph-sdk";
-import {
-  uiMessageReducer,
-  type UIMessage,
-  type RemoveUIMessage,
-} from "@langchain/langgraph-sdk/react-ui";
-import { useQueryState } from "nuqs";
-import { Input } from "@/shared/components/ui/input/index";
-import { Button } from "@/shared/components/ui/button/index";
-import { LangGraphLogoSVG } from "@/shared/components/icons/langgraph";
-import { Label } from "@/shared/components/ui/label/index";
-import { ArrowRight } from "lucide-react";
-import { PasswordInput } from "@/shared/components/ui/password-input/index";
-import { getApiKey } from "@/features/chat/lib/api-key";
-import { useThreads } from "./thread-provider";
-import { toast } from "sonner";
 
-export type StateType = { messages: Message[]; ui?: UIMessage[] };
+export type StreamUiMessage = {
+  id: string;
+  metadata?: {
+    message_id?: string;
+  };
+};
 
-const useTypedStream = useStream<
-  StateType,
-  {
-    UpdateType: {
-      messages?: Message[] | Message | string;
-      ui?: (UIMessage | RemoveUIMessage)[] | UIMessage | RemoveUIMessage;
-    };
-    CustomEventType: UIMessage | RemoveUIMessage;
-  }
->;
-
-type StreamContextType = ReturnType<typeof useTypedStream>;
+type StreamContextType = {
+  messages: Message[];
+  isLoading: boolean;
+  submit: (...args: any[]) => Promise<void>;
+  stop: () => void;
+  error: unknown;
+  ui: StreamUiMessage[];
+  getMessagesMetadata: (msg: unknown) => any;
+  setBranch: (branch: string) => void;
+  interrupt: any;
+  values: { ui: StreamUiMessage[] };
+};
 const StreamContext = createContext<StreamContextType | undefined>(undefined);
-
-async function checkGraphStatus(
-  apiUrl: string,
-  apiKey: string | null,
-): Promise<boolean> {
-  try {
-    const res = await fetch(`${apiUrl}/info`, {
-      ...(apiKey && {
-        headers: {
-          "X-Api-Key": apiKey,
-        },
-      }),
-    });
-
-    return res.ok;
-  } catch (e) {
-    console.error(e);
-    return false;
-  }
-}
 
 export const StreamProvider: React.FC<{ children: ReactNode }> = ({
   children,
@@ -69,7 +38,7 @@ export const StreamProvider: React.FC<{ children: ReactNode }> = ({
     setIsLoading(false);
   };
 
-  const streamValue = {
+  const streamValue: StreamContextType = {
     messages,
     isLoading,
     submit,
@@ -79,12 +48,12 @@ export const StreamProvider: React.FC<{ children: ReactNode }> = ({
     getMessagesMetadata: (msg: any) => ({
       branch: "main",
       branchOptions: ["main"],
-      firstSeenState: { parent_checkpoint: null },
+      firstSeenState: { parent_checkpoint: null, values: { messages: [] } },
     }),
     setBranch: (branch: string) => {},
     interrupt: null,
     values: { ui: [] },
-  } as any;
+  };
 
   return (
     <StreamContext.Provider value={streamValue}>

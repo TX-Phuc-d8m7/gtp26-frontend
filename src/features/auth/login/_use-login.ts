@@ -10,9 +10,8 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 
+import { apiLogin, saveTokens } from "@/features/auth/_api";
 import { loginSchema, LoginFormData } from ".";
-
-const AUTH_STORAGE_KEY = "food-recommendation:isLoggedIn";
 
 export function useLogin() {
   const [isLoading, setIsLoading] = useState(false);
@@ -25,14 +24,15 @@ export function useLogin() {
   const onSubmit = async (data: LoginFormData) => {
     setIsLoading(true);
     try {
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-      console.log("Login Data:", data);
-      window.localStorage.setItem(AUTH_STORAGE_KEY, "true");
+      const result = await apiLogin(data.email, data.password);
+      saveTokens(result.access_token, result.refresh_token);
 
       toast.success("Đăng nhập thành công!");
       router.push("/");
-    } catch {
-      toast.error("Đăng nhập thất bại. Vui lòng thử lại.");
+    } catch (err) {
+      const message =
+        err instanceof Error ? err.message : "Đăng nhập thất bại.";
+      toast.error(message);
     } finally {
       setIsLoading(false);
     }

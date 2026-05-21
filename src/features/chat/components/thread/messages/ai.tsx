@@ -4,10 +4,8 @@ import { AIMessage, Checkpoint, Message } from "@langchain/langgraph-sdk";
 import { getContentString } from "../utils";
 import { BranchSwitcher, CommandBar } from "./shared";
 import { MarkdownText } from "../markdown-text";
-import { LoadExternalComponent } from "@langchain/langgraph-sdk/react-ui";
 import { ToolCalls, ToolResult } from "./tool-calls";
 import { MessageContentComplex } from "@langchain/core/messages";
-import { Fragment } from "react/jsx-runtime";
 import { isAgentInboxInterruptSchema } from "@/features/chat/lib/agent-inbox-interrupt";
 import { ThreadView } from "../agent-inbox";
 import { useQueryState, parseAsBoolean } from "nuqs";
@@ -15,33 +13,9 @@ import { GenericInterruptView } from "./generic-interrupt";
 import { GeminiSparkleSVG } from "@/shared/components/icons/gemini-sparkle";
 import { Box } from "@mui/material";
 import { styles } from "../../../_styles";
-
-function CustomComponent({
-  message,
-  thread,
-}: {
-  message: Message;
-  thread: ReturnType<typeof useStreamContext>;
-}) {
-  const { values } = useStreamContext();
-  const customComponents = values.ui?.filter(
-    (ui) => ui.metadata?.message_id === message.id,
-  );
-
-  if (!customComponents?.length) return null;
-  return (
-    <Fragment key={message.id}>
-      {customComponents.map((customComponent) => (
-        <LoadExternalComponent
-          key={customComponent.id}
-          stream={thread}
-          message={customComponent}
-          meta={{ ui: customComponent }}
-        />
-      ))}
-    </Fragment>
-  );
-}
+import { CircleAlert } from "lucide-react";
+import { Typography } from "@/shared/components/ui/typography";
+import { DEFAULT_ASSISTANT_DISCLAIMER } from "@/features/chat/_interface";
 
 function parseAnthropicStreamedToolCalls(
   content: MessageContentComplex[],
@@ -138,6 +112,17 @@ export function AssistantMessage({
           }}
         >
           {contentString.length > 0 && (
+            <Box sx={styles.disclaimerNoticeStyles}>
+              <Box sx={styles.disclaimerIconStyles}>
+                <CircleAlert size={24} />
+              </Box>
+              <Typography as="p" sx={styles.disclaimerTextStyles}>
+                {DEFAULT_ASSISTANT_DISCLAIMER}
+              </Typography>
+            </Box>
+          )}
+
+          {contentString.length > 0 && (
             <Box sx={styles.langchainAssistantContentStyles}>
               <MarkdownText>{contentString}</MarkdownText>
             </Box>
@@ -155,7 +140,6 @@ export function AssistantMessage({
             </>
           )}
 
-          {message && <CustomComponent message={message} thread={thread} />}
           {isAgentInboxInterruptSchema(threadInterrupt?.value) &&
             (isLastMessage || hasNoAIOrToolMessages) && (
               <ThreadView interrupt={threadInterrupt.value} />

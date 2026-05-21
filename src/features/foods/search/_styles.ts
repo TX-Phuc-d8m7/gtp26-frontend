@@ -21,6 +21,16 @@ const darkFoodTheme = {
   orangeDeep: "#EA580C",
 } as const;
 
+// Landing-page warm palette for light mode
+const lightWarm = {
+  background: "#fffbf5",
+  backgroundGradient:
+    "linear-gradient(160deg, #fffbf5 0%, #fff7ed 40%, #fef3c7 100%)",
+  surface: "#fffbf5",
+  border: "rgba(231, 229, 228, 0.65)",
+  borderStrong: "rgba(231, 229, 228, 0.85)",
+} as const;
+
 export const rootStyles = (isEmbedded?: boolean) => (theme: Theme) => ({
   height: isEmbedded ? "100%" : "auto",
   minHeight: isEmbedded ? 0 : "100dvh",
@@ -28,8 +38,7 @@ export const rootStyles = (isEmbedded?: boolean) => (theme: Theme) => ({
   overflowY: isEmbedded ? "auto" : "visible",
   WebkitOverflowScrolling: "touch",
   overscrollBehavior: isEmbedded ? "contain" : "auto",
-  background:
-    "radial-gradient(circle at 14% 0%, rgba(245, 114, 107, 0.1) 0, transparent 30%), radial-gradient(circle at 88% 8%, rgba(248, 182, 90, 0.1) 0, transparent 26%), linear-gradient(180deg, #F9FAFB 0%, #FFFFFF 52%, #F9FAFB 100%)",
+  background: lightWarm.backgroundGradient,
   color: "var(--foreground)",
   scrollbarWidth: "none",
   "&::-webkit-scrollbar": {
@@ -73,14 +82,14 @@ export const backButtonStyles = (theme: Theme) => ({
   height: 44,
   borderRadius: "999px",
   color: "var(--foreground)",
-  border: "1px solid rgba(15, 23, 42, 0.14)",
-  backgroundColor: "rgba(255, 255, 255, 0.68)",
+  border: `1px solid ${lightWarm.border}`,
+  backgroundColor: `rgba(255, 251, 245, 0.82)`,
   boxShadow: "0 12px 30px rgba(15, 23, 42, 0.06)",
   backdropFilter: "blur(18px) saturate(1.14)",
   WebkitBackdropFilter: "blur(18px) saturate(1.14)",
   "&:hover": {
     color: "var(--primary)",
-    backgroundColor: "rgba(255, 255, 255, 0.86)",
+    backgroundColor: `rgba(255, 251, 245, 0.96)`,
   },
   ".dark &": {
     color: darkFoodTheme.text,
@@ -157,9 +166,9 @@ export const heroPanelStyles = (theme: Theme) => ({
     xs: 3,
     md: 4,
   },
-  border: "1px solid rgba(15, 23, 42, 0.16)",
+  border: `1px solid ${lightWarm.border}`,
   background:
-    "linear-gradient(135deg, rgba(255, 255, 255, 0.72) 0%, rgba(255, 247, 237, 0.24) 54%, rgba(255, 255, 255, 0.58) 100%)",
+    "linear-gradient(135deg, rgba(255, 251, 245, 0.88) 0%, rgba(255, 247, 237, 0.72) 54%, rgba(255, 251, 245, 0.82) 100%)",
   boxShadow:
     "0 24px 64px rgba(15, 23, 42, 0.09), 0 0 0 1px rgba(15, 23, 42, 0.035), inset 0 1px 0 rgba(255, 255, 255, 0.86)",
   backdropFilter: "blur(24px) saturate(1.18)",
@@ -273,8 +282,8 @@ export const contextCardStyles = (theme: Theme) => ({
   alignItems: "center",
   gap: 1,
   borderRadius: 3,
-  border: "1px solid rgba(15, 23, 42, 0.14)",
-  backgroundColor: "rgba(255, 255, 255, 0.58)",
+  border: `1px solid ${lightWarm.border}`,
+  backgroundColor: `rgba(255, 251, 245, 0.72)`,
   padding: {
     xs: "0.8rem 0.9rem",
     md: "0.9rem",
@@ -343,17 +352,17 @@ export const searchInputStyles = (theme: Theme) => ({
       xs: 3,
       sm: 4,
     },
-    backgroundColor: "rgba(255, 255, 255, 0.68)",
+    backgroundColor: `rgba(255, 251, 245, 0.88)`,
     color: "var(--foreground)",
     boxShadow:
       "0 16px 34px rgba(15, 23, 42, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.78)",
     backdropFilter: "blur(18px) saturate(1.14)",
     WebkitBackdropFilter: "blur(18px) saturate(1.14)",
     "& fieldset": {
-      borderColor: "rgba(15, 23, 42, 0.16)",
+      borderColor: lightWarm.border,
     },
     "&:hover fieldset": {
-      borderColor: "rgba(15, 23, 42, 0.24)",
+      borderColor: lightWarm.borderStrong,
     },
     "&.Mui-focused fieldset": {
       borderColor: "#D9480F",
@@ -401,8 +410,8 @@ export const suggestionPaperStyles = (theme: Theme) => ({
   right: 0,
   top: "calc(100% + 10px)",
   borderRadius: 4,
-  border: "1px solid rgba(15, 23, 42, 0.16)",
-  backgroundColor: "rgba(255, 255, 255, 0.82)",
+  border: `1px solid ${lightWarm.border}`,
+  backgroundColor: `rgba(255, 251, 245, 0.96)`,
   color: "var(--popover-foreground)",
   boxShadow:
     "0 24px 70px rgba(15, 23, 42, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.78)",
@@ -495,16 +504,16 @@ export const tagChipStyles = (isActive: boolean) => (theme: Theme) => ({
   borderRadius: "999px",
   fontWeight: 700,
   flexShrink: 0,
-  borderColor: isActive ? "#D9480F" : "rgba(15, 23, 42, 0.14)",
+  borderColor: isActive ? "#D9480F" : lightWarm.border,
   background: isActive
     ? "linear-gradient(135deg, #D9480F 0%, #FF6B00 100%)"
-    : "rgba(255, 255, 255, 0.58)",
+    : `rgba(255, 251, 245, 0.82)`,
   color: isActive ? "#FFFFFF" : "var(--muted-foreground)",
   boxShadow: isActive ? "none" : "inset 0 1px 0 rgba(255, 255, 255, 0.72)",
   backdropFilter: "blur(14px)",
   WebkitBackdropFilter: "blur(14px)",
   "&:hover": {
-    backgroundColor: isActive ? "#D9480F" : "rgba(255, 255, 255, 0.78)",
+    backgroundColor: isActive ? "#D9480F" : `rgba(255, 251, 245, 0.96)`,
   },
   ".dark &": {
     borderColor: isActive
@@ -588,9 +597,9 @@ export const cardStyles = (theme: Theme) => ({
     md: 4,
   },
   overflow: "hidden",
-  border: "1px solid rgba(15, 23, 42, 0.16)",
+  border: `1px solid ${lightWarm.border}`,
   background:
-    "linear-gradient(180deg, rgba(255, 255, 255, 0.72) 0%, rgba(255, 247, 237, 0.22) 100%)",
+    "linear-gradient(180deg, rgba(255, 251, 245, 0.92) 0%, rgba(255, 247, 237, 0.72) 100%)",
   color: "var(--card-foreground)",
   boxShadow:
     "0 18px 42px rgba(15, 23, 42, 0.1), 0 0 0 1px rgba(15, 23, 42, 0.035), inset 0 1px 0 rgba(255, 255, 255, 0.86)",
@@ -600,7 +609,7 @@ export const cardStyles = (theme: Theme) => ({
     "transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease",
   "&:hover": {
     transform: "translateY(-3px)",
-    borderColor: "rgba(15, 23, 42, 0.24)",
+    borderColor: lightWarm.borderStrong,
     boxShadow:
       "0 24px 54px rgba(15, 23, 42, 0.14), 0 0 0 1px rgba(15, 23, 42, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.88)",
   },
@@ -743,9 +752,9 @@ export const chipWrapStyles = (theme: Theme) => ({
 export const softTagStyles = (theme: Theme) => ({
   height: 25,
   borderRadius: "999px",
-  borderColor: "rgba(15, 23, 42, 0.12)",
-  backgroundColor: "rgba(255, 255, 255, 0.58)",
-  color: "#3F3F46",
+  borderColor: lightWarm.border,
+  backgroundColor: `rgba(255, 251, 245, 0.72)`,
+  color: "#44403c",
   fontSize: 12,
   fontWeight: 700,
   backdropFilter: "blur(12px)",
@@ -778,7 +787,7 @@ export const locationTextStyles = (theme: Theme) => ({
 });
 
 export const emptyStateStyles = (theme: Theme) => ({
-  border: "1px dashed rgba(15, 23, 42, 0.18)",
+  border: `1px dashed ${lightWarm.borderStrong}`,
   borderRadius: 4,
   textAlign: "center",
   padding: {
@@ -786,7 +795,7 @@ export const emptyStateStyles = (theme: Theme) => ({
     md: "4rem 2rem",
   },
   background:
-    "linear-gradient(135deg, rgba(255, 255, 255, 0.72) 0%, rgba(255, 247, 237, 0.24) 100%)",
+    "linear-gradient(135deg, rgba(255, 251, 245, 0.88) 0%, rgba(255, 247, 237, 0.62) 100%)",
   boxShadow: "0 18px 42px rgba(15, 23, 42, 0.08)",
   backdropFilter: "blur(20px) saturate(1.12)",
   WebkitBackdropFilter: "blur(20px) saturate(1.12)",
@@ -801,8 +810,8 @@ export const dialogPaperStyles = (theme: Theme) => ({
     xs: 0,
     sm: 4,
   },
-  border: "1px solid rgba(15, 23, 42, 0.14)",
-  backgroundColor: "rgba(255, 255, 255, 0.92)",
+  border: `1px solid ${lightWarm.border}`,
+  backgroundColor: `rgba(255, 251, 245, 0.97)`,
   color: "var(--foreground)",
   boxShadow: "0 28px 80px rgba(15, 23, 42, 0.18)",
   backdropFilter: "blur(18px) saturate(1.12)",
@@ -875,8 +884,8 @@ export const locationCardStyles = (theme: Theme) => ({
   gap: 1.5,
   padding: 1.5,
   borderRadius: 2,
-  border: "1px solid rgba(15, 23, 42, 0.14)",
-  backgroundColor: "rgba(255, 255, 255, 0.62)",
+  border: `1px solid ${lightWarm.border}`,
+  backgroundColor: `rgba(255, 251, 245, 0.78)`,
   boxShadow: "inset 0 1px 0 rgba(255, 255, 255, 0.72)",
   backdropFilter: "blur(14px)",
   WebkitBackdropFilter: "blur(14px)",
@@ -918,6 +927,140 @@ export const closeButtonStyles = (theme: Theme) => ({
     },
   },
 });
+
+// ---------------------------------------------------------------------------
+// Filter bar & panel styles
+// ---------------------------------------------------------------------------
+
+export const filterBarStyles = {
+  display: "flex",
+  alignItems: "center",
+  gap: 1.5,
+  mt: 1.5,
+  mb: 0.5,
+};
+
+export const filterToggleButtonStyles = (isOpen: boolean, hasActive: boolean) => ({
+  borderRadius: 99,
+  textTransform: "none",
+  fontWeight: 700,
+  fontSize: 13,
+  px: 2,
+  py: 0.75,
+  border: "1.5px solid",
+  borderColor: hasActive ? "#ea580c" : "rgba(120,90,60,0.28)",
+  color: hasActive ? "#ea580c" : "#78350f",
+  backgroundColor: hasActive ? "rgba(234,88,12,0.06)" : "transparent",
+  "&:hover": {
+    backgroundColor: hasActive ? "rgba(234,88,12,0.12)" : "rgba(120,90,60,0.06)",
+    borderColor: hasActive ? "#c2410c" : "rgba(120,90,60,0.45)",
+  },
+  "& .MuiButton-endIcon": {
+    transition: "transform 0.18s ease",
+    transform: isOpen ? "rotate(180deg)" : "rotate(0deg)",
+  },
+  ".dark &": {
+    borderColor: hasActive ? "#fb923c" : "rgba(255,247,237,0.18)",
+    color: hasActive ? "#fb923c" : "rgba(255,247,237,0.72)",
+    backgroundColor: hasActive ? "rgba(251,146,60,0.08)" : "transparent",
+    "&:hover": {
+      backgroundColor: hasActive ? "rgba(251,146,60,0.16)" : "rgba(255,247,237,0.06)",
+      borderColor: hasActive ? "#f97316" : "rgba(255,247,237,0.32)",
+    },
+  },
+});
+
+export const filterPanelStyles = {
+  mt: 1,
+  mb: 1,
+  px: 2,
+  py: 2,
+  borderRadius: 3,
+  border: `1px solid ${lightWarm.borderStrong}`,
+  backgroundColor: "rgba(255, 251, 245, 0.82)",
+  backdropFilter: "blur(16px)",
+  WebkitBackdropFilter: "blur(16px)",
+  boxShadow: "0 2px 12px rgba(120, 80, 40, 0.07), inset 0 1px 0 rgba(255,255,255,0.7)",
+  maxHeight: 480,
+  overflowY: "auto" as const,
+  ".dark &": {
+    borderColor: darkFoodTheme.border,
+    backgroundColor: "rgba(28, 25, 23, 0.92)",
+    boxShadow: "0 2px 16px rgba(0,0,0,0.32), inset 0 1px 0 rgba(255,255,255,0.04)",
+  },
+};
+
+export const filterGroupStyles = {
+  display: "flex",
+  flexDirection: "column" as const,
+  gap: 1,
+};
+
+export const filterGroupLabelStyles = {
+  fontSize: 12,
+  fontWeight: 800,
+  letterSpacing: "0.06em",
+  textTransform: "uppercase" as const,
+  color: "#92400e",
+  mb: 0.5,
+  ".dark &": {
+    color: darkFoodTheme.orange,
+  },
+};
+
+export const filterOptionsGridStyles = {
+  display: "flex",
+  flexWrap: "wrap" as const,
+  gap: 0.75,
+};
+
+export const filterOptionItemStyles = (isSelected: boolean) => ({
+  display: "inline-flex",
+  alignItems: "center",
+  gap: 0.5,
+  px: 1.25,
+  py: 0.5,
+  borderRadius: 99,
+  border: "1.5px solid",
+  cursor: "pointer",
+  userSelect: "none" as const,
+  transition: "all 0.14s ease",
+  borderColor: isSelected ? "#ea580c" : "rgba(120,90,60,0.22)",
+  backgroundColor: isSelected ? "rgba(234,88,12,0.08)" : "rgba(255,251,245,0.55)",
+  color: isSelected ? "#c2410c" : "#57534e",
+  "&:hover": {
+    borderColor: isSelected ? "#c2410c" : "rgba(120,90,60,0.40)",
+    backgroundColor: isSelected ? "rgba(234,88,12,0.14)" : "rgba(120,90,60,0.06)",
+  },
+  ".dark &": {
+    borderColor: isSelected ? "#fb923c" : "rgba(255,247,237,0.14)",
+    backgroundColor: isSelected ? "rgba(251,146,60,0.12)" : "rgba(28,25,23,0.55)",
+    color: isSelected ? "#fb923c" : "rgba(255,247,237,0.65)",
+    "&:hover": {
+      borderColor: isSelected ? "#f97316" : "rgba(255,247,237,0.26)",
+      backgroundColor: isSelected ? "rgba(251,146,60,0.20)" : "rgba(255,247,237,0.05)",
+    },
+  },
+});
+
+export const filterClearAllButtonStyles = {
+  textTransform: "none" as const,
+  fontWeight: 600,
+  fontSize: 13,
+  color: "#dc2626",
+  px: 1,
+  py: 0.5,
+  minWidth: 0,
+  "&:hover": {
+    backgroundColor: "rgba(220,38,38,0.08)",
+  },
+  ".dark &": {
+    color: "#f87171",
+    "&:hover": {
+      backgroundColor: "rgba(248,113,113,0.10)",
+    },
+  },
+};
 
 export const styles = {
   rootStyles,
@@ -976,4 +1119,12 @@ export const styles = {
   locationCardStyles,
   mapLinkStyles,
   closeButtonStyles,
+  filterBarStyles,
+  filterToggleButtonStyles,
+  filterPanelStyles,
+  filterGroupStyles,
+  filterGroupLabelStyles,
+  filterOptionsGridStyles,
+  filterOptionItemStyles,
+  filterClearAllButtonStyles,
 } as const;

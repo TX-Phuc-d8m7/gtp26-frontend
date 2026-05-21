@@ -13,8 +13,9 @@ import {
 } from "react";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
+import { apiLogout, getAccessToken } from "@/features/auth/_api";
+import { prewarmFilterOptions } from "@/features/foods/search";
 
-const AUTH_STORAGE_KEY = "food-recommendation:isLoggedIn";
 const SEARCH_PORTAL_SELECTOR = ".MuiDialog-root, [role='dialog']";
 
 const isSearchPortalElement = (target: EventTarget | null) => {
@@ -35,7 +36,12 @@ export function useHeader() {
   const modelOptions = ["Cân bằng", "Nhanh", "Chính xác", "Sáng tạo"];
 
   useEffect(() => {
-    setIsLoggedIn(window.localStorage.getItem(AUTH_STORAGE_KEY) === "true");
+    setIsLoggedIn(Boolean(getAccessToken()));
+  }, []);
+
+  // Pre-warm filter options cache so tag chips appear instantly when search opens
+  useEffect(() => {
+    prewarmFilterOptions();
   }, []);
 
   useEffect(() => {
@@ -92,10 +98,14 @@ export function useHeader() {
     setIsSearchOpen(false);
   };
 
-  const handleLogout = () => {
-    window.localStorage.removeItem(AUTH_STORAGE_KEY);
-    setIsLoggedIn(false);
+  const handleLogout = async () => {
     setIsUserMenuOpen(false);
+    try {
+      await apiLogout(); // revoke refresh token ở backend + xóa tokens local
+    } catch {
+      /* tokens đã được xóa trong apiLogout dù server lỗi */
+    }
+    setIsLoggedIn(false);
     toast.success("Đã đăng xuất thành công!");
     router.push("/");
   };

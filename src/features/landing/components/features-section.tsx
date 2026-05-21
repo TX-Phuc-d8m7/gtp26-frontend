@@ -1,32 +1,39 @@
-import { Box, Card, CardContent, Typography, alpha, Container } from "@mui/material";
+import {
+  Box,
+  Card,
+  CardContent,
+  Typography,
+  alpha,
+  Container,
+} from "@mui/material";
 
 const mainFeatures = [
   {
-    icon: "📊",
-    title: "Theo Dõi Dinh Dưỡng Thông Minh",
+    icon: "🎯",
+    title: "Gợi Ý Thông Minh",
     description:
-      "Tự động ghi lại thực phẩm và theo dõi macro, vitamin, chất xơ theo thời gian thực.",
+      "Nhập khẩu vị, nguyên liệu, ngân sách hoặc tình trạng sức khỏe để AI đề xuất món phù hợp nhất.",
     color: "#FFB25C",
   },
   {
-    icon: "💪",
-    title: "Lập Kế Hoạch Tập Luyện",
+    icon: "🛡️",
+    title: "Lọc An Toàn Cá Nhân",
     description:
-      "Nhận bài tập được tùy chỉnh dựa trên mục tiêu fitness và trình độ của bạn.",
+      "Hồ sơ dị ứng, bệnh lý nền và chế độ ăn kiêng được đưa vào bộ lọc ngầm khi gợi ý.",
     color: "#FFB25C",
   },
   {
-    icon: "🏥",
-    title: "Lời Khuyên Y Tế",
+    icon: "🍜",
+    title: "Khám Phá Món Đà Nẵng",
     description:
-      "Nhận gợi ý từ AI được huấn luyện bởi các chuyên gia y tế và dinh dưỡng.",
+      "Tìm theo tên món, nguyên liệu, tag mềm hoặc nhu cầu như ít dầu, dễ tiêu, giá rẻ.",
     color: "#FFB25C",
   },
   {
-    icon: "📈",
-    title: "Phân Tích Sâu Sắc",
+    icon: "📍",
+    title: "Quán Ăn Gần Bạn",
     description:
-      "Xem biểu đồ chi tiết về tiến độ sức khỏe, thói quen ăn uống hàng tuần và hàng tháng.",
+      "Mỗi món gợi ý đều kèm danh sách quán gần vị trí của bạn và bản đồ dễ xem.",
     color: "#FFB25C",
   },
 ];
@@ -66,7 +73,8 @@ export function FeaturesSection() {
               mx: "auto",
             }}
           >
-            Công cụ mạnh mẽ để giúp bạn đạt mục tiêu sức khỏe
+            Một luồng tìm món gọn, cá nhân hoá và sẵn sàng kết nối backend
+            LangGraph
           </Typography>
         </Box>
 
@@ -74,7 +82,11 @@ export function FeaturesSection() {
         <Box
           sx={{
             display: "grid",
-            gridTemplateColumns: { xs: "1fr", md: "repeat(2, 1fr)", lg: "repeat(4, 1fr)" },
+            gridTemplateColumns: {
+              xs: "1fr",
+              md: "repeat(2, 1fr)",
+              lg: "repeat(4, 1fr)",
+            },
             gap: 4,
             mb: 12,
           }}
@@ -145,7 +157,7 @@ export function FeaturesSection() {
                 mb: 2,
               }}
             >
-              Tại Sao Người Dùng Yêu Thích Chúng Tôi
+              Tại Sao Luồng Này Phù Hợp Với Hệ Thống
             </Typography>
           </Box>
 
@@ -158,22 +170,22 @@ export function FeaturesSection() {
           >
             {[
               {
-                title: "Kết Quả Thực Tế",
+                title: "Gợi Ý Có Ngữ Cảnh",
                 description:
-                  "Người dùng báo cáo cải thiện sức khỏe trong vòng 2-4 tuần.",
-                stat: "92%",
+                  "AI không chỉ tìm món theo từ khóa mà còn cân nhắc hồ sơ và mục tiêu ăn uống.",
+                stat: "AI",
               },
               {
-                title: "Dễ Sử Dụng",
+                title: "Dễ Lắp Backend",
                 description:
-                  "Giao diện trực quan được thiết kế cho bất kỳ ai sử dụng.",
-                stat: "4.8★",
+                  "UI đã chuẩn bị thread, message, feedback, food cards và map panel để nối API.",
+                stat: "API",
               },
               {
-                title: "Hỗ Trợ Tận Tâm",
+                title: "Tập Trung Đà Nẵng",
                 description:
-                  "Đội hỗ trợ 24/7 sẵn sàng giúp bạn bất kỳ lúc nào.",
-                stat: "24/7",
+                  "Nội dung xoay quanh đặc sản, quán ăn và thói quen tìm món tại Đà Nẵng.",
+                stat: "DN",
               },
             ].map((benefit, index) => (
               <Box

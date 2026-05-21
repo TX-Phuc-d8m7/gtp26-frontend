@@ -34,11 +34,6 @@ export function LandingThemeProvider({ children }: { children: ReactNode }) {
     });
   };
 
-  // Prevent hydration mismatch
-  if (!mounted) {
-    return <>{children}</>;
-  }
-
   return (
     <LandingThemeContext.Provider value={{ isDark, toggleTheme }}>
       {children}

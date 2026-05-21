@@ -18,7 +18,23 @@ import type {
   ChatSendResponse,
   ChatThread,
 } from "../_interface";
-import { localChatApiAdapter } from "../lib/chat-api-adapter";
+import { chatApiAdapter } from "../lib/chat-api-adapter";
+
+function mergeMessagesById(
+  currentMessages: ChatMessage[],
+  incomingMessages: ChatMessage[],
+): ChatMessage[] {
+  const seen = new Set<string>();
+  const merged: ChatMessage[] = [];
+
+  for (const message of [...currentMessages, ...incomingMessages]) {
+    if (seen.has(message.id)) continue;
+    seen.add(message.id);
+    merged.push(message);
+  }
+
+  return merged;
+}
 
 interface ThreadContextType {
   threads: ChatThread[];
@@ -57,7 +73,7 @@ export function ThreadProvider({ children }: { children: ReactNode }) {
     setThreadsLoading(true);
     setError(null);
     try {
-      const nextThreads = await localChatApiAdapter.listThreads();
+      const nextThreads = await chatApiAdapter.listThreads();
       setThreads(nextThreads);
       return nextThreads;
     } catch (err) {
@@ -74,7 +90,7 @@ export function ThreadProvider({ children }: { children: ReactNode }) {
     setMessagesLoading(true);
     setError(null);
     try {
-      const messages = await localChatApiAdapter.getMessages(threadId);
+      const messages = await chatApiAdapter.getMessages(threadId);
       setMessagesByThreadId((prev) => ({
         ...prev,
         [threadId]: messages,
@@ -92,7 +108,7 @@ export function ThreadProvider({ children }: { children: ReactNode }) {
 
   const createThread = useCallback(async (initialMessage?: string) => {
     setError(null);
-    const thread = await localChatApiAdapter.createThread(initialMessage);
+    const thread = await chatApiAdapter.createThread(initialMessage);
     setThreads((prev) => [
       thread,
       ...prev.filter((item) => item.id !== thread.id),
@@ -127,15 +143,44 @@ export function ThreadProvider({ children }: { children: ReactNode }) {
     }
 
     try {
-      const response = await localChatApiAdapter.sendMessage(payload);
+      const response = await chatApiAdapter.sendMessage(payload);
       setThreads((prev) => [
         response.thread,
         ...prev.filter((item) => item.id !== response.thread.id),
       ]);
-      setMessagesByThreadId((prev) => ({
-        ...prev,
-        [payload.threadId]: response.messages,
-      }));
+      setMessagesByThreadId((prev) => {
+        const currentMessages = prev[payload.threadId] ?? [];
+
+        if (payload.replaceMessageId) {
+          const hasMessageToReplace = currentMessages.some(
+            (message) => message.id === payload.replaceMessageId,
+          );
+          const nextMessages = hasMessageToReplace
+            ? currentMessages.map((message) =>
+                message.id === payload.replaceMessageId
+                  ? response.assistantMessage
+                  : message,
+              )
+            : mergeMessagesById(currentMessages, [response.assistantMessage]);
+
+          return {
+            ...prev,
+            [payload.threadId]: nextMessages,
+          };
+        }
+
+        const withoutOptimisticMessage = currentMessages.filter(
+          (message) => !message.id.startsWith("optimistic-"),
+        );
+
+        return {
+          ...prev,
+          [payload.threadId]: mergeMessagesById(
+            withoutOptimisticMessage,
+            response.messages,
+          ),
+        };
+      });
       return response;
     } catch (err) {
       const message =
@@ -149,7 +194,7 @@ export function ThreadProvider({ children }: { children: ReactNode }) {
 
   const renameThread = useCallback(async (threadId: string, title: string) => {
     setError(null);
-    const thread = await localChatApiAdapter.renameThread(threadId, title);
+    const thread = await chatApiAdapter.renameThread(threadId, title);
     setThreads((prev) =>
       prev.map((item) => (item.id === threadId ? thread : item)),
     );
@@ -157,7 +202,7 @@ export function ThreadProvider({ children }: { children: ReactNode }) {
 
   const deleteThread = useCallback(async (threadId: string) => {
     setError(null);
-    await localChatApiAdapter.deleteThread(threadId);
+    await chatApiAdapter.deleteThread(threadId);
     setThreads((prev) => prev.filter((item) => item.id !== threadId));
     setMessagesByThreadId((prev) => {
       const { [threadId]: _, ...rest } = prev;
@@ -168,7 +213,7 @@ export function ThreadProvider({ children }: { children: ReactNode }) {
   const updateMessageFeedback = useCallback(
     async (threadId: string, messageId: string, feedback?: ChatFeedback) => {
       setError(null);
-      const message = await localChatApiAdapter.updateMessageFeedback(
+      const message = await chatApiAdapter.updateMessageFeedback(
         threadId,
         messageId,
         feedback,

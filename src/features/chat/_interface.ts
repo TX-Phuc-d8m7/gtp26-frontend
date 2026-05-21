@@ -5,6 +5,9 @@
 import type { ReactNode } from "react";
 import type { ComposerAttachment } from "./components/thread/input-area";
 
+export const DEFAULT_ASSISTANT_DISCLAIMER =
+  "Câu trả lời này chỉ nhằm mục đích cung cấp thông tin. Để được tư vấn hoặc chẩn đoán y tế, vui lòng hỏi ý kiến của chuyên gia.";
+
 export interface ChatProps {
   fallback?: ReactNode;
 }
@@ -39,6 +42,37 @@ export interface FoodLocation {
   rating?: number;
   openingHours?: string;
   mapUrl?: string;
+  phoneNumber?: string;
+  userRatingCount?: number;
+  businessStatus?: string;
+}
+
+export interface BackendPlaceSearchResult {
+  place_id: string;
+  name: string;
+  formatted_address?: string | null;
+  rating?: number | null;
+  user_rating_count?: number | null;
+  google_maps_uri?: string | null;
+  phone_number?: string | null;
+  business_status?: string | null;
+  location?: {
+    latitude: number;
+    longitude: number;
+  } | null;
+  distance_meters?: number | null;
+}
+
+export interface BackendPlaceSearchResponse {
+  query: string;
+  dish: string;
+  location_text: string;
+  latitude?: number | null;
+  longitude?: number | null;
+  radius_m?: number | null;
+  cache_hit: boolean;
+  results: BackendPlaceSearchResult[];
+  provider: string;
 }
 
 export interface BackendSearchResponse {
@@ -91,6 +125,7 @@ export interface ChatSendPayload {
   content: string;
   attachments?: ComposerAttachment[];
   replaceMessageId?: string;
+  skipProfile?: boolean;
   signal?: AbortSignal;
 }
 

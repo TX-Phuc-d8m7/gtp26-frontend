@@ -47,7 +47,7 @@ export function CtaSectionLight() {
                 color: "#27251F",
               }}
             >
-              Hãy Bắt Đầu Sống Khỏe Mạnh Ngay Hôm Nay
+              Bắt Đầu Tìm Món Đà Nẵng Phù Hợp Với Bạn
             </Typography>
             <Typography
               sx={{
@@ -57,7 +57,9 @@ export function CtaSectionLight() {
                 mx: "auto",
               }}
             >
-              Không cần thẻ tín dụng. Không cần đăng ký phức tạp. Chỉ cần 2 phút để bắt đầu nhận lời khuyên sức khỏe được tùy chỉnh.
+              Mở chat, nói khẩu vị hoặc tình trạng ăn uống hiện tại. Foodie
+              Suggest sẽ gợi ý món, giải thích lý do và hiển thị địa điểm khi có
+              dữ liệu.
             </Typography>
 
             <Box
@@ -69,7 +71,10 @@ export function CtaSectionLight() {
                 pt: 2,
               }}
             >
-              <Link href="/chat" style={{ textDecoration: "none", flex: { xs: 1, sm: "auto" } }}>
+              <Link
+                href="/chat"
+                style={{ textDecoration: "none", display: "block" }}
+              >
                 <Button
                   variant="contained"
                   size="large"
@@ -90,7 +95,7 @@ export function CtaSectionLight() {
                     },
                   }}
                 >
-                  Bắt Đầu Miễn Phí
+                  Vào màn chat
                 </Button>
               </Link>
               <Button
@@ -115,7 +120,7 @@ export function CtaSectionLight() {
                   },
                 }}
               >
-                Xem Demo
+                Xem luồng tìm kiếm
               </Button>
             </Box>
           </Box>
@@ -139,10 +144,10 @@ export function CtaSectionLight() {
                   mb: 0.5,
                 }}
               >
-                10K+
+                Chat
               </Typography>
               <Typography sx={{ fontSize: 13, color: alpha("#27251F", 0.5) }}>
-                Người dùng
+                Nhiều thread
               </Typography>
             </Box>
             <Box sx={{ textAlign: "center" }}>
@@ -154,10 +159,10 @@ export function CtaSectionLight() {
                   mb: 0.5,
                 }}
               >
-                95%
+                Food
               </Typography>
               <Typography sx={{ fontSize: 13, color: alpha("#27251F", 0.5) }}>
-                Hài lòng
+                Gợi ý món
               </Typography>
             </Box>
             <Box sx={{ textAlign: "center" }}>
@@ -169,10 +174,10 @@ export function CtaSectionLight() {
                   mb: 0.5,
                 }}
               >
-                30 ngày
+                Map
               </Typography>
               <Typography sx={{ fontSize: 13, color: alpha("#27251F", 0.5) }}>
-                Hoàn tiền
+                Quán gần bạn
               </Typography>
             </Box>
           </Box>

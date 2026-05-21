@@ -42,6 +42,7 @@ import type {
   ChatFeedback,
   ChatMessage,
 } from "../../_interface";
+import { DEFAULT_ASSISTANT_DISCLAIMER } from "../../_interface";
 import { styles } from "../../_styles";
 const EMPTY_STATE_PROMPTS: {
   title: string;
@@ -243,11 +244,10 @@ export function Thread() {
     "chatHistoryOpen",
     parseAsBoolean.withDefault(false),
   );
-  const [showRecommendationAnalysis, setShowRecommendationAnalysis] =
-    useQueryState(
-      "showRecommendationAnalysis",
-      parseAsBoolean.withDefault(false),
-    );
+  const [useHealthProfile, setUseHealthProfile] = useQueryState(
+    "useHealthProfile",
+    parseAsBoolean.withDefault(true),
+  );
   const [input, setInput] = useState("");
   const [firstTokenReceived, setFirstTokenReceived] = useState(false);
   const [attachments, setAttachments] = useState<ComposerAttachment[]>([]);
@@ -390,6 +390,7 @@ export function Thread() {
         threadId: activeThread,
         content: userQuery,
         attachments: messageAttachments,
+        skipProfile: !useHealthProfile,
         signal: controller.signal,
       });
       setFirstTokenReceived(true);
@@ -412,6 +413,7 @@ export function Thread() {
         threadId: message.threadId,
         content: message.sourceQuery,
         replaceMessageId: message.id,
+        skipProfile: !useHealthProfile,
         signal: controller.signal,
       });
       setFirstTokenReceived(true);
@@ -674,21 +676,12 @@ export function Thread() {
                               gap: 0.75,
                             }}
                           >
-                            {message.disclaimer && (
-                              <Box sx={styles.disclaimerNoticeStyles}>
-                                <Box sx={styles.disclaimerIconStyles}>
-                                  <CircleAlert size={24} />
-                                </Box>
-                                <Typography
-                                  as="p"
-                                  sx={styles.disclaimerTextStyles}
-                                >
-                                  {message.disclaimer}
-                                </Typography>
-                              </Box>
-                            )}
-                            <Box sx={styles.localAssistantBubbleStyles}>
-                              {/* {message.disclaimer && (
+                            {(() => {
+                              const disclaimerText =
+                                message.disclaimer?.trim() ||
+                                DEFAULT_ASSISTANT_DISCLAIMER;
+
+                              return (
                                 <Box sx={styles.disclaimerNoticeStyles}>
                                   <Box sx={styles.disclaimerIconStyles}>
                                     <CircleAlert size={24} />
@@ -697,11 +690,12 @@ export function Thread() {
                                     as="p"
                                     sx={styles.disclaimerTextStyles}
                                   >
-                                    {message.disclaimer}
+                                    {disclaimerText}
                                   </Typography>
                                 </Box>
-                              )} */}
-
+                              );
+                            })()}
+                            <Box sx={styles.localAssistantBubbleStyles}>
                               <Typography
                                 as="p"
                                 sx={{ whiteSpace: "pre-wrap" }}
@@ -786,8 +780,8 @@ export function Thread() {
             input={input}
             onInputChange={setInput}
             onSubmit={handleSubmit}
-            onShowRecommendationAnalysisChange={setShowRecommendationAnalysis}
-            showRecommendationAnalysis={showRecommendationAnalysis}
+            onUseHealthProfileChange={setUseHealthProfile}
+            useHealthProfile={useHealthProfile}
             isLoading={isLoading}
             onCancel={handleCancel}
             attachments={attachments}

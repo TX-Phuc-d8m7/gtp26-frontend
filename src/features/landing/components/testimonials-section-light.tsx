@@ -1,45 +1,52 @@
-import { Box, Card, CardContent, Typography, alpha, Container } from "@mui/material";
+import {
+  Box,
+  Card,
+  CardContent,
+  Typography,
+  alpha,
+  Container,
+} from "@mui/material";
 
 const testimonials = [
   {
-    name: "Nguyễn Hương",
-    role: "Nhân viên văn phòng",
+    name: "Minh Tuấn",
+    role: "Sinh viên · Hải Châu, Đà Nẵng",
+    avatar: "🎒",
+    content:
+      "Mình hay phân vân không biết ăn gì mỗi sáng. App gợi ý đúng khẩu vị, lại còn chỉ quán gần ký túc xá — tiện lắm!",
+    rating: 5,
+  },
+  {
+    name: "Lan Anh",
+    role: "Nhân viên văn phòng · Sơn Trà",
     avatar: "👩‍💼",
     content:
-      "Tôi đã sử dụng ứng dụng này trong 3 tháng và đã giảm 8kg! AI đưa ra những gợi ý bữa ăn rất hợp lý và dễ thực hiện.",
+      "Mình bị dị ứng hải sản. Chỉ cần điền vào hồ sơ một lần, hệ thống tự lọc món phù hợp mà không cần nhắc lại.",
     rating: 5,
   },
   {
-    name: "Trần Minh Tuấn",
-    role: "Huấn luyện viên Fitness",
-    avatar: "🧑‍🏫",
+    name: "Bác Thanh Hà",
+    role: "Nội trợ · Cẩm Lệ, Đà Nẵng",
+    avatar: "🍳",
     content:
-      "Tuyệt vời cho khách hàng của tôi. Lúc đầu có chút hoài nghi nhưng kết quả nói lên tất cả. Rất chi tiết và chuyên nghiệp.",
+      "Chồng bị tiểu đường nên tôi hay phải cân nhắc từng bữa. App gợi ý món ít đường, ít muối rất phù hợp cho gia đình tôi.",
     rating: 5,
   },
   {
-    name: "Lê Thảo Vy",
-    role: "Sinh viên",
-    avatar: "👩‍🎓",
+    name: "Hoàng Nam",
+    role: "Du khách · Đến thăm Đà Nẵng",
+    avatar: "🗺️",
     content:
-      "Giao diện dễ sử dụng, AI thực sự hiểu nhu cầu của tôi. Đã giới thiệu cho cả gia đình. Mọi người đều yêu thích!",
-    rating: 5,
-  },
-  {
-    name: "Phạm Duy Anh",
-    role: "Bác sĩ",
-    avatar: "👨‍⚕️",
-    content:
-      "Từ góc độ y tế, tôi rất ấn tượng với độ chính xác của lời khuyên. Tôi đang đề xuất cho bệnh nhân của tôi.",
+      "Lần đầu đến Đà Nẵng, không biết nên thử đặc sản gì. App gợi ý Mì Quảng, bánh xèo và chỉ ngay quán gần khách sạn.",
     rating: 5,
   },
 ];
 
 const stats = [
-  { label: "Người dùng hoạt động", value: "10K+", icon: "👥" },
-  { label: "Bữa ăn được lập kế hoạch", value: "2.3M+", icon: "🍽️" },
-  { label: "Điểm đánh giá trung bình", value: "4.8", icon: "⭐" },
-  { label: "Tỷ lệ hoàn thành mục tiêu", value: "92%", icon: "🎯" },
+  { label: "Độ phù hợp gợi ý", value: "87%+", icon: "🎯" },
+  { label: "Món đặc sản Đà Nẵng", value: "50+", icon: "🍜" },
+  { label: "Quán ăn được cập nhật", value: "200+", icon: "📍" },
+  { label: "Lọc hồ sơ sức khỏe", value: "Tự động", icon: "🛡️" },
 ];
 
 export function TestimonialsSectionLight() {
@@ -67,7 +74,7 @@ export function TestimonialsSectionLight() {
               mb: 3,
             }}
           >
-            Được Yêu Thích Bởi Hàng Ngàn Người
+            Người Dùng Nói Gì Về Chúng Tôi
           </Typography>
           <Typography
             sx={{
@@ -77,7 +84,7 @@ export function TestimonialsSectionLight() {
               mx: "auto",
             }}
           >
-            Đọc những câu chuyện thành công từ những người dùng thực tế
+            Hàng nghìn người Đà Nẵng đang tin tưởng Foodie Suggest để tìm món mỗi ngày
           </Typography>
         </Box>
 

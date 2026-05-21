@@ -207,7 +207,7 @@ export default function FoodCard({
                 Đánh giá gợi ý
               </Button>
             )}
-            {locationCount > 0 && onOpenLocations && (
+            {onOpenLocations && (
               <Button
                 type="button"
                 variant="outlined"
@@ -216,7 +216,9 @@ export default function FoodCard({
                 onClick={() => onOpenLocations(food)}
                 sx={styles.getActionButtonSx("location")}
               >
-                {locationCount} quán gần bạn
+                {locationCount > 0
+                  ? `${locationCount} quán gần bạn`
+                  : "Quán gần bạn"}
               </Button>
             )}
           </Box>

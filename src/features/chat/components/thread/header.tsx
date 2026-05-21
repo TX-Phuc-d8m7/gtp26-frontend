@@ -23,11 +23,12 @@ import {
 } from "@/shared/components/ui/tooltip/index";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
-import { FoodSearchUI } from "@/features/foods/search";
+import { FoodSearchUI, prewarmFilterOptions } from "@/features/foods/search";
 import { styles } from "@/features/chat/_styles";
 
 import { HeaderProps } from "./_interface";
 import { useHeader } from "./_use-header";
+import favicon2 from "@/app/favicon2.svg";
 
 export function Header({
   chatHistoryOpen,
@@ -101,12 +102,19 @@ export function Header({
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
           >
             <Box sx={styles.brandButtonStyles}>
-              <Box sx={styles.brandMarkStyles}>
-                <Soup size={16} />
-              </Box>
-              <Box sx={styles.brandTextStyles}>
-                <Typography as="span" sx={styles.brandTitleStyles}>
-                  Foodie Suggest
+              <Box sx={styles.brandLogoLockupStyles}>
+                <Box
+                  component="img"
+                  src={favicon2.src}
+                  alt="App Icon"
+                  sx={styles.brandLogoImageStyles}
+                />
+                <Typography as="span" sx={styles.brandHeaderTextStyles}>
+                  Hôm nay
+                  <br />
+                  <Box component="span" sx={styles.brandHeaderAccentStyles}>
+                    bạn ăn gì?
+                  </Box>
                 </Typography>
               </Box>
             </Box>
@@ -222,7 +230,7 @@ export function Header({
                             py: 1.2,
                             mb: 0.5,
                           }}
-                          >
+                        >
                           <Box sx={styles.assistantAvatarStyles}>
                             <User size={16} />
                           </Box>

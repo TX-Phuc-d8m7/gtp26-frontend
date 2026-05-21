@@ -7,13 +7,13 @@
 import { Controller } from "react-hook-form";
 import { ArrowRight, Loader2 } from "lucide-react";
 
+import { styles, useOnboarding } from ".";
 import {
-  ALLERGY_OPTIONS,
-  DISLIKE_OPTIONS,
-  FAVORITE_OPTIONS,
-  styles,
-  useOnboarding,
-} from ".";
+  DISH_TYPE_OPTIONS,
+  FAVORITE_INGREDIENT_OPTIONS,
+  HEALTH_RISK_OPTIONS,
+  TASTE_PREFERENCE_OPTIONS,
+} from "@/features/profile/_interface";
 import { Box } from "@/shared/components/ui/box/index";
 import { Button } from "@/shared/components/ui/button/index";
 import { Form } from "@/shared/components/ui/form/index";
@@ -42,20 +42,21 @@ export default function Onboarding() {
         <Form onSubmit={handleSubmit(onSubmit)} sx={styles.formStyles}>
           <Box sx={styles.fieldStyles}>
             <Label sx={styles.labelStyles}>
-              Dị ứng thực phẩm
+              Bệnh lý và dị ứng
               <Typography as="span" sx={styles.optionalBadgeStyles}>
                 Không bắt buộc
               </Typography>
             </Label>
             <Typography sx={styles.fieldDescriptionStyles}>
-              Chọn các nguyên liệu bạn bị dị ứng (nếu có).
+              Chọn bệnh lý nền, triệu chứng hoặc dị ứng để AI lọc món an toàn
+              hơn.
             </Typography>
             <Controller
-              name="allergies"
+              name="healthRisks"
               control={control}
               render={({ field }) => (
                 <MultiSelectPills
-                  options={ALLERGY_OPTIONS}
+                  options={HEALTH_RISK_OPTIONS}
                   value={field.value}
                   onChange={field.onChange}
                   variant="danger"
@@ -66,20 +67,20 @@ export default function Onboarding() {
 
           <Box sx={styles.fieldStyles}>
             <Label sx={styles.labelStyles}>
-              Món ăn yêu thích
+              Nguyên liệu yêu thích
               <Typography as="span" sx={styles.optionalBadgeStyles}>
                 Nhiều lựa chọn
               </Typography>
             </Label>
             <Typography sx={styles.fieldDescriptionStyles}>
-              Bạn thường thích ăn những loại thức ăn nào?
+              Những nguyên liệu bạn muốn hệ thống ưu tiên khi gợi ý món.
             </Typography>
             <Controller
               name="favorites"
               control={control}
               render={({ field }) => (
                 <MultiSelectPills
-                  options={FAVORITE_OPTIONS}
+                  options={FAVORITE_INGREDIENT_OPTIONS}
                   value={field.value}
                   onChange={field.onChange}
                   variant="success"
@@ -89,19 +90,38 @@ export default function Onboarding() {
           </Box>
 
           <Box sx={styles.fieldStyles}>
-            <Label sx={styles.labelStyles}>Không thích ăn</Label>
+            <Label sx={styles.labelStyles}>Khẩu vị yêu thích</Label>
             <Typography sx={styles.fieldDescriptionStyles}>
-              Những nguyên liệu hoặc món bạn không bao giờ muốn ăn.
+              Vị chủ đạo bạn thường thích trong một món ăn.
             </Typography>
             <Controller
-              name="dislikes"
+              name="tastePreferences"
               control={control}
               render={({ field }) => (
                 <MultiSelectPills
-                  options={DISLIKE_OPTIONS}
+                  options={TASTE_PREFERENCE_OPTIONS}
                   value={field.value}
                   onChange={field.onChange}
-                  variant="danger"
+                  variant="default"
+                />
+              )}
+            />
+          </Box>
+
+          <Box sx={styles.fieldStyles}>
+            <Label sx={styles.labelStyles}>Cách nấu yêu thích</Label>
+            <Typography sx={styles.fieldDescriptionStyles}>
+              Kiểu chế biến bạn muốn AI ưu tiên khi chọn món.
+            </Typography>
+            <Controller
+              name="dishTypes"
+              control={control}
+              render={({ field }) => (
+                <MultiSelectPills
+                  options={DISH_TYPE_OPTIONS}
+                  value={field.value}
+                  onChange={field.onChange}
+                  variant="success"
                 />
               )}
             />

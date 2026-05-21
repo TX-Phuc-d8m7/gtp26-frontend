@@ -20,14 +20,24 @@ const darkFoodChat = {
   surfaceRaised: "#44403C",
   border: "rgba(255, 247, 237, 0.12)",
   borderSoft: "rgba(255, 247, 237, 0.06)",
-  borderStrong: "#FB923C",
+  borderStrong: "#FF9A1F",
   text: "#FFF7ED",
   muted: "rgba(255, 247, 237, 0.6)",
-  orange: "#F68B2D",
-  orangeStrong: "#F26608",
+  orange: "#FF9A1F",
+  orangeStrong: "#FF7A00",
   glow: "rgba(249, 115, 22, 0.15)",
   error: "#EF4444",
   success: "#22C55E",
+} as const;
+
+// Landing-page warm palette applied to chat light mode
+const lightWarm = {
+  background: "#fffbf5",
+  backgroundGradient:
+    "linear-gradient(160deg, #fffbf5 0%, #fff7ed 40%, #fef3c7 100%)",
+  surface: "#fffbf5",
+  border: "rgba(231, 229, 228, 0.65)",
+  borderGlass: "rgba(255, 255, 255, 0.65)",
 } as const;
 
 export const fallbackStyles = (theme: Theme) => ({
@@ -47,7 +57,7 @@ export const appShellStyles = (theme: Theme) => ({
   flexDirection: "column",
   overflow: "hidden",
   color: "var(--foreground)",
-  background: "#F9FAFB",
+  background: lightWarm.backgroundGradient,
   ".dark &": {
     background: `radial-gradient(circle at 12% 6%, ${alpha(colors.base.brand[500], 0.22)} 0, transparent 30%),
         radial-gradient(circle at 92% 14%, ${alpha(colors.base.brand[600], 0.18)} 0, transparent 25%),
@@ -64,8 +74,8 @@ export const headerBarStyles = (theme: Theme) => ({
   gap: 1.5,
   px: { xs: 1.5, sm: 2 },
   py: 1.25,
-  borderBottom: "1px solid rgba(255, 255, 255, 0.72)",
-  background: alpha("#FFFFFF", 0.68),
+  borderBottom: `1px solid ${lightWarm.border}`,
+  background: alpha(lightWarm.surface, 0.82),
   boxShadow: "0 12px 30px rgba(15, 23, 42, 0.04)",
   backdropFilter: "blur(18px) saturate(1.14)",
   WebkitBackdropFilter: "blur(18px) saturate(1.14)",
@@ -100,6 +110,45 @@ export const brandButtonStyles = {
   },
 };
 
+export const brandLogoLockupStyles = {
+  display: "flex",
+  alignItems: "center",
+  gap: "10px",
+  minWidth: 0,
+};
+
+export const brandLogoImageStyles = {
+  width: 36,
+  height: 36,
+  flexShrink: 0,
+};
+
+export const brandHeaderTextStyles = {
+  textAlign: "left",
+  fontWeight: fontWeights.bold,
+  fontSize: "1rem",
+  lineHeight: 1,
+  color: "#1C1917",
+  transition: "color 180ms ease-in-out",
+  ".dark &": {
+    color: darkFoodChat.text,
+  },
+};
+
+export const brandHeaderAccentStyles = {
+  background: "linear-gradient(135deg, #EA580C 0%, #D84315 54%, #B71C1C 100%)",
+  backgroundClip: "text",
+  WebkitBackgroundClip: "text",
+  WebkitTextFillColor: "transparent",
+  ".dark &": {
+    background:
+      "linear-gradient(135deg, #FFB25C 0%, #FF8A1F 54%, #F26608 100%)",
+    backgroundClip: "text",
+    WebkitBackgroundClip: "text",
+    WebkitTextFillColor: "transparent",
+  },
+};
+
 export const brandMarkStyles = (theme: Theme) => ({
   display: { xs: "none", sm: "grid" },
   placeItems: "center",
@@ -108,7 +157,7 @@ export const brandMarkStyles = (theme: Theme) => ({
   borderRadius: "12px",
   color: "#fff",
   background: colors.food.accentGradient,
-  boxShadow: `0 14px 34px ${alpha(colors.base.brand[600], 0.34)}`,
+  // boxShadow: `0 14px 34px ${alpha(colors.base.brand[600], 0.34)}`,
 });
 
 export const brandTextStyles = {
@@ -172,7 +221,7 @@ export const dropdownPanelStyles = (theme: Theme) => ({
   overflow: "hidden",
   borderRadius: effects.borderRadius.lg,
   border: `1px solid ${alpha(colors.base.brand[600], 0.2)}`,
-  backgroundColor: alpha("#FFFDF9", 0.98),
+  backgroundColor: alpha(lightWarm.surface, 0.98),
   color: "var(--foreground)",
   boxShadow: effects.shadows.lg,
   backdropFilter: "blur(18px)",
@@ -238,7 +287,7 @@ export const searchOverlayPanelStyles = (theme: Theme) => ({
   willChange: "transform, opacity",
   borderRadius: { xs: "22px", sm: "30px" },
   border: `1px solid ${alpha(colors.base.brand[500], 0.28)}`,
-  backgroundColor: colors.food.surface,
+  backgroundColor: alpha(lightWarm.surface, 0.98),
   boxShadow: `0 30px 90px ${alpha(colors.base.brand[800], 0.18)}`,
   ".dark &": {
     borderColor: darkFoodChat.border,
@@ -264,8 +313,8 @@ export const desktopSidebarMotionStyles = (theme: Theme) => ({
   zIndex: 20,
   height: "100%",
   overflow: "hidden",
-  borderRight: "1px solid rgba(255, 255, 255, 0.72)",
-  backgroundColor: alpha("#FFFFFF", 0.64),
+  borderRight: `1px solid ${lightWarm.border}`,
+  backgroundColor: alpha(lightWarm.surface, 0.78),
   boxShadow: "12px 0 32px rgba(15, 23, 42, 0.04)",
   backdropFilter: "blur(20px) saturate(1.14)",
   WebkitBackdropFilter: "blur(20px) saturate(1.14)",
@@ -292,9 +341,9 @@ export const emptyStateStyles = {
   alignItems: { xs: "flex-start", md: "center" },
   justifyContent: "center",
   overflowY: "auto",
-  px: { xs: 1.25, sm: 3 },
-  pt: { xs: 3, sm: 4, md: 8 },
-  pb: { xs: 3, sm: 4, md: 8 },
+  px: { xs: 1, sm: 3 },
+  pt: { xs: 1.5, sm: 4, md: 8 },
+  pb: { xs: 2, sm: 4, md: 8 },
   scrollbarGutter: "stable",
   "&::-webkit-scrollbar": {
     width: 8,
@@ -318,11 +367,11 @@ export const emptyHeroPanelStyles = (theme: Theme) => ({
   width: "100%",
   maxWidth: 900,
   mx: "auto",
-  borderRadius: { xs: "24px", md: "34px" },
-  p: { xs: 2, sm: 4, md: 5 },
+  borderRadius: { xs: "20px", sm: "28px", md: "34px" },
+  p: { xs: 1.5, sm: 4, md: 5 },
   overflow: "hidden",
-  border: "1px solid rgba(255, 255, 255, 0.78)",
-  background: alpha("#FFFFFF", 0.72),
+  border: `1px solid ${lightWarm.border}`,
+  background: alpha(lightWarm.surface, 0.85),
   boxShadow:
     "0 24px 64px rgba(15, 23, 42, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.86)",
   backdropFilter: "blur(22px) saturate(1.12)",
@@ -353,19 +402,23 @@ export const emptyHeroPanelStyles = (theme: Theme) => ({
       filter: "saturate(1.45)",
     },
   },
+  "@media (max-width: 420px)": {
+    borderRadius: "18px",
+    p: 1.25,
+  },
 });
 
 export const emptyEyebrowStyles = {
   display: "inline-flex",
   alignItems: "center",
   gap: 0.75,
-  mb: 2,
+  mb: { xs: 1.25, sm: 2 },
   borderRadius: "999px",
-  px: 1.5,
-  py: 0.75,
+  px: { xs: 1.1, sm: 1.5 },
+  py: { xs: 0.55, sm: 0.75 },
   color: colors.base.brand[700],
   backgroundColor: alpha(colors.base.brand[500], 0.18),
-  fontSize: "0.78rem",
+  fontSize: { xs: "0.68rem", sm: "0.78rem" },
   fontWeight: fontWeights.bold,
   ".dark &": {
     color: darkFoodChat.orange,
@@ -377,30 +430,39 @@ export const emptyEyebrowStyles = {
 export const emptyTitleStyles = {
   maxWidth: 680,
   fontFamily: "var(--font-display)",
-  fontSize: { xs: "2rem", sm: "3.4rem", md: "4.2rem" },
+  fontSize: { xs: "1.95rem", sm: "3.4rem", md: "4.2rem" },
   fontWeight: fontWeights.extrabold,
   lineHeight: { xs: 0.94, sm: 0.98 },
   letterSpacing: 0,
   color: "var(--foreground)",
   textWrap: "balance",
+  "@media (max-width: 420px)": {
+    maxWidth: 260,
+    fontSize: "1.72rem",
+    lineHeight: 0.98,
+  },
 };
 
 export const emptyDescriptionStyles = {
-  mt: 2,
+  mt: { xs: 1.15, sm: 2 },
   maxWidth: 600,
-  fontSize: { xs: "1rem", sm: "1.05rem" },
-  lineHeight: { xs: 1.62, sm: 1.7 },
+  fontSize: { xs: "0.9rem", sm: "1.05rem" },
+  lineHeight: { xs: 1.5, sm: 1.7 },
   color: "var(--muted-foreground)",
   ".dark &": {
     color: darkFoodChat.muted,
+  },
+  "@media (max-width: 420px)": {
+    fontSize: "0.84rem",
+    lineHeight: 1.45,
   },
 };
 
 export const emptySignalRowStyles = {
   display: "flex",
   flexWrap: "wrap",
-  gap: 1,
-  mt: { xs: 2.25, sm: 2.75 },
+  gap: { xs: 0.55, sm: 1 },
+  mt: { xs: 1.4, sm: 2.75 },
 };
 
 export const emptySignalChipStyles = {
@@ -408,13 +470,13 @@ export const emptySignalChipStyles = {
   alignItems: "center",
   borderRadius: "999px",
   border: "1px solid rgba(255, 255, 255, 0.76)",
-  px: 1.25,
-  py: 0.55,
+  px: { xs: 0.9, sm: 1.25 },
+  py: { xs: 0.38, sm: 0.55 },
   color: "var(--muted-foreground)",
-  backgroundColor: alpha("#F9FAFB", 0.86),
-  fontSize: "0.76rem",
+  backgroundColor: alpha(lightWarm.surface, 0.86),
+  fontSize: { xs: "0.68rem", sm: "0.76rem" },
   fontWeight: fontWeights.bold,
-  borderColor: "#E5E7EB",
+  borderColor: "rgba(231, 229, 228, 0.8)",
   ".dark &": {
     borderColor: darkFoodChat.borderSoft,
     color: darkFoodChat.muted,
@@ -425,19 +487,19 @@ export const emptySignalChipStyles = {
 export const promptGridStyles = {
   display: "grid",
   gridTemplateColumns: { xs: "1fr", sm: "repeat(2, minmax(0, 1fr))" },
-  gap: { xs: 1.25, sm: 1.5 },
-  mt: { xs: 3, sm: 4 },
+  gap: { xs: 0.85, sm: 1.5 },
+  mt: { xs: 1.6, sm: 4 },
 };
 
 export const promptCardStyles = (theme: Theme) => ({
   display: "flex",
-  minHeight: { xs: 74, sm: 92 },
+  minHeight: { xs: 58, sm: 92 },
   alignItems: "center",
-  gap: { xs: 1.25, sm: 1.5 },
-  border: "1px solid #E5E7EB",
-  borderRadius: effects.borderRadius.xl,
-  p: { xs: 1.4, sm: 2 },
-  backgroundColor: alpha("#FFFFFF", 0.7),
+  gap: { xs: 1, sm: 1.5 },
+  border: `1px solid rgba(231, 229, 228, 0.8)`,
+  borderRadius: { xs: "16px", sm: effects.borderRadius.xl },
+  p: { xs: 1.05, sm: 2 },
+  backgroundColor: alpha(lightWarm.surface, 0.78),
   color: "var(--foreground)",
   textAlign: "left",
   cursor: "pointer",
@@ -468,15 +530,20 @@ export const promptCardStyles = (theme: Theme) => ({
       background: alpha(colors.base.brand[500], 0.14),
     },
   },
+  "@media (max-width: 420px)": {
+    minHeight: 54,
+    p: 0.9,
+    borderRadius: "15px",
+  },
 });
 
 export const promptIconStyles = {
   display: "grid",
-  width: { xs: 42, sm: 38 },
-  height: { xs: 42, sm: 38 },
+  width: { xs: 34, sm: 38 },
+  height: { xs: 34, sm: 38 },
   flexShrink: 0,
   placeItems: "center",
-  borderRadius: "14px",
+  borderRadius: { xs: "12px", sm: "14px" },
   color: "#fff",
   background: colors.food.accentGradient,
   boxShadow: `0 12px 30px ${alpha(colors.base.brand[600], 0.32)}`,
@@ -490,15 +557,15 @@ export const promptCardContentStyles = {
 };
 
 export const promptTextStyles = {
-  fontSize: { xs: "0.98rem", sm: "0.92rem" },
+  fontSize: { xs: "0.84rem", sm: "0.92rem" },
   fontWeight: fontWeights.semibold,
-  lineHeight: 1.35,
+  lineHeight: { xs: 1.25, sm: 1.35 },
   textWrap: "pretty",
 };
 
 export const promptTagStyles = {
   color: "var(--muted-foreground)",
-  fontSize: "0.76rem",
+  fontSize: { xs: "0.68rem", sm: "0.76rem" },
   fontWeight: fontWeights.bold,
   lineHeight: 1.25,
   ".dark &": {
@@ -641,7 +708,7 @@ export const localAssistantBubbleStyles = (theme: Theme) => ({
 
 export const disclaimerNoticeStyles = (theme: Theme) => ({
   display: "flex",
-  alignItems: "flex-start",
+  alignItems: "center",
   gap: 1.25,
   mb: 2,
   border: "1px solid rgba(15, 23, 42, 0.12)",
@@ -1217,7 +1284,7 @@ export const scrollToBottomWrapStyles = {
 export const scrollToBottomButtonStyles = (theme: Theme) => ({
   borderRadius: "999px",
   borderColor: alpha(colors.base.brand[600], 0.22),
-  backgroundColor: alpha("#FFFDF9", 0.94),
+  backgroundColor: alpha(lightWarm.surface, 0.96),
   boxShadow: `0 14px 34px ${alpha(colors.base.brand[700], 0.12)}`,
   ".dark &": {
     borderColor: darkFoodChat.borderSoft,
@@ -1236,7 +1303,7 @@ export const inputShellStyles = (theme: Theme) => ({
   // pt: 2,
   pb: { xs: 2, sm: 2.8 },
   background:
-    "linear-gradient(180deg, transparent 0%, rgba(249, 250, 251, 0.72) 36%, rgba(249, 250, 251, 0.94) 100%)",
+    "linear-gradient(180deg, transparent 0%, rgba(255, 251, 245, 0.78) 36%, rgba(255, 251, 245, 0.97) 100%)",
   ".dark &": {
     background:
       "linear-gradient(180deg, transparent 0%, rgba(9, 9, 11, 0.9) 36%, rgba(5, 5, 5, 0.98) 100%)",
@@ -1255,8 +1322,8 @@ export const composerStyles = (theme: Theme) => ({
   zIndex: 1,
   overflow: "visible",
   borderRadius: { xs: "22px", sm: "28px" },
-  border: "1px solid rgba(255, 255, 255, 0.76)",
-  background: alpha("#FFFFFF", 0.72),
+  border: `1px solid ${lightWarm.border}`,
+  background: alpha(lightWarm.surface, 0.88),
   boxShadow:
     "0 22px 58px rgba(15, 23, 42, 0.09), inset 0 1px 0 rgba(255, 255, 255, 0.84)",
   backdropFilter: "blur(22px) saturate(1.12)",
@@ -1298,7 +1365,7 @@ export const attachmentChipStyles = (theme: Theme) => ({
   gap: 0.75,
   borderRadius: "14px",
   border: `1px solid ${alpha(colors.base.brand[600], 0.16)}`,
-  backgroundColor: alpha("#FFFDF9", 0.82),
+  backgroundColor: alpha(lightWarm.surface, 0.88),
   px: 1.2,
   py: 0.9,
   color: "var(--foreground)",
@@ -1360,8 +1427,8 @@ export const toolsPanelStyles = (theme: Theme) => ({
   zIndex: 100,
   width: { xs: 280, sm: 400 },
   borderRadius: effects.borderRadius.xl,
-  border: "1px solid rgba(255, 255, 255, 0.76)",
-  backgroundColor: alpha("#FFFFFF", 0.78),
+  border: `1px solid ${lightWarm.border}`,
+  backgroundColor: alpha(lightWarm.surface, 0.94),
   p: 1,
   color: "var(--foreground)",
   boxShadow:
@@ -1431,8 +1498,8 @@ export const historyShellStyles = (theme: Theme) => ({
   flexShrink: 0,
   flexDirection: "column",
   gap: 2,
-  borderRight: "1px solid rgba(255, 255, 255, 0.76)",
-  background: alpha("#FFFFFF", 0.68),
+  borderRight: `1px solid ${lightWarm.border}`,
+  background: alpha(lightWarm.surface, 0.82),
   boxShadow:
     "12px 0 32px rgba(15, 23, 42, 0.04), inset -1px 0 0 rgba(255, 255, 255, 0.72)",
   backdropFilter: "blur(20px) saturate(1.12)",
@@ -1719,7 +1786,7 @@ export const historyRenameInputStyles = (theme: Theme) => ({
   width: "100%",
   border: `1px solid ${alpha(colors.base.brand[500], 0.36)}`,
   borderRadius: "12px",
-  backgroundColor: alpha("#FFFFFF", 0.78),
+  backgroundColor: alpha(lightWarm.surface, 0.88),
   px: 1,
   py: 0.65,
   color: "var(--foreground)",
@@ -1820,6 +1887,10 @@ export const styles = {
   headerBarStyles,
   headerSideStyles,
   brandButtonStyles,
+  brandLogoLockupStyles,
+  brandLogoImageStyles,
+  brandHeaderTextStyles,
+  brandHeaderAccentStyles,
   brandMarkStyles,
   brandTextStyles,
   brandTitleStyles,

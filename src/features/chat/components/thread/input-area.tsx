@@ -9,12 +9,10 @@ import {
   LoaderCircle,
   Paperclip,
   SlidersHorizontal,
-  Sparkles,
   X,
   Clock3,
   Leaf,
   Flame,
-  Users,
 } from "lucide-react";
 import { FormEvent, useEffect, useRef, useState } from "react";
 import { styles } from "../../_styles";
@@ -30,8 +28,8 @@ interface InputAreaProps {
   input: string;
   onInputChange: (value: string) => void;
   onSubmit: (e: FormEvent) => void;
-  onShowRecommendationAnalysisChange: (checked: boolean) => void;
-  showRecommendationAnalysis: boolean;
+  onUseHealthProfileChange: (checked: boolean) => void;
+  useHealthProfile: boolean;
   isLoading: boolean;
   onCancel?: () => void;
   onKeyDown?: (e: React.KeyboardEvent) => void;
@@ -44,8 +42,8 @@ export function InputArea({
   input,
   onInputChange,
   onSubmit,
-  onShowRecommendationAnalysisChange,
-  showRecommendationAnalysis,
+  onUseHealthProfileChange,
+  useHealthProfile,
   isLoading,
   onCancel,
   onKeyDown,
@@ -338,18 +336,18 @@ export function InputArea({
                           }}
                         >
                           <Label
-                            htmlFor="show-recommendation-analysis"
+                            htmlFor="use-health-profile"
                             sx={{
                               color: "var(--foreground)",
                               cursor: "pointer",
                             }}
                           >
-                            Hiện phân tích gợi ý
+                            Lọc theo hồ sơ sức khỏe
                           </Label>
                           <Switch
-                            id="show-recommendation-analysis"
-                            checked={showRecommendationAnalysis ?? false}
-                            onCheckedChange={onShowRecommendationAnalysisChange}
+                            id="use-health-profile"
+                            checked={useHealthProfile ?? true}
+                            onCheckedChange={onUseHealthProfileChange}
                             disabled={isLoading}
                           />
                         </Box>
@@ -365,16 +363,16 @@ export function InputArea({
                   }}
                 >
                   <Switch
-                    id="show-recommendation-analysis-inline"
-                    checked={showRecommendationAnalysis ?? false}
-                    onCheckedChange={onShowRecommendationAnalysisChange}
+                    id="use-health-profile-inline"
+                    checked={useHealthProfile ?? true}
+                    onCheckedChange={onUseHealthProfileChange}
                     disabled={isLoading}
                   />
                   <Label
-                    htmlFor="show-recommendation-analysis-inline"
+                    htmlFor="use-health-profile-inline"
                     sx={{ cursor: "pointer" }}
                   >
-                    Hiện phân tích gợi ý
+                    Lọc theo hồ sơ sức khỏe
                   </Label>
                 </Box>
               </Box>

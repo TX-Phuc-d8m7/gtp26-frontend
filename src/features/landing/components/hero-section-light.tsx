@@ -1,4 +1,5 @@
 import { Box, Button, Typography, alpha, Container } from "@mui/material";
+import Image from "next/image";
 import Link from "next/link";
 
 export function HeroSectionLight() {
@@ -57,7 +58,7 @@ export function HeroSectionLight() {
                   letterSpacing: "0.1em",
                 }}
               >
-                AI Health Agent
+                AI Food Assistant Đà Nẵng
               </Typography>
             </Box>
 
@@ -70,7 +71,7 @@ export function HeroSectionLight() {
                 lineHeight: 1.1,
               }}
             >
-              Trợ Lý Sức Khoẻ{" "}
+              Hôm Nay Bạn{" "}
               <Box
                 component="span"
                 sx={{
@@ -81,9 +82,9 @@ export function HeroSectionLight() {
                   WebkitTextFillColor: "transparent",
                 }}
               >
-                AI
+                Ăn Gì
               </Box>{" "}
-              Của Bạn
+              Ở Đà Nẵng?
             </Typography>
 
             <Typography
@@ -94,7 +95,8 @@ export function HeroSectionLight() {
                 maxWidth: 520,
               }}
             >
-              Lập kế hoạch dinh dưỡng cá nhân, theo dõi tiến độ sức khỏe, và nhận lời khuyên từ AI được huấn luyện. Đạt được mục tiêu sức khỏe của bạn nhanh hơn.
+              Foodie Suggest giúp bạn trò chuyện tự nhiên để tìm món ăn phù hợp
+              với khẩu vị, ngân sách, dị ứng, bệnh lý nền và địa điểm quanh bạn.
             </Typography>
 
             <Box
@@ -105,7 +107,10 @@ export function HeroSectionLight() {
                 pt: 2,
               }}
             >
-              <Link href="/chat" style={{ textDecoration: "none", flex: { xs: 1, sm: "auto" } }}>
+              <Link
+                href="/chat"
+                style={{ textDecoration: "none", display: "block" }}
+              >
                 <Button
                   variant="contained"
                   size="large"
@@ -127,7 +132,7 @@ export function HeroSectionLight() {
                     },
                   }}
                 >
-                  Bắt Đầu Miễn Phí
+                  Bắt đầu hỏi món
                 </Button>
               </Link>
               <Button
@@ -152,7 +157,7 @@ export function HeroSectionLight() {
                   },
                 }}
               >
-                Xem Demo
+                Khám phá món ăn
               </Button>
             </Box>
 
@@ -173,10 +178,10 @@ export function HeroSectionLight() {
                     color: "#27251F",
                   }}
                 >
-                  10K+
+                  5+
                 </Typography>
                 <Typography sx={{ fontSize: 13, color: alpha("#27251F", 0.5) }}>
-                  Người dùng
+                  Món gợi ý mỗi lượt
                 </Typography>
               </Box>
               <Box>
@@ -187,10 +192,10 @@ export function HeroSectionLight() {
                     color: "#27251F",
                   }}
                 >
-                  4.8/5
+                  Hồ sơ
                 </Typography>
                 <Typography sx={{ fontSize: 13, color: alpha("#27251F", 0.5) }}>
-                  Xếp hạng
+                  Cá nhân hoá
                 </Typography>
               </Box>
               <Box>
@@ -201,215 +206,168 @@ export function HeroSectionLight() {
                     color: "#27251F",
                   }}
                 >
-                  24/7
+                  Địa điểm
                 </Typography>
                 <Typography sx={{ fontSize: 13, color: alpha("#27251F", 0.5) }}>
-                  Hỗ trợ
+                  Quán gần bạn
                 </Typography>
               </Box>
             </Box>
           </Box>
 
-          {/* Right column - Visual showcase */}
+          {/* Right column - Food image collage */}
           <Box
             sx={{
-              display: { xs: "none", lg: "flex" },
-              alignItems: "center",
-              justifyContent: "center",
+              display: { xs: "none", lg: "block" },
               position: "relative",
-              height: 500,
+              height: 540,
             }}
           >
-            {/* Floating cards animation */}
+            {/* Main large food image */}
             <Box
               sx={{
-                position: "relative",
-                width: "100%",
-                height: "100%",
+                position: "absolute",
+                top: 0,
+                right: 0,
+                width: "73%",
+                height: "76%",
+                borderRadius: "24px",
+                overflow: "hidden",
+                boxShadow: `0 24px 64px ${alpha("#000000", 0.12)}`,
               }}
             >
-              {/* Card 1 - Meal Plan */}
+              <Image
+                src="https://images.unsplash.com/photo-1582878826629-29b7ad1cdc43?w=700&h=560&q=85&auto=format&fit=crop"
+                alt="Phở bò Việt Nam"
+                fill
+                style={{ objectFit: "cover" }}
+                priority
+              />
               <Box
                 sx={{
                   position: "absolute",
-                  top: 20,
-                  right: 40,
-                  width: 280,
-                  borderRadius: "16px",
-                  background: `linear-gradient(135deg, ${alpha(
-                    "#FAFAF8",
-                    0.6,
-                  )} 0%, ${alpha("#F5F3F0", 0.5)} 100%)`,
-                  border: `1px solid ${alpha("#27251F", 0.08)}`,
-                  backdropFilter: "blur(20px)",
-                  padding: "20px",
-                  boxShadow: `0 8px 32px ${alpha("#000000", 0.06)}`,
-                  animation: "float1 4s ease-in-out infinite",
-                  "@keyframes float1": {
-                    "0%, 100%": { transform: "translateY(0px)" },
-                    "50%": { transform: "translateY(-20px)" },
-                  },
-                }}
-              >
-                <Typography
-                  sx={{
-                    fontSize: 12,
-                    color: "#EA580C",
-                    fontWeight: 600,
-                    textTransform: "uppercase",
-                    mb: 1,
-                  }}
-                >
-                  Kế hoạch hôm nay
-                </Typography>
-                <Typography
-                  sx={{
-                    fontSize: 14,
-                    color: "#27251F",
-                    mb: 2,
-                  }}
-                >
-                  Gà nướng + Cơm lứt + Rau luộc
-                </Typography>
-                <Box
-                  sx={{
-                    display: "grid",
-                    gridTemplateColumns: "1fr 1fr",
-                    gap: 2,
-                  }}
-                >
-                  <Box>
-                    <Typography
-                      sx={{
-                        fontSize: 12,
-                        color: alpha("#27251F", 0.5),
-                        mb: 0.5,
-                      }}
-                    >
-                      Protein
-                    </Typography>
-                    <Typography sx={{ fontSize: 14, color: "#EA580C" }}>
-                      45g
-                    </Typography>
-                  </Box>
-                  <Box>
-                    <Typography
-                      sx={{
-                        fontSize: 12,
-                        color: alpha("#27251F", 0.5),
-                        mb: 0.5,
-                      }}
-                    >
-                      Calories
-                    </Typography>
-                    <Typography sx={{ fontSize: 14, color: "#EA580C" }}>
-                      650kcal
-                    </Typography>
-                  </Box>
-                </Box>
-              </Box>
-
-              {/* Card 2 - Health Stats */}
-              <Box
-                sx={{
-                  position: "absolute",
-                  bottom: 40,
-                  left: 20,
-                  width: 260,
-                  borderRadius: "16px",
-                  background: `linear-gradient(135deg, ${alpha(
-                    "#FAFAF8",
-                    0.6,
-                  )} 0%, ${alpha("#F5F3F0", 0.5)} 100%)`,
-                  border: `1px solid ${alpha("#27251F", 0.08)}`,
-                  backdropFilter: "blur(20px)",
-                  padding: "20px",
-                  boxShadow: `0 8px 32px ${alpha("#000000", 0.06)}`,
-                  animation: "float2 5s ease-in-out infinite",
-                  "@keyframes float2": {
-                    "0%, 100%": { transform: "translateY(0px)" },
-                    "50%": { transform: "translateY(15px)" },
-                  },
-                }}
-              >
-                <Typography
-                  sx={{
-                    fontSize: 12,
-                    color: "#EA580C",
-                    fontWeight: 600,
-                    textTransform: "uppercase",
-                    mb: 2,
-                  }}
-                >
-                  Tiến độ tuần này
-                </Typography>
-                <Box sx={{ display: "grid", gap: 2 }}>
-                  <Box>
-                    <Box
-                      sx={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        mb: 1,
-                      }}
-                    >
-                      <Typography
-                        sx={{
-                          fontSize: 12,
-                          color: alpha("#27251F", 0.6),
-                        }}
-                      >
-                        Mục tiêu
-                      </Typography>
-                      <Typography
-                        sx={{
-                          fontSize: 12,
-                          color: "#EA580C",
-                          fontWeight: 600,
-                        }}
-                      >
-                        85%
-                      </Typography>
-                    </Box>
-                    <Box
-                      sx={{
-                        height: 4,
-                        borderRadius: "2px",
-                        background: alpha("#27251F", 0.1),
-                        overflow: "hidden",
-                      }}
-                    >
-                      <Box
-                        sx={{
-                          height: "100%",
-                          width: "85%",
-                          background:
-                            "linear-gradient(90deg, #EA580C, #D84315)",
-                        }}
-                      />
-                    </Box>
-                  </Box>
-                </Box>
-              </Box>
-
-              {/* Center glow effect */}
-              <Box
-                sx={{
-                  position: "absolute",
-                  top: "50%",
-                  left: "50%",
-                  transform: "translate(-50%, -50%)",
-                  width: 200,
-                  height: 200,
-                  borderRadius: "50%",
-                  background: `radial-gradient(circle, ${alpha(
-                    "#EA580C",
-                    0.1,
-                  )} 0%, transparent 70%)`,
-                  filter: "blur(40px)",
-                  zIndex: -1,
+                  inset: 0,
+                  background:
+                    "linear-gradient(180deg,transparent 55%,rgba(0,0,0,0.22))",
                 }}
               />
             </Box>
+
+            {/* Secondary image — bottom left */}
+            <Box
+              sx={{
+                position: "absolute",
+                bottom: 0,
+                left: 0,
+                width: "54%",
+                height: "52%",
+                borderRadius: "20px",
+                overflow: "hidden",
+                border: "4px solid #FFFFFF",
+                boxShadow: `0 12px 40px ${alpha("#000000", 0.1)}`,
+              }}
+            >
+              <Image
+                src="https://images.unsplash.com/photo-1597345637412-9fd611e758f3?w=500&h=380&q=80&auto=format&fit=crop"
+                alt="Ẩm thực Đà Nẵng"
+                fill
+                style={{ objectFit: "cover" }}
+              />
+            </Box>
+
+            {/* Floating badge — match score */}
+            <Box
+              sx={{
+                position: "absolute",
+                bottom: "36%",
+                right: "-4%",
+                borderRadius: "16px",
+                background: "rgba(255,255,255,0.88)",
+                backdropFilter: "blur(16px)",
+                border: `1px solid ${alpha("#27251F", 0.07)}`,
+                boxShadow: `0 8px 32px ${alpha("#000000", 0.08)}`,
+                padding: "14px 18px",
+                display: "flex",
+                alignItems: "center",
+                gap: "12px",
+                minWidth: 200,
+                animation: "floatA 4s ease-in-out infinite",
+                "@keyframes floatA": {
+                  "0%,100%": { transform: "translateY(0)" },
+                  "50%": { transform: "translateY(-10px)" },
+                },
+              }}
+            >
+              <Box
+                sx={{
+                  width: 36,
+                  height: 36,
+                  borderRadius: "10px",
+                  background: alpha("#EA580C", 0.12),
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontSize: 18,
+                }}
+              >
+                🎯
+              </Box>
+              <Box>
+                <Typography sx={{ fontSize: 11, color: alpha("#27251F", 0.5) }}>
+                  Độ phù hợp
+                </Typography>
+                <Typography sx={{ fontSize: 15, fontWeight: 700, color: "#EA580C" }}>
+                  87% với bạn
+                </Typography>
+              </Box>
+            </Box>
+
+            {/* Floating badge — location */}
+            <Box
+              sx={{
+                position: "absolute",
+                top: "6%",
+                right: "-2%",
+                borderRadius: "14px",
+                background: "rgba(255,255,255,0.88)",
+                backdropFilter: "blur(16px)",
+                border: `1px solid ${alpha("#27251F", 0.07)}`,
+                boxShadow: `0 8px 24px ${alpha("#000000", 0.07)}`,
+                padding: "12px 16px",
+                display: "flex",
+                alignItems: "center",
+                gap: "10px",
+                animation: "floatB 5s ease-in-out infinite",
+                "@keyframes floatB": {
+                  "0%,100%": { transform: "translateY(0)" },
+                  "50%": { transform: "translateY(8px)" },
+                },
+              }}
+            >
+              <Typography sx={{ fontSize: 20 }}>📍</Typography>
+              <Box>
+                <Typography sx={{ fontSize: 11, color: alpha("#27251F", 0.5) }}>
+                  Quán gần bạn
+                </Typography>
+                <Typography sx={{ fontSize: 13, fontWeight: 700, color: "#27251F" }}>
+                  Hải Châu, Đà Nẵng
+                </Typography>
+              </Box>
+            </Box>
+
+            {/* Dot grid decoration */}
+            <Box
+              sx={{
+                position: "absolute",
+                bottom: "10%",
+                right: "8%",
+                width: 80,
+                height: 80,
+                opacity: 0.15,
+                backgroundImage: `radial-gradient(circle, #EA580C 1.5px, transparent 1.5px)`,
+                backgroundSize: "10px 10px",
+              }}
+            />
           </Box>
         </Box>
       </Container>

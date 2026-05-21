@@ -5,6 +5,5 @@
 export * from "./_use-food-search";
 export * from "./_styles";
 export * from "./_interface";
-export { SEARCH_FOODS } from "./mockData";
-export type { FoodLocation, SearchFood } from "./mockData";
+export { prewarmFilterOptions } from "./_api";
 export { default as FoodSearchUI } from "./page";

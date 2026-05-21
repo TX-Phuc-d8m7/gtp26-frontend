@@ -2,31 +2,31 @@ import { Box, Typography, alpha, Container, Rating } from "@mui/material";
 
 const testimonials = [
   {
-    name: "Nguyễn Thảo",
-    role: "Lập trình viên",
+    name: "Minh Tuấn",
+    role: "Sinh viên · Hải Châu, Đà Nẵng",
     content:
-      "Tôi đã sử dụng ứng dụng này trong 3 tháng và đã giảm 8kg. Lời khuyên về dinh dưỡng rất chính xác và dễ theo dõi.",
+      "Mình hay phân vân không biết ăn gì mỗi sáng. App gợi ý đúng khẩu vị, lại còn chỉ quán gần ký túc xá — tiện lắm!",
     rating: 5,
   },
   {
-    name: "Trần Minh",
-    role: "Huấn luyện viên fitness",
+    name: "Lan Anh",
+    role: "Nhân viên văn phòng · Sơn Trà",
     content:
-      "Công cụ theo dõi macro này rất tuyệt vời. Nó giúp tôi và những khách hàng của tôi có thể đạt mục tiêu nhanh hơn.",
+      "Mình bị dị ứng hải sản. Chỉ cần điền vào hồ sơ một lần, hệ thống tự lọc món phù hợp mà không cần nhắc lại.",
     rating: 5,
   },
   {
-    name: "Hoàng Linh",
-    role: "Quản lý dự án",
+    name: "Bác Thanh Hà",
+    role: "Nội trợ · Cẩm Lệ, Đà Nẵng",
     content:
-      "Giao diện dễ sử dụng và AI luôn đưa ra những gợi ý thông minh. Tôi khuyên tất cả bạn bè của tôi sử dụng nó.",
+      "Chồng bị tiểu đường nên tôi hay phải cân nhắc từng bữa. App gợi ý món ít đường, ít muối rất phù hợp cho gia đình tôi.",
     rating: 5,
   },
   {
-    name: "Phạm Hùng",
-    role: "Sinh viên",
+    name: "Hoàng Nam",
+    role: "Du khách · Đến thăm Đà Nẵng",
     content:
-      "Nó không chỉ giúp tôi quản lý sức khỏe mà còn học được về dinh dưỡng. Rất đáng giá!",
+      "Lần đầu đến Đà Nẵng, không biết nên thử đặc sản gì. App gợi ý Mì Quảng, bánh xèo và chỉ ngay quán gần khách sạn.",
     rating: 5,
   },
 ];
@@ -56,7 +56,7 @@ export function TestimonialsSection() {
               mb: 2,
             }}
           >
-            Người Dùng Yêu Thích Chúng Tôi
+            Các Tình Huống Hệ Thống Hỗ Trợ Tốt
           </Typography>
           <Typography
             sx={{
@@ -66,7 +66,8 @@ export function TestimonialsSection() {
               mx: "auto",
             }}
           >
-            Đọc những câu chuyện thực tế từ những người dùng của chúng tôi
+            Landing page này mô tả đúng các luồng chính đang có trong frontend
+            hiện tại
           </Typography>
         </Box>
 
@@ -176,10 +177,10 @@ export function TestimonialsSection() {
             }}
           >
             {[
-              { value: "10K+", label: "Người dùng hoạt động" },
-              { value: "92%", label: "Tỷ lệ hài lòng" },
-              { value: "2.3M+", label: "Bữa ăn được lập kế hoạch" },
-              { value: "4.8★", label: "Xếp hạng trung bình" },
+              { value: "Multi", label: "Thread trò chuyện" },
+              { value: "Food", label: "Cards gợi ý món" },
+              { value: "Map", label: "Panel quán gần bạn" },
+              { value: "Safe", label: "Lọc hồ sơ sức khỏe" },
             ].map((stat, index) => (
               <Box
                 key={index}

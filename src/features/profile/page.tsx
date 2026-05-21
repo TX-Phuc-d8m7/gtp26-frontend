@@ -7,15 +7,9 @@
 import { Controller } from "react-hook-form";
 import type { Path } from "react-hook-form";
 import {
-  ALLERGY_OPTIONS,
-  DISLIKE_OPTIONS,
-  FAVORITE_OPTIONS,
-} from "@/features/auth/onboarding";
-import {
   ArrowLeft,
-  Ban,
+  ChefHat,
   CheckCircle2,
-  Clock3,
   Flame,
   HeartPulse,
   Loader2,
@@ -24,26 +18,22 @@ import {
   Salad,
   Save,
   Sparkles,
-  Target,
   User,
-  Utensils,
-  Wallet,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
 import { styles, useProfile } from ".";
 import {
-  BUDGET_LEVEL_OPTIONS,
-  DIET_TYPE_OPTIONS,
-  MEAL_TIME_OPTIONS,
-  MEDICAL_CONDITION_OPTIONS,
-  NUTRITION_GOAL_OPTIONS,
+  DISH_TYPE_OPTIONS,
+  FAVORITE_INGREDIENT_OPTIONS,
+  HEALTH_RISK_OPTIONS,
   TASTE_PREFERENCE_OPTIONS,
 } from "@/features/profile/_interface";
 import type {
   ProfileFormData,
   ProfilePreferenceVariant,
 } from "@/features/profile/_interface";
+import LinearProgress from "@mui/material/LinearProgress";
 import { Box } from "@/shared/components/ui/box/index";
 import { Button } from "@/shared/components/ui/button/index";
 import { Form } from "@/shared/components/ui/form/index";
@@ -56,9 +46,7 @@ const PROFILE_FORM_ID = "profile-form";
 
 const navItems = [
   { href: "#profile-account", label: "Tài khoản" },
-  { href: "#profile-health", label: "Sức khỏe" },
-  { href: "#profile-taste", label: "Khẩu vị" },
-  { href: "#profile-context", label: "Bối cảnh ăn" },
+  { href: "#profile-health", label: "Hồ sơ sức khỏe" },
 ] as const;
 
 export default function Profile() {
@@ -69,6 +57,7 @@ export default function Profile() {
     errors,
     handleBack,
     isDirty,
+    isFetching,
     isLoading,
     onSubmit,
     profileValues,
@@ -77,54 +66,50 @@ export default function Profile() {
   const completedFields = [
     profileValues.fullName,
     profileValues.email,
-    profileValues.allergies,
-    profileValues.medicalConditions,
-    profileValues.dietTypes,
+    profileValues.healthRisks,
     profileValues.favorites,
-    profileValues.dislikes,
     profileValues.tastePreferences,
-    profileValues.budgetLevels,
-    profileValues.mealTimes,
-    profileValues.nutritionGoals,
+    profileValues.dishTypes,
   ].filter((value) =>
     Array.isArray(value) ? value.length > 0 : Boolean(value),
   );
-  const completionPercent = Math.round((completedFields.length / 11) * 100);
-  const healthSignals =
-    profileValues.allergies.length +
-    profileValues.medicalConditions.length +
-    profileValues.dietTypes.length;
+  const completionPercent = Math.round((completedFields.length / 6) * 100);
+  const healthSignals = profileValues.healthRisks.length;
   const tasteSignals =
     profileValues.favorites.length +
-    profileValues.dislikes.length +
-    profileValues.tastePreferences.length;
-  const contextSignals =
-    profileValues.budgetLevels.length +
-    profileValues.mealTimes.length +
-    profileValues.nutritionGoals.length;
+    profileValues.tastePreferences.length +
+    profileValues.dishTypes.length;
   const insightItems = [
-    profileValues.allergies.length
-      ? `Tránh ${profileValues.allergies.slice(0, 2).join(", ")}`
+    profileValues.healthRisks.length
+      ? `Lưu ý ${profileValues.healthRisks.slice(0, 2).join(", ")}`
       : null,
-    profileValues.dietTypes.length
-      ? `Ưu tiên ${profileValues.dietTypes.slice(0, 2).join(", ")}`
+    profileValues.favorites.length
+      ? `Thích ${profileValues.favorites.slice(0, 2).join(", ")}`
       : null,
     profileValues.tastePreferences.length
       ? `Gu ${profileValues.tastePreferences.slice(0, 2).join(", ")}`
       : null,
-    profileValues.budgetLevels.length
-      ? `Ngân sách ${profileValues.budgetLevels[0].toLowerCase()}`
-      : null,
-    profileValues.mealTimes.length
-      ? `Hay ăn ${profileValues.mealTimes[0].toLowerCase()}`
-      : null,
-    profileValues.nutritionGoals.length
-      ? `Mục tiêu ${profileValues.nutritionGoals[0].toLowerCase()}`
+    profileValues.dishTypes.length
+      ? `Cách nấu ${profileValues.dishTypes.slice(0, 2).join(", ")}`
       : null,
   ].filter(Boolean) as string[];
 
   return (
     <Box sx={styles.pageShellStyles}>
+      {isFetching && (
+        <LinearProgress
+          sx={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            zIndex: 9999,
+            height: 3,
+            "& .MuiLinearProgress-bar": { backgroundColor: "#ea580c" },
+            backgroundColor: "rgba(234,88,12,0.15)",
+          }}
+        />
+      )}
       <Box sx={styles.pageBackgroundStyles} />
 
       <Box sx={styles.controlHeaderStyles}>
@@ -252,11 +237,6 @@ export default function Profile() {
                   value={tasteSignals}
                   helper="tín hiệu"
                 />
-                <SummaryMetric
-                  label="Bối cảnh"
-                  value={contextSignals}
-                  helper="tín hiệu"
-                />
               </Box>
 
               <Box sx={styles.insightListStyles}>
@@ -331,7 +311,27 @@ export default function Profile() {
 
                   <Box sx={styles.fullWidthFieldStyles}>
                     <Label sx={styles.passwordLabelStyles}>
-                      <Typography as="span">Đổi mật khẩu mới</Typography>
+                      <Typography as="span">Mật khẩu hiện tại</Typography>
+                      <Typography as="span" sx={styles.optionalTextStyles}>
+                        Bắt buộc khi đổi mật khẩu
+                      </Typography>
+                    </Label>
+                    <Box sx={styles.inputWrapperStyles}>
+                      <Box sx={styles.inputIconWrapperStyles}>
+                        <Box component={Lock} sx={styles.inputIconStyles} />
+                      </Box>
+                      <Input
+                        type="password"
+                        placeholder="Nhập mật khẩu hiện tại"
+                        sx={styles.passwordInputStyles}
+                        {...register("currentPassword")}
+                      />
+                    </Box>
+                  </Box>
+
+                  <Box sx={styles.fullWidthFieldStyles}>
+                    <Label sx={styles.passwordLabelStyles}>
+                      <Typography as="span">Mật khẩu mới</Typography>
                       <Typography as="span" sx={styles.optionalTextStyles}>
                         Bỏ trống nếu không đổi
                       </Typography>
@@ -342,7 +342,7 @@ export default function Profile() {
                       </Box>
                       <Input
                         type="password"
-                        placeholder="••••••••"
+                        placeholder="Mật khẩu mới tối thiểu 6 ký tự"
                         sx={styles.passwordInputStyles}
                         {...register("password")}
                       />
@@ -361,10 +361,11 @@ export default function Profile() {
                   </Box>
                   <Box>
                     <Typography as="h2" sx={styles.sectionTitleStyles}>
-                      Hồ sơ sức khỏe
+                      Hồ sơ sức khỏe & khẩu vị
                     </Typography>
                     <Typography sx={styles.sectionDescriptionStyles}>
-                      Các dữ liệu an toàn giúp AI tránh món có rủi ro.
+                      Các dữ liệu này giúp AI lọc rủi ro và hiểu cách bạn muốn
+                      ăn.
                     </Typography>
                   </Box>
                 </Box>
@@ -372,70 +373,21 @@ export default function Profile() {
                 <Box sx={styles.preferenceGridStyles}>
                   <PreferenceField
                     control={control}
-                    name="allergies"
-                    label="Dị ứng thực phẩm"
-                    description="Các nguyên liệu cần loại trừ tuyệt đối khi gợi ý món."
-                    options={ALLERGY_OPTIONS}
+                    name="healthRisks"
+                    label="Bệnh lý và dị ứng"
+                    description="Các bệnh lý nền hoặc dị ứng cần được đưa vào bộ lọc an toàn."
+                    options={HEALTH_RISK_OPTIONS}
                     variant="danger"
                     Icon={HeartPulse}
                   />
-                  <PreferenceField
-                    control={control}
-                    name="dislikes"
-                    label="Nguyên liệu không thích"
-                    description="Những món hoặc nguyên liệu bạn thường muốn tránh."
-                    options={DISLIKE_OPTIONS}
-                    variant="danger"
-                    Icon={Ban}
-                  />
-                  <PreferenceField
-                    control={control}
-                    name="medicalConditions"
-                    label="Bệnh lý nền"
-                    description="Dùng để tránh món có rủi ro với tình trạng sức khỏe."
-                    options={MEDICAL_CONDITION_OPTIONS}
-                    variant="default"
-                    Icon={HeartPulse}
-                  />
-                  <PreferenceField
-                    control={control}
-                    name="dietTypes"
-                    label="Chế độ ăn kiêng"
-                    description="Các nguyên tắc ăn uống cố định bạn đang theo."
-                    options={DIET_TYPE_OPTIONS}
-                    variant="success"
-                    Icon={Salad}
-                  />
-                </Box>
-              </Box>
-
-              <Box id="profile-taste" sx={styles.sectionCardStyles}>
-                <Box sx={styles.sectionHeaderStyles}>
-                  <Box sx={styles.sectionIconStyles("success")}>
-                    <Box
-                      component={Utensils}
-                      sx={styles.preferenceIconSvgStyles}
-                    />
-                  </Box>
-                  <Box>
-                    <Typography as="h2" sx={styles.sectionTitleStyles}>
-                      Khẩu vị & món yêu thích
-                    </Typography>
-                    <Typography sx={styles.sectionDescriptionStyles}>
-                      Cho AI biết gu ăn uống để gợi ý tự nhiên hơn.
-                    </Typography>
-                  </Box>
-                </Box>
-
-                <Box sx={styles.preferenceGridStyles}>
                   <PreferenceField
                     control={control}
                     name="favorites"
-                    label="Món ăn yêu thích"
-                    description="Các nhóm món giúp AI hiểu gu ăn uống quen thuộc của bạn."
-                    options={FAVORITE_OPTIONS}
+                    label="Nguyên liệu yêu thích"
+                    description="Những nguyên liệu bạn muốn hệ thống ưu tiên khi gợi ý món."
+                    options={FAVORITE_INGREDIENT_OPTIONS}
                     variant="success"
-                    Icon={Utensils}
+                    Icon={Salad}
                   />
                   <PreferenceField
                     control={control}
@@ -446,54 +398,14 @@ export default function Profile() {
                     variant="default"
                     Icon={Flame}
                   />
-                </Box>
-              </Box>
-
-              <Box id="profile-context" sx={styles.sectionCardStyles}>
-                <Box sx={styles.sectionHeaderStyles}>
-                  <Box sx={styles.sectionIconStyles("default")}>
-                    <Box
-                      component={Target}
-                      sx={styles.preferenceIconSvgStyles}
-                    />
-                  </Box>
-                  <Box>
-                    <Typography as="h2" sx={styles.sectionTitleStyles}>
-                      Ngân sách & mục tiêu
-                    </Typography>
-                    <Typography sx={styles.sectionDescriptionStyles}>
-                      Tối ưu gợi ý theo thời điểm, giá tiền và mục tiêu ăn uống.
-                    </Typography>
-                  </Box>
-                </Box>
-
-                <Box sx={styles.preferenceGridStyles}>
                   <PreferenceField
                     control={control}
-                    name="budgetLevels"
-                    label="Mức ngân sách"
-                    description="Giúp hệ thống ưu tiên món và địa điểm hợp túi tiền."
-                    options={BUDGET_LEVEL_OPTIONS}
-                    variant="default"
-                    Icon={Wallet}
-                  />
-                  <PreferenceField
-                    control={control}
-                    name="mealTimes"
-                    label="Thời điểm ăn"
-                    description="Mỗi khung giờ sẽ ưu tiên kiểu món khác nhau."
-                    options={MEAL_TIME_OPTIONS}
-                    variant="default"
-                    Icon={Clock3}
-                  />
-                  <PreferenceField
-                    control={control}
-                    name="nutritionGoals"
-                    label="Mục tiêu ăn uống"
-                    description="Mục tiêu cá nhân để AI cân bằng giữa ngon và phù hợp."
-                    options={NUTRITION_GOAL_OPTIONS}
+                    name="dishTypes"
+                    label="Cách nấu yêu thích"
+                    description="Kiểu chế biến bạn thích để AI chọn món đúng gu hơn."
+                    options={DISH_TYPE_OPTIONS}
                     variant="success"
-                    Icon={Target}
+                    Icon={ChefHat}
                   />
                 </Box>
               </Box>
