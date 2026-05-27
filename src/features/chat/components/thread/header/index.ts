@@ -4,4 +4,5 @@
  */
 export * from "./_interface";
 export * from "./_styles";
-export { default as Thread } from "./page";
+export * from "./_use-header";
+export { default as Header } from "./page";

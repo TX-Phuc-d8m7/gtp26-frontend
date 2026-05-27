@@ -929,6 +929,138 @@ export const closeButtonStyles = (theme: Theme) => ({
 });
 
 // ---------------------------------------------------------------------------
+// Category browser styles
+// ---------------------------------------------------------------------------
+
+export const categorySectionStyles = (theme: Theme) => ({
+  mt: {
+    xs: 1.25,
+    md: 1.5,
+  },
+  position: "relative",
+  zIndex: 2,
+});
+
+export const categoryHeaderStyles = (theme: Theme) => ({
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "space-between",
+  gap: 1,
+  mb: 1,
+  px: 0.25,
+});
+
+export const categoryTitleStyles = (theme: Theme) => ({
+  color: "var(--foreground)",
+  fontSize: 13,
+  fontWeight: 850,
+  ".dark &": {
+    color: darkFoodTheme.text,
+  },
+});
+
+export const categoryMetaStyles = (theme: Theme) => ({
+  color: "var(--muted-foreground)",
+  fontSize: 12,
+  fontWeight: 750,
+  ".dark &": {
+    color: darkFoodTheme.muted,
+  },
+});
+
+export const categoryRailStyles = (theme: Theme) => ({
+  display: "flex",
+  gap: 1,
+  overflowX: "auto",
+  overflowY: "hidden",
+  pb: 0.4,
+  mx: -0.25,
+  px: 0.25,
+  scrollSnapType: "x proximity",
+  scrollbarWidth: "none",
+  "&::-webkit-scrollbar": {
+    display: "none",
+  },
+});
+
+export const categoryPillStyles = (isSelected: boolean) => (theme: Theme) => ({
+  appearance: "none",
+  display: "inline-flex",
+  flexShrink: 0,
+  flexDirection: "column",
+  alignItems: "flex-start",
+  justifyContent: "center",
+  minWidth: {
+    xs: 118,
+    sm: 132,
+  },
+  minHeight: 46,
+  borderRadius: 999,
+  border: "1px solid",
+  cursor: "pointer",
+  scrollSnapAlign: "start",
+  px: 1.4,
+  py: 0.75,
+  textAlign: "left",
+  transition:
+    "transform 160ms ease, background-color 160ms ease, border-color 160ms ease, box-shadow 160ms ease",
+  borderColor: isSelected ? "rgba(217, 72, 15, 0.58)" : lightWarm.border,
+  color: isSelected ? "#9A3412" : "#57534E",
+  background: isSelected
+    ? "linear-gradient(135deg, rgba(255, 237, 213, 0.92), rgba(255, 251, 245, 0.82))"
+    : "rgba(255, 251, 245, 0.72)",
+  boxShadow: isSelected
+    ? "0 12px 26px rgba(217, 72, 15, 0.12), inset 0 1px 0 rgba(255,255,255,0.8)"
+    : "inset 0 1px 0 rgba(255,255,255,0.72)",
+  backdropFilter: "blur(16px) saturate(1.12)",
+  WebkitBackdropFilter: "blur(16px) saturate(1.12)",
+  "&:hover": {
+    transform: "translateY(-1px)",
+    borderColor: isSelected ? "#D9480F" : lightWarm.borderStrong,
+    background: isSelected
+      ? "linear-gradient(135deg, rgba(255, 237, 213, 1), rgba(255, 251, 245, 0.92))"
+      : "rgba(255, 251, 245, 0.9)",
+  },
+  ".dark &": {
+    borderColor: isSelected ? "rgba(251, 146, 60, 0.52)" : darkFoodTheme.border,
+    color: isSelected ? darkFoodTheme.orange : darkFoodTheme.muted,
+    background: isSelected
+      ? "linear-gradient(135deg, rgba(249, 115, 22, 0.18), rgba(41, 37, 36, 0.82))"
+      : "rgba(28, 25, 23, 0.72)",
+    boxShadow: isSelected
+      ? "0 14px 30px rgba(0,0,0,0.28), inset 0 1px 0 rgba(255,247,237,0.07)"
+      : "inset 0 1px 0 rgba(255,247,237,0.04)",
+    "&:hover": {
+      borderColor: isSelected
+        ? darkFoodTheme.orangeStrong
+        : "rgba(255, 247, 237, 0.22)",
+      background: isSelected
+        ? "linear-gradient(135deg, rgba(249, 115, 22, 0.24), rgba(41, 37, 36, 0.9))"
+        : "rgba(255, 247, 237, 0.06)",
+    },
+  },
+});
+
+export const categoryPillLabelStyles = (theme: Theme) => ({
+  maxWidth: "100%",
+  overflow: "hidden",
+  textOverflow: "ellipsis",
+  whiteSpace: "nowrap",
+  fontSize: 13,
+  fontWeight: 850,
+  lineHeight: 1.25,
+});
+
+export const categoryPillCountStyles = (theme: Theme) => ({
+  mt: 0.25,
+  color: "inherit",
+  opacity: 0.72,
+  fontSize: 11,
+  fontWeight: 800,
+  lineHeight: 1.1,
+});
+
+// ---------------------------------------------------------------------------
 // Filter bar & panel styles
 // ---------------------------------------------------------------------------
 
@@ -940,7 +1072,10 @@ export const filterBarStyles = {
   mb: 0.5,
 };
 
-export const filterToggleButtonStyles = (isOpen: boolean, hasActive: boolean) => ({
+export const filterToggleButtonStyles = (
+  isOpen: boolean,
+  hasActive: boolean,
+) => ({
   borderRadius: 99,
   textTransform: "none",
   fontWeight: 700,
@@ -952,7 +1087,9 @@ export const filterToggleButtonStyles = (isOpen: boolean, hasActive: boolean) =>
   color: hasActive ? "#ea580c" : "#78350f",
   backgroundColor: hasActive ? "rgba(234,88,12,0.06)" : "transparent",
   "&:hover": {
-    backgroundColor: hasActive ? "rgba(234,88,12,0.12)" : "rgba(120,90,60,0.06)",
+    backgroundColor: hasActive
+      ? "rgba(234,88,12,0.12)"
+      : "rgba(120,90,60,0.06)",
     borderColor: hasActive ? "#c2410c" : "rgba(120,90,60,0.45)",
   },
   "& .MuiButton-endIcon": {
@@ -964,7 +1101,9 @@ export const filterToggleButtonStyles = (isOpen: boolean, hasActive: boolean) =>
     color: hasActive ? "#fb923c" : "rgba(255,247,237,0.72)",
     backgroundColor: hasActive ? "rgba(251,146,60,0.08)" : "transparent",
     "&:hover": {
-      backgroundColor: hasActive ? "rgba(251,146,60,0.16)" : "rgba(255,247,237,0.06)",
+      backgroundColor: hasActive
+        ? "rgba(251,146,60,0.16)"
+        : "rgba(255,247,237,0.06)",
       borderColor: hasActive ? "#f97316" : "rgba(255,247,237,0.32)",
     },
   },
@@ -980,13 +1119,15 @@ export const filterPanelStyles = {
   backgroundColor: "rgba(255, 251, 245, 0.82)",
   backdropFilter: "blur(16px)",
   WebkitBackdropFilter: "blur(16px)",
-  boxShadow: "0 2px 12px rgba(120, 80, 40, 0.07), inset 0 1px 0 rgba(255,255,255,0.7)",
+  boxShadow:
+    "0 2px 12px rgba(120, 80, 40, 0.07), inset 0 1px 0 rgba(255,255,255,0.7)",
   maxHeight: 480,
   overflowY: "auto" as const,
   ".dark &": {
     borderColor: darkFoodTheme.border,
     backgroundColor: "rgba(28, 25, 23, 0.92)",
-    boxShadow: "0 2px 16px rgba(0,0,0,0.32), inset 0 1px 0 rgba(255,255,255,0.04)",
+    boxShadow:
+      "0 2px 16px rgba(0,0,0,0.32), inset 0 1px 0 rgba(255,255,255,0.04)",
   },
 };
 
@@ -1026,19 +1167,27 @@ export const filterOptionItemStyles = (isSelected: boolean) => ({
   userSelect: "none" as const,
   transition: "all 0.14s ease",
   borderColor: isSelected ? "#ea580c" : "rgba(120,90,60,0.22)",
-  backgroundColor: isSelected ? "rgba(234,88,12,0.08)" : "rgba(255,251,245,0.55)",
+  backgroundColor: isSelected
+    ? "rgba(234,88,12,0.08)"
+    : "rgba(255,251,245,0.55)",
   color: isSelected ? "#c2410c" : "#57534e",
   "&:hover": {
     borderColor: isSelected ? "#c2410c" : "rgba(120,90,60,0.40)",
-    backgroundColor: isSelected ? "rgba(234,88,12,0.14)" : "rgba(120,90,60,0.06)",
+    backgroundColor: isSelected
+      ? "rgba(234,88,12,0.14)"
+      : "rgba(120,90,60,0.06)",
   },
   ".dark &": {
     borderColor: isSelected ? "#fb923c" : "rgba(255,247,237,0.14)",
-    backgroundColor: isSelected ? "rgba(251,146,60,0.12)" : "rgba(28,25,23,0.55)",
+    backgroundColor: isSelected
+      ? "rgba(251,146,60,0.12)"
+      : "rgba(28,25,23,0.55)",
     color: isSelected ? "#fb923c" : "rgba(255,247,237,0.65)",
     "&:hover": {
       borderColor: isSelected ? "#f97316" : "rgba(255,247,237,0.26)",
-      backgroundColor: isSelected ? "rgba(251,146,60,0.20)" : "rgba(255,247,237,0.05)",
+      backgroundColor: isSelected
+        ? "rgba(251,146,60,0.20)"
+        : "rgba(255,247,237,0.05)",
     },
   },
 });
@@ -1094,6 +1243,14 @@ export const styles = {
   helperTextStyles,
   gridStyles,
   cardStyles,
+  categorySectionStyles,
+  categoryHeaderStyles,
+  categoryTitleStyles,
+  categoryMetaStyles,
+  categoryRailStyles,
+  categoryPillStyles,
+  categoryPillLabelStyles,
+  categoryPillCountStyles,
   cardActionStyles,
   cardMediaWrapStyles,
   cardMediaStyles,

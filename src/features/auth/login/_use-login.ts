@@ -28,7 +28,7 @@ export function useLogin() {
       saveTokens(result.access_token, result.refresh_token);
 
       toast.success("Đăng nhập thành công!");
-      router.push("/");
+      router.push("/chat");
     } catch (err) {
       const message =
         err instanceof Error ? err.message : "Đăng nhập thất bại.";

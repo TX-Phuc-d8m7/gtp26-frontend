@@ -31,12 +31,9 @@ import { useTheme } from "@mui/material/styles";
 import {
   AlertCircle,
   ArrowLeft,
-  Bot,
   ChevronDown,
   ChevronUp,
   Clock3,
-  Leaf,
-  MapPinned,
   Search,
   SlidersHorizontal,
   Sparkles,
@@ -44,7 +41,6 @@ import {
   Utensils,
   X,
 } from "lucide-react";
-import type { LucideIcon } from "lucide-react";
 import { useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 
@@ -52,7 +48,7 @@ import { AppLoading } from "@/shared/components/ui/app-loading";
 
 import type {
   ApiFilterOptions,
-  ApiFood,
+  ApiFoodCategory,
   ApiFoodDetail,
   FoodSearchUIProps,
   RankedFood,
@@ -69,28 +65,6 @@ const suggestionTypeLabels: Record<SearchSuggestion["type"], string> = {
   tag: "Thẻ gợi ý",
   ingredient: "Nguyên liệu",
 };
-
-const searchContextCards: {
-  title: string;
-  helper: string;
-  Icon: LucideIcon;
-}[] = [
-  {
-    title: "Nói tự nhiên",
-    helper: "khẩu vị, ngân sách",
-    Icon: Bot,
-  },
-  {
-    title: "Ăn nhẹ hơn",
-    helper: "ít dầu, dễ tiêu",
-    Icon: Leaf,
-  },
-  {
-    title: "Gần trải nghiệm thật",
-    helper: "món + địa điểm",
-    Icon: MapPinned,
-  },
-];
 
 const GROUP_ORDER: Array<keyof ApiFilterOptions> = [
   "meal_context",
@@ -176,16 +150,18 @@ export default function FoodSearchUI(props: FoodSearchUIProps = {}) {
   const shouldSkipMountMotion = Boolean(shouldReduceMotion || isEmbedded);
   const {
     query,
+    selectedCategory,
     selectedTags,
     selectedFood,
-    allTags,
     filterOptions,
+    foodCategories,
     activeFilterCount,
     rankedFoods,
     suggestions,
     isSuggestionOpen,
     isLoading,
     isLoadingMore,
+    isCategoryLoading,
     isDetailLoading,
     hasEverLoaded,
     error,
@@ -199,6 +175,7 @@ export default function FoodSearchUI(props: FoodSearchUIProps = {}) {
     setIsSuggestionOpen,
     setQuery,
     setSelectedFood,
+    toggleCategory,
     toggleTag,
   } = useFoodSearch(props);
 
@@ -206,7 +183,10 @@ export default function FoodSearchUI(props: FoodSearchUIProps = {}) {
 
   // First visit: show AppLoading until the very first fetch resolves
   const showSystemLoading = isLoading && !hasEverLoaded;
-  const hasActiveSearch = Boolean(query.trim()) || selectedTags.length > 0;
+  const hasActiveSearch =
+    Boolean(query.trim()) ||
+    selectedTags.length > 0 ||
+    Boolean(selectedCategory);
   const suggestionGroups = (
     ["dish", "tag", "ingredient"] as SearchSuggestion["type"][]
   )
@@ -352,18 +332,37 @@ export default function FoodSearchUI(props: FoodSearchUIProps = {}) {
             </AnimatePresence>
           </Box>
 
+          <CategoryBrowser
+            categories={foodCategories}
+            isLoading={isCategoryLoading}
+            selectedCategory={selectedCategory}
+            onSelectCategory={toggleCategory}
+          />
+
           {/* Filter toggle button row */}
           <Box sx={styles.filterBarStyles}>
             <Button
-              onClick={() => setIsFilterPanelOpen(p => !p)}
+              onClick={() => setIsFilterPanelOpen((p) => !p)}
               startIcon={<SlidersHorizontal size={16} />}
-              endIcon={isFilterPanelOpen ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
-              sx={styles.filterToggleButtonStyles(isFilterPanelOpen, activeFilterCount > 0)}
+              endIcon={
+                isFilterPanelOpen ? (
+                  <ChevronUp size={14} />
+                ) : (
+                  <ChevronDown size={14} />
+                )
+              }
+              sx={styles.filterToggleButtonStyles(
+                isFilterPanelOpen,
+                activeFilterCount > 0,
+              )}
             >
               Bộ lọc{activeFilterCount > 0 ? ` (${activeFilterCount})` : ""}
             </Button>
             {activeFilterCount > 0 && (
-              <Button onClick={clearFilters} sx={styles.filterClearAllButtonStyles}>
+              <Button
+                onClick={clearFilters}
+                sx={styles.filterClearAllButtonStyles}
+              >
                 Xóa bộ lọc
               </Button>
             )}
@@ -381,7 +380,9 @@ export default function FoodSearchUI(props: FoodSearchUIProps = {}) {
 
         <Box sx={styles.statusRowStyles}>
           {error ? (
-            <Typography sx={{ ...styles.resultCountStyles, color: "error.main" }}>
+            <Typography
+              sx={{ ...styles.resultCountStyles, color: "error.main" }}
+            >
               {error}
             </Typography>
           ) : isLoading ? (
@@ -407,7 +408,10 @@ export default function FoodSearchUI(props: FoodSearchUIProps = {}) {
         ) : rankedFoods.length > 0 ? (
           <>
             <Box sx={styles.gridStyles}>
-              <AnimatePresence mode="popLayout" initial={!shouldSkipMountMotion}>
+              <AnimatePresence
+                mode="popLayout"
+                initial={!shouldSkipMountMotion}
+              >
                 {rankedFoods.map((result, index) => (
                   <Box
                     key={result.food.id}
@@ -462,6 +466,94 @@ export default function FoodSearchUI(props: FoodSearchUIProps = {}) {
   );
 }
 
+function CategoryBrowser({
+  categories,
+  isLoading,
+  selectedCategory,
+  onSelectCategory,
+}: {
+  categories: ApiFoodCategory[];
+  isLoading: boolean;
+  selectedCategory: string | null;
+  onSelectCategory: (categoryKey: string | null) => void;
+}) {
+  if (isLoading) {
+    return (
+      <Box sx={styles.categorySectionStyles}>
+        <Box sx={styles.categoryHeaderStyles}>
+          <Skeleton variant="text" animation="wave" width={150} height={22} />
+          <Skeleton variant="text" animation="wave" width={96} height={18} />
+        </Box>
+        <Box sx={styles.categoryRailStyles}>
+          {Array.from({ length: 6 }).map((_, index) => (
+            <Skeleton
+              key={index}
+              variant="rounded"
+              animation="wave"
+              width={index % 2 === 0 ? 132 : 104}
+              height={44}
+              sx={{ borderRadius: 999, flexShrink: 0 }}
+            />
+          ))}
+        </Box>
+      </Box>
+    );
+  }
+
+  if (categories.length === 0) return null;
+
+  const totalCount = categories.reduce(
+    (sum, category) => sum + category.count,
+    0,
+  );
+
+  return (
+    <Box sx={styles.categorySectionStyles}>
+      <Box sx={styles.categoryHeaderStyles}>
+        <Typography sx={styles.categoryTitleStyles}>
+          Duyệt theo nhóm nguyên liệu
+        </Typography>
+        <Typography sx={styles.categoryMetaStyles}>
+          {categories.length} nhóm
+        </Typography>
+      </Box>
+      <Box sx={styles.categoryRailStyles}>
+        <Box
+          component="button"
+          type="button"
+          onClick={() => onSelectCategory(null)}
+          sx={styles.categoryPillStyles(!selectedCategory)}
+        >
+          <Typography sx={styles.categoryPillLabelStyles}>Tất cả</Typography>
+          <Typography sx={styles.categoryPillCountStyles}>
+            {totalCount} món
+          </Typography>
+        </Box>
+
+        {categories.map((category) => {
+          const isSelected = selectedCategory === category.key;
+          return (
+            <Box
+              key={category.key}
+              component="button"
+              type="button"
+              onClick={() => onSelectCategory(category.key)}
+              sx={styles.categoryPillStyles(isSelected)}
+            >
+              <Typography sx={styles.categoryPillLabelStyles}>
+                {category.label}
+              </Typography>
+              <Typography sx={styles.categoryPillCountStyles}>
+                {category.count} món
+              </Typography>
+            </Box>
+          );
+        })}
+      </Box>
+    </Box>
+  );
+}
+
 function SuggestionItem({
   suggestion,
   onSelect,
@@ -510,16 +602,46 @@ function FoodCardSkeleton() {
         {/* Food name */}
         <Skeleton variant="text" animation="wave" width="65%" height={28} />
         {/* Description — 2 lines */}
-        <Skeleton variant="text" animation="wave" width="100%" height={18} sx={{ mt: 0.5 }} />
+        <Skeleton
+          variant="text"
+          animation="wave"
+          width="100%"
+          height={18}
+          sx={{ mt: 0.5 }}
+        />
         <Skeleton variant="text" animation="wave" width="80%" height={18} />
         {/* Tag chips */}
         <Box sx={{ display: "flex", gap: 0.75, mt: 1 }}>
-          <Skeleton variant="rounded" animation="wave" width={56} height={24} sx={{ borderRadius: 99 }} />
-          <Skeleton variant="rounded" animation="wave" width={72} height={24} sx={{ borderRadius: 99 }} />
-          <Skeleton variant="rounded" animation="wave" width={48} height={24} sx={{ borderRadius: 99 }} />
+          <Skeleton
+            variant="rounded"
+            animation="wave"
+            width={56}
+            height={24}
+            sx={{ borderRadius: 99 }}
+          />
+          <Skeleton
+            variant="rounded"
+            animation="wave"
+            width={72}
+            height={24}
+            sx={{ borderRadius: 99 }}
+          />
+          <Skeleton
+            variant="rounded"
+            animation="wave"
+            width={48}
+            height={24}
+            sx={{ borderRadius: 99 }}
+          />
         </Box>
         {/* Meta line */}
-        <Skeleton variant="text" animation="wave" width="55%" height={16} sx={{ mt: 1 }} />
+        <Skeleton
+          variant="text"
+          animation="wave"
+          width="55%"
+          height={16}
+          sx={{ mt: 1 }}
+        />
       </CardContent>
     </Card>
   );
@@ -669,8 +791,8 @@ function FoodDetailDialog({
               </Typography>
 
               {/* Taste & occasion tags */}
-              {(food.taste_profile.length > 0 ||
-                food.occasion_context.length > 0) ? (
+              {food.taste_profile.length > 0 ||
+              food.occasion_context.length > 0 ? (
                 <Box sx={styles.detailSectionStyles}>
                   <Typography sx={{ fontWeight: 800, marginBottom: 1 }}>
                     Khẩu vị & dịp ăn
@@ -767,8 +889,7 @@ function FoodDetailDialog({
               ) : null}
 
               {/* Favorite status */}
-              {food.is_favorite !== null &&
-              food.is_favorite !== undefined ? (
+              {food.is_favorite !== null && food.is_favorite !== undefined ? (
                 <Box sx={styles.detailSectionStyles}>
                   <Typography sx={{ color: "text.secondary", fontSize: 13 }}>
                     {food.is_favorite
@@ -890,10 +1011,7 @@ function EmptyState({
       </Box>
 
       {/* Title */}
-      <Typography
-        variant="h6"
-        sx={{ color, fontWeight: 700, mb: 1 }}
-      >
+      <Typography variant="h6" sx={{ color, fontWeight: 700, mb: 1 }}>
         {title}
       </Typography>
 

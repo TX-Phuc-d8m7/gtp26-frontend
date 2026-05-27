@@ -16,9 +16,17 @@ export interface BackendFoodResult {
   id: string;
   name: string;
   description: string;
+  img_url?: string | null;
+  core_ingredients?: string[];
+  soft_tags?: string[];
+  taste_profile?: string[];
+  meal_context?: string[];
+  occasion_context?: string[];
   matchScore: number;
+  reason?: string | null;
   locations?: FoodLocation[];
-  // Enhanced metadata
+
+  // Optional presentation fields if backend extends the contract later.
   image?: string;
   cookingTime?: number; // in minutes
   difficulty?: "easy" | "medium" | "hard";
@@ -28,7 +36,6 @@ export interface BackendFoodResult {
   carbs?: number;
   fat?: number;
   tags?: string[]; // e.g., ["vegetarian", "low-carb", "quick"]
-  reason?: string; // why this recipe was recommended
 }
 
 export interface FoodLocation {
@@ -40,11 +47,15 @@ export interface FoodLocation {
   lng: number;
   distanceMeters?: number;
   rating?: number;
-  openingHours?: string;
-  mapUrl?: string;
-  phoneNumber?: string;
   userRatingCount?: number;
+  /** Hours info from SerpAPI (e.g. "Open ⋅ Closes 10 PM") or operational status from Google Places. */
   businessStatus?: string;
+  priceLevel?: string;
+  mapUrl?: string;
+  websiteUrl?: string;
+  phoneNumber?: string;
+  /** "google_places_text_search" | "serpapi_google_search" */
+  provider?: string;
 }
 
 export interface BackendPlaceSearchResult {
@@ -54,8 +65,10 @@ export interface BackendPlaceSearchResult {
   rating?: number | null;
   user_rating_count?: number | null;
   google_maps_uri?: string | null;
+  website_uri?: string | null;
   phone_number?: string | null;
   business_status?: string | null;
+  price_level?: string | null;
   location?: {
     latitude: number;
     longitude: number;
@@ -71,7 +84,16 @@ export interface BackendPlaceSearchResponse {
   longitude?: number | null;
   radius_m?: number | null;
   cache_hit: boolean;
+  /** Pre-selected display list (strict results, or fallback if strict is empty). */
   results: BackendPlaceSearchResult[];
+  /** Only strict matches (name/type contains the dish). */
+  strict_results: BackendPlaceSearchResult[];
+  /** Fallback results when strict is empty (nearby related restaurants). */
+  fallback_results: BackendPlaceSearchResult[];
+  used_fallback_results: boolean;
+  /** "Khớp đúng món" or "Quán gần liên quan nhất". */
+  result_label: string;
+  /** "google_places_text_search" | "serpapi_google_search" */
   provider: string;
 }
 

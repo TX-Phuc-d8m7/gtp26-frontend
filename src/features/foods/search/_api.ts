@@ -5,6 +5,7 @@
 
 import type {
   ApiFilterOptions,
+  ApiFoodCategoriesResponse,
   ApiFoodDetail,
   ApiFoodListResponse,
 } from "./_interface";
@@ -20,6 +21,8 @@ const BASE_URL =
 
 let _filterOptionsCache: ApiFilterOptions | null = null;
 let _filterOptionsInflight: Promise<ApiFilterOptions> | null = null;
+let _foodCategoriesCache: ApiFoodCategoriesResponse | null = null;
+let _foodCategoriesInflight: Promise<ApiFoodCategoriesResponse> | null = null;
 
 /** Lấy tất cả giá trị filter options — có cache module-level */
 export async function fetchFilterOptions(): Promise<ApiFilterOptions> {
@@ -50,8 +53,33 @@ export async function fetchFilterOptions(): Promise<ApiFilterOptions> {
  */
 export function prewarmFilterOptions(): void {
   if (!_filterOptionsCache && !_filterOptionsInflight) {
-    fetchFilterOptions().catch(() => {/* silent — will retry when search opens */});
+    fetchFilterOptions().catch(() => {
+      /* silent — will retry when search opens */
+    });
   }
+}
+
+/** Lấy danh sách category nhóm nguyên liệu chính — có cache module-level */
+export async function fetchFoodCategories(): Promise<ApiFoodCategoriesResponse> {
+  if (_foodCategoriesCache) return _foodCategoriesCache;
+  if (_foodCategoriesInflight) return _foodCategoriesInflight;
+
+  _foodCategoriesInflight = fetch(`${BASE_URL}/foods/categories`)
+    .then(async (res) => {
+      if (!res.ok) throw new Error(`fetchFoodCategories: HTTP ${res.status}`);
+      return res.json() as Promise<ApiFoodCategoriesResponse>;
+    })
+    .then((data) => {
+      _foodCategoriesCache = data;
+      _foodCategoriesInflight = null;
+      return data;
+    })
+    .catch((err) => {
+      _foodCategoriesInflight = null;
+      throw err;
+    });
+
+  return _foodCategoriesInflight;
 }
 
 // ---------------------------------------------------------------------------
@@ -64,6 +92,7 @@ export interface FetchFoodsParams {
   sort_order?: "asc" | "desc";
   limit?: number;
   offset?: number;
+  category?: string;
   // Multi-select filters — mapped directly to backend query params
   taste_profile?: string[];
   meal_context?: string[];
@@ -89,6 +118,7 @@ export async function fetchFoods(
   if (params.limit !== undefined) urlParams.set("limit", String(params.limit));
   if (params.offset !== undefined)
     urlParams.set("offset", String(params.offset));
+  if (params.category) urlParams.set("category", params.category);
 
   const arrayFields = [
     "taste_profile",

@@ -41,6 +41,18 @@ export interface ApiFoodListResponse {
   items: ApiFood[];
 }
 
+/** Item của GET /foods/categories */
+export interface ApiFoodCategory {
+  key: string;
+  label: string;
+  count: number;
+}
+
+/** Response của GET /foods/categories */
+export interface ApiFoodCategoriesResponse {
+  categories: ApiFoodCategory[];
+}
+
 /** Response của GET /foods/filter-options */
 export interface ApiFilterOptions {
   taste_profile: string[];
@@ -66,6 +78,7 @@ export interface SearchSuggestion {
   id: string;
   label: string;
   type: "dish" | "tag" | "ingredient";
+  categoryKey?: string;
 }
 
 export interface FoodSearchState {
