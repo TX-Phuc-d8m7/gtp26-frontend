@@ -579,6 +579,7 @@ export const messageScrollStyles = (chatStarted: boolean) => ({
   width: "100%",
   height: "100%",
   overflowY: "auto",
+  overflowX: "hidden",
   px: { xs: 1.5, sm: 2 },
   display: chatStarted ? "block" : "flex",
   ...(chatStarted
@@ -683,7 +684,141 @@ export const assistantAvatarStyles = {
   },
 };
 
+export const assistantLoadingAvatarStyles = {
+  animation: "assistantThinkingPulse 1600ms ease-in-out infinite",
+  "@keyframes assistantThinkingPulse": {
+    "0%, 100%": {
+      transform: "scale(1)",
+      opacity: 0.78,
+    },
+    "50%": {
+      transform: "scale(1.04)",
+      opacity: 1,
+    },
+  },
+  "@media (prefers-reduced-motion: reduce)": {
+    animation: "none",
+  },
+};
+
+export const assistantLoadingGroupStyles = {
+  display: "flex",
+  width: "fit-content",
+  maxWidth: { xs: "74%", sm: "65%" },
+  alignItems: "flex-start",
+  gap: 1.35,
+  mr: "auto",
+};
+
+export const assistantLoadingBubbleStyles = (theme: Theme) => ({
+  position: "relative",
+  overflow: "hidden",
+  isolation: "isolate",
+  transform: "translateZ(0)",
+  border: "1px solid rgba(15, 23, 42, 0.18)",
+  borderRadius: "20px 20px 20px 6px",
+  px: { xs: 1.55, sm: 1.8 },
+  py: { xs: 1.2, sm: 1.35 },
+  color: "var(--foreground)",
+  background:
+    "radial-gradient(circle at 0% 0%, rgba(248, 182, 90, 0.16) 0%, rgba(248, 182, 90, 0) 34%), linear-gradient(135deg, rgba(255, 255, 255, 0.42) 0%, rgba(255, 255, 255, 0.18) 55%, rgba(255, 247, 237, 0.2) 100%)",
+  boxShadow:
+    "0 18px 42px rgba(15, 23, 42, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.78)",
+  backdropFilter: "blur(22px) saturate(1.18)",
+  WebkitBackdropFilter: "blur(22px) saturate(1.18)",
+  "&::after": {
+    content: '""',
+    position: "absolute",
+    inset: 0,
+    background:
+      "linear-gradient(110deg, transparent 0%, rgba(255, 255, 255, 0.28) 42%, transparent 68%)",
+    transform: "translateX(-100%)",
+    animation: "assistantThinkingSheen 1800ms ease-in-out infinite",
+    pointerEvents: "none",
+  },
+  "@keyframes assistantThinkingSheen": {
+    "0%": { transform: "translateX(-100%)" },
+    "58%, 100%": { transform: "translateX(100%)" },
+  },
+  "@media (prefers-reduced-motion: reduce)": {
+    "&::after": {
+      animation: "none",
+      display: "none",
+    },
+  },
+  ".dark &": {
+    borderColor: alpha("#FFF7ED", 0.18),
+    color: darkFoodChat.text,
+    background:
+      "linear-gradient(135deg, rgba(41, 37, 36, 0.58) 0%, rgba(28, 25, 23, 0.48) 100%)",
+    boxShadow: `0 16px 38px ${alpha("#000", 0.3)}, inset 0 1px 0 ${alpha("#FFF7ED", 0.08)}`,
+    "&::after": {
+      background:
+        "linear-gradient(110deg, transparent 0%, rgba(255, 247, 237, 0.08) 42%, transparent 68%)",
+    },
+  },
+});
+
+export const assistantLoadingTitleStyles = {
+  m: 0,
+  display: "flex",
+  alignItems: "center",
+  gap: 0.9,
+  color: "var(--foreground)",
+  fontSize: { xs: "0.86rem", sm: "0.92rem" },
+  fontWeight: fontWeights.bold,
+  lineHeight: 1.35,
+  ".dark &": {
+    color: darkFoodChat.text,
+  },
+};
+
+export const assistantLoadingMetaStyles = {
+  mt: 0.35,
+  color: "var(--muted-foreground)",
+  fontSize: { xs: "0.76rem", sm: "0.8rem" },
+  fontWeight: 600,
+  lineHeight: 1.45,
+  ".dark &": {
+    color: darkFoodChat.muted,
+  },
+};
+
+export const assistantLoadingDotsStyles = {
+  display: "inline-flex",
+  alignItems: "center",
+  gap: 0.45,
+};
+
+export const assistantLoadingDotStyles = (delay: number) => ({
+  width: 6,
+  height: 6,
+  borderRadius: "999px",
+  backgroundColor: colors.base.brand[600],
+  animation: `assistantThinkingDot 1050ms ease-in-out ${delay}ms infinite`,
+  "@keyframes assistantThinkingDot": {
+    "0%, 80%, 100%": {
+      transform: "translateY(0)",
+      opacity: 0.42,
+    },
+    "40%": {
+      transform: "translateY(-3px)",
+      opacity: 1,
+    },
+  },
+  "@media (prefers-reduced-motion: reduce)": {
+    animation: "none",
+    opacity: 0.78,
+  },
+  ".dark &": {
+    backgroundColor: darkFoodChat.orange,
+  },
+});
+
 export const localAssistantBubbleStyles = (theme: Theme) => ({
+  minWidth: 0,
+  overflowWrap: "anywhere",
+  wordBreak: "break-word",
   border: "1px solid rgba(15, 23, 42, 0.2)",
   borderRadius: "22px 22px 22px 6px",
   px: 2,
@@ -707,21 +842,22 @@ export const localAssistantBubbleStyles = (theme: Theme) => ({
 });
 
 export const disclaimerNoticeStyles = (theme: Theme) => ({
-  display: "flex",
-  alignItems: "center",
-  gap: 1.25,
-  mb: 2,
-  border: "1px solid rgba(15, 23, 42, 0.12)",
-  borderRadius: "18px",
-  px: { xs: 1.5, sm: 1.75 },
-  py: { xs: 1.35, sm: 1.5 },
-  color: "rgba(15, 23, 42, 0.76)",
+  display: 'flex',
+  alignItem: 'center',
+  gap: '10px',
+  border: "1px solid rgba(15, 23, 42, 0.2)",
+  borderRadius: "22px 22px 22px 6px",
+  px: 2,
+  py: 1.6,
+  color: "var(--foreground)",
   background:
-    "linear-gradient(135deg, rgba(241, 245, 249, 0.82) 0%, rgba(248, 250, 252, 0.62) 100%)",
+    "radial-gradient(circle at 100% 0%, rgba(248, 182, 90, 0.15) 0%, rgba(248, 182, 90, 0) 34%), linear-gradient(135deg, rgba(255, 255, 255, 0.32) 0%, rgba(255, 255, 255, 0.12) 52%, rgba(249, 115, 22, 0.08) 100%)",
   boxShadow:
-    "0 12px 30px rgba(15, 23, 42, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.8)",
-  backdropFilter: "blur(18px) saturate(1.12)",
-  WebkitBackdropFilter: "blur(18px) saturate(1.12)",
+    "0 20px 50px rgba(15, 23, 42, 0.12), 0 0 0 1px rgba(15, 23, 42, 0.055), inset 0 1px 0 rgba(255, 255, 255, 0.82)",
+  backdropFilter: "blur(24px) saturate(1.18)",
+  WebkitBackdropFilter: "blur(24px) saturate(1.18)",
+  fontSize: "0.92rem",
+  lineHeight: 1.7,
   ".dark &": {
     borderColor: alpha("#FFF7ED", 0.16),
     color: alpha("#FFF7ED", 0.74),
@@ -1923,6 +2059,13 @@ export const styles = {
   localHumanBubbleStyles,
   localAssistantGroupStyles,
   assistantAvatarStyles,
+  assistantLoadingAvatarStyles,
+  assistantLoadingGroupStyles,
+  assistantLoadingBubbleStyles,
+  assistantLoadingTitleStyles,
+  assistantLoadingMetaStyles,
+  assistantLoadingDotsStyles,
+  assistantLoadingDotStyles,
   localAssistantBubbleStyles,
   disclaimerNoticeStyles,
   disclaimerIconStyles,

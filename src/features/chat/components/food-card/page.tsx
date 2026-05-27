@@ -34,9 +34,16 @@ export default function FoodCard({
   const [imageFailed, setImageFailed] = useState(false);
   const score = Math.max(0, Math.min(100, food.matchScore));
   const locationCount = food.locations?.length ?? 0;
-  const difficulty = food.difficulty || "easy";
-  const difficultyConfig = styles.difficultyConfig[difficulty];
-  const shouldShowImage = Boolean(food.image && !imageFailed);
+  const difficulty = food.difficulty;
+  const difficultyConfig = difficulty
+    ? styles.difficultyConfig[difficulty]
+    : undefined;
+  const imageSrc = food.img_url ?? food.image;
+  const displayTags =
+    food.soft_tags && food.soft_tags.length > 0
+      ? food.soft_tags
+      : (food.tags ?? []);
+  const shouldShowImage = Boolean(imageSrc && !imageFailed);
 
   return (
     <Card sx={mergeSx(styles.getRootSx(), sx)}>
@@ -45,7 +52,7 @@ export default function FoodCard({
           <Box sx={styles.imageWrapSx}>
             <Box
               component="img"
-              src={food.image}
+              src={imageSrc}
               alt={food.name}
               sx={styles.imageSx}
               onError={() => setImageFailed(true)}
@@ -62,7 +69,7 @@ export default function FoodCard({
         )}
 
         <Box sx={styles.bodySx}>
-          <Box>
+          <Box sx={{ flex: 1 }}>
             {!shouldShowImage && (
               <Box sx={styles.fallbackHeaderSx}>
                 <Box sx={{ minWidth: 0, flex: 1 }}>
@@ -110,7 +117,7 @@ export default function FoodCard({
                   </Box>
                 </Box>
               )}
-              {difficulty && (
+              {difficulty && difficultyConfig && (
                 <Box sx={styles.getDifficultyPillSx(difficulty)}>
                   <ChefHat size={16} color={difficultyConfig.color} />
                   <Box
@@ -154,9 +161,9 @@ export default function FoodCard({
               </Box>
             )}
 
-            {food.tags && food.tags.length > 0 && (
+            {displayTags.length > 0 && (
               <Box sx={styles.tagWrapSx}>
-                {food.tags.map((tag) => (
+                {displayTags.map((tag) => (
                   <Box key={tag} component="span" sx={styles.getTagChipSx(tag)}>
                     {tag}
                   </Box>

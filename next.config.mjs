@@ -15,6 +15,17 @@ const nextConfig = {
       },
     ],
   },
+  // Proxy tất cả /api/backend/* → http://localhost:8000/*
+  // Giúp điện thoại gọi backend qua HTTPS mà không bị Mixed Content.
+  async rewrites() {
+    const backendUrl = process.env.BACKEND_URL ?? "http://localhost:8000";
+    return [
+      {
+        source: "/api/backend/:path*",
+        destination: `${backendUrl}/:path*`,
+      },
+    ];
+  },
 };
 
 export default nextConfig;

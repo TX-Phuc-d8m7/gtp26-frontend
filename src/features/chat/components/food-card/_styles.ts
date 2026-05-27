@@ -142,6 +142,9 @@ export const contentRootSx: SxProps<Theme> = {
   flexDirection: "column",
   overflow: "hidden",
   p: 0,
+  '&:last-child': { 
+    paddingBottom: 0 // Tương đương 16px, hoặc set về 0 tùy ý bạn
+  }
 };
 
 export const imageWrapSx: SxProps<Theme> = {
