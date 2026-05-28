@@ -584,6 +584,7 @@ const actionBaseSx = {
 
 export const getActionButtonSx = (
   actionType: FoodCardActionType,
+  isActive = false,
 ): SxProps<Theme> => {
   const lightConfig =
     actionType === "feedback"
@@ -600,7 +601,20 @@ export const getActionButtonSx = (
 
   return {
     ...actionBaseSx,
-    color: lightConfig.color,
+    color: isActive ? "#15803D" : lightConfig.color,
+    ...(isActive
+      ? {
+          borderColor: "rgba(22, 163, 74, 0.28)",
+          background:
+            "linear-gradient(135deg, rgba(240,253,244,0.82), rgba(255,255,255,0.68))",
+          ".dark &": {
+            borderColor: "rgba(163, 230, 53, 0.34)",
+            background:
+              "linear-gradient(135deg, rgba(63, 98, 18, 0.34), rgba(24,24,27,0.68))",
+            color: "#D9F99D",
+          },
+        }
+      : {}),
     "&:hover": {
       ...actionBaseHoverSx,
       borderColor: lightConfig.hoverBorder,

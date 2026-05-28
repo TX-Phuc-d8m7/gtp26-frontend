@@ -25,9 +25,9 @@ const StreamContext = createContext<StreamContextType | undefined>(undefined);
 export const StreamProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [error] = useState(null);
 
   const submit = async () => {
     // The chat UI now calls backend directly in Thread component.

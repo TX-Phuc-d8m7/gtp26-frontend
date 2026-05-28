@@ -24,6 +24,7 @@ import {
   profileSchema,
   ProfileFormData,
 } from "@/features/profile/_interface";
+import { useRequireAuth } from "@/shared/hooks/use-auth-redirect";
 
 // ---------------------------------------------------------------------------
 // Mapping helpers: form ↔ backend health-profile
@@ -73,6 +74,7 @@ export function useProfile() {
   const [isLoading, setIsLoading] = useState(false);
   const [isFetching, setIsFetching] = useState(true);
   const router = useRouter();
+  useRequireAuth();
 
   const form = useForm<ProfileFormData>({
     resolver: zodResolver(profileSchema),

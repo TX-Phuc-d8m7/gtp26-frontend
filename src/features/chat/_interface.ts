@@ -116,6 +116,37 @@ export type ChatMessageStatus = "sending" | "streaming" | "complete" | "error";
 
 export type ChatFeedback = "like" | "dislike";
 
+export type FoodRecommendationFeedbackVerdict =
+  | "like"
+  | "neutral"
+  | "dislike";
+
+export interface FoodRecommendationFeedbackResult {
+  id: string;
+  userId: string;
+  threadId: string;
+  assistantMessageId: string;
+  foodId: string;
+  verdict: FoodRecommendationFeedbackVerdict;
+  rating?: number | null;
+  reasons: string[];
+  comment?: string | null;
+  tried: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface FoodRecommendationFeedbackPayload {
+  threadId: string;
+  messageId: string;
+  foodId: string;
+  verdict: FoodRecommendationFeedbackVerdict;
+  rating?: number | null;
+  reasons: string[];
+  comment?: string | null;
+  tried: boolean;
+}
+
 export type ChatThreadStatus = "idle" | "running" | "error";
 
 export interface ChatThread {
@@ -137,6 +168,7 @@ export interface ChatMessage {
   aiInsight?: BackendSearchResponse["ai_insight"];
   disclaimer?: string | null;
   feedback?: ChatFeedback;
+  foodRecommendationFeedbacks?: FoodRecommendationFeedbackResult[];
   attachments?: ComposerAttachment[];
   status: ChatMessageStatus;
   sourceQuery?: string;
@@ -147,6 +179,14 @@ export interface ChatSendPayload {
   content: string;
   attachments?: ComposerAttachment[];
   replaceMessageId?: string;
+  skipProfile?: boolean;
+  signal?: AbortSignal;
+}
+
+export interface ChatEditAndResendPayload {
+  threadId: string;
+  messageId: string;
+  content: string;
   skipProfile?: boolean;
   signal?: AbortSignal;
 }
@@ -162,6 +202,9 @@ export interface ChatApiAdapter {
   createThread: (initialMessage?: string) => Promise<ChatThread>;
   getMessages: (threadId: string) => Promise<ChatMessage[]>;
   sendMessage: (payload: ChatSendPayload) => Promise<ChatSendResponse>;
+  editMessageAndResend: (
+    payload: ChatEditAndResendPayload,
+  ) => Promise<ChatSendResponse>;
   renameThread: (threadId: string, title: string) => Promise<ChatThread>;
   deleteThread: (threadId: string) => Promise<void>;
   updateMessageFeedback: (
@@ -169,4 +212,7 @@ export interface ChatApiAdapter {
     messageId: string,
     feedback?: ChatFeedback,
   ) => Promise<ChatMessage>;
+  submitFoodRecommendationFeedback: (
+    payload: FoodRecommendationFeedbackPayload,
+  ) => Promise<FoodRecommendationFeedbackResult>;
 }

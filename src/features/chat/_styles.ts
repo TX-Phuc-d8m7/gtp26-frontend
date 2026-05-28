@@ -652,6 +652,77 @@ export const localHumanBubbleStyles = {
   },
 };
 
+export const humanMessageEditFormStyles = {
+  display: "flex",
+  minWidth: { xs: 240, sm: 360 },
+  flexDirection: "column",
+  gap: 1,
+};
+
+export const humanMessageEditTextareaStyles = {
+  width: "100%",
+  minHeight: 84,
+  resize: "vertical",
+  border: "1px solid rgba(255, 255, 255, 0.52)",
+  borderRadius: "16px",
+  px: 1.25,
+  py: 1,
+  color: "#FFFFFF",
+  backgroundColor: "rgba(255, 255, 255, 0.12)",
+  fontFamily: "inherit",
+  fontSize: "0.92rem",
+  lineHeight: 1.55,
+  outline: 0,
+  "&::placeholder": {
+    color: "rgba(255, 255, 255, 0.72)",
+  },
+  "&:focus": {
+    borderColor: "rgba(255, 255, 255, 0.86)",
+    boxShadow: "0 0 0 3px rgba(255, 255, 255, 0.18)",
+  },
+  ".dark &": {
+    borderColor: alpha(darkFoodChat.orangeStrong, 0.34),
+    backgroundColor: alpha("#000000", 0.18),
+    "&:focus": {
+      borderColor: alpha(darkFoodChat.orange, 0.72),
+      boxShadow: `0 0 0 3px ${alpha(darkFoodChat.orangeStrong, 0.18)}`,
+    },
+  },
+};
+
+export const humanMessageEditActionsStyles = {
+  display: "flex",
+  justifyContent: "flex-end",
+  gap: 0.75,
+};
+
+export const humanMessageEditCancelButtonStyles = {
+  minHeight: 34,
+  borderRadius: "999px",
+  color: "rgba(255, 255, 255, 0.92)",
+  "&:hover": {
+    color: "#FFFFFF",
+    backgroundColor: "rgba(255, 255, 255, 0.16)",
+  },
+};
+
+export const humanMessageEditSubmitButtonStyles = {
+  minHeight: 34,
+  borderRadius: "999px",
+  color: colors.base.brand[800],
+  backgroundColor: "rgba(255, 255, 255, 0.88)",
+  "&:hover": {
+    backgroundColor: "#FFFFFF",
+  },
+  ".dark &": {
+    color: darkFoodChat.background,
+    backgroundColor: darkFoodChat.orange,
+    "&:hover": {
+      backgroundColor: "#FFB25C",
+    },
+  },
+};
+
 export const localAssistantGroupStyles = {
   display: "flex",
   maxWidth: { xs: "96%", sm: "90%" },
@@ -660,7 +731,7 @@ export const localAssistantGroupStyles = {
 };
 
 export const assistantAvatarStyles = {
-  display: "grid",
+  display: { xs: "none", sm: "grid" },
   width: 34,
   height: 34,
   flexShrink: 0,
@@ -842,9 +913,9 @@ export const localAssistantBubbleStyles = (theme: Theme) => ({
 });
 
 export const disclaimerNoticeStyles = (theme: Theme) => ({
-  display: 'flex',
-  alignItem: 'center',
-  gap: '10px',
+  display: "flex",
+  alignItem: "center",
+  gap: "10px",
   border: "1px solid rgba(15, 23, 42, 0.2)",
   borderRadius: "22px 22px 22px 6px",
   px: 2,
@@ -2012,7 +2083,11 @@ export const messageActionsStyles = {
   gap: 0.25,
   opacity: 0,
   transition: "opacity 160ms ease",
-  ".group:hover &, .group:focus-within &": {
+  "[data-message-group='true']:hover &, [data-message-group='true']:focus-within &":
+    {
+      opacity: 1,
+    },
+  "@media (hover: none)": {
     opacity: 1,
   },
 };
@@ -2057,6 +2132,11 @@ export const styles = {
   messageContentStyles,
   localHumanGroupStyles,
   localHumanBubbleStyles,
+  humanMessageEditFormStyles,
+  humanMessageEditTextareaStyles,
+  humanMessageEditActionsStyles,
+  humanMessageEditCancelButtonStyles,
+  humanMessageEditSubmitButtonStyles,
   localAssistantGroupStyles,
   assistantAvatarStyles,
   assistantLoadingAvatarStyles,

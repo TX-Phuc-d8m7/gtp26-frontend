@@ -6,6 +6,7 @@ import { v4 as uuidv4 } from "uuid";
 
 import { apiFetch, isLoggedIn } from "@/features/auth/_api";
 import type {
+  ChatEditAndResendPayload,
   BackendFoodResult,
   BackendSearchResponse,
   ChatApiAdapter,
@@ -15,6 +16,7 @@ import type {
   ChatSendPayload,
   ChatSendResponse,
   ChatThread,
+  FoodRecommendationFeedbackResult,
 } from "../_interface";
 
 const FOOD_AI_API_URL =
@@ -367,6 +369,88 @@ export const localChatApiAdapter: ChatApiAdapter = {
     };
   },
 
+  async editMessageAndResend(
+    payload: ChatEditAndResendPayload,
+  ): Promise<ChatSendResponse> {
+    let store = readStore();
+    const existingThread =
+      store.threads.find((item) => item.id === payload.threadId) ??
+      createThreadWithId(payload.threadId, payload.content);
+
+    const currentMessages = store.messagesByThreadId[payload.threadId] ?? [];
+    const targetIndex = currentMessages.findIndex(
+      (message) => message.id === payload.messageId && message.role === "human",
+    );
+
+    if (targetIndex === -1) {
+      throw new Error("Không tìm thấy câu hỏi cần chỉnh sửa.");
+    }
+
+    const editedHumanMessage: ChatMessage = {
+      ...currentMessages[targetIndex],
+      content: payload.content,
+      status: "complete",
+    };
+    const messagesBeforeAssistant = [
+      ...currentMessages.slice(0, targetIndex),
+      editedHumanMessage,
+    ];
+
+    let assistantMessage: ChatMessage;
+    const localIntentMessage = buildLocalIntentAssistantMessage(payload);
+
+    if (localIntentMessage) {
+      assistantMessage = localIntentMessage;
+    } else {
+      try {
+        const data = await requestFoodSearch(payload);
+        assistantMessage = buildAssistantMessage(payload, data);
+      } catch (error) {
+        const isAbortError =
+          error instanceof Error && error.name === "AbortError";
+        assistantMessage = {
+          ...buildAssistantErrorMessage(payload),
+          content: isAbortError
+            ? "Yêu cầu đã bị dừng hoặc backend phản hồi quá lâu, vui lòng thử lại."
+            : "Không gọi được API backend để tra cứu món ăn, vui lòng kiểm tra server.",
+        };
+      }
+    }
+
+    const normalizedNextMessages = normalizeStoredMessages([
+      ...messagesBeforeAssistant,
+      assistantMessage,
+    ]);
+    const nextThread: ChatThread = {
+      ...existingThread,
+      title:
+        targetIndex === 0
+          ? createThreadTitle(payload.content)
+          : existingThread.title,
+      updatedAt: new Date().toISOString(),
+      lastMessagePreview: createPreview(assistantMessage.content),
+      status: assistantMessage.status === "error" ? "error" : "idle",
+    };
+
+    store = upsertThread(
+      {
+        ...store,
+        messagesByThreadId: {
+          ...store.messagesByThreadId,
+          [payload.threadId]: normalizedNextMessages,
+        },
+      },
+      nextThread,
+    );
+    writeStore(store);
+
+    return {
+      thread: nextThread,
+      messages: normalizedNextMessages,
+      assistantMessage,
+    };
+  },
+
   async renameThread(threadId, title) {
     const store = readStore();
     const thread = store.threads.find((item) => item.id === threadId);
@@ -418,6 +502,10 @@ export const localChatApiAdapter: ChatApiAdapter = {
 
     return nextMessage;
   },
+
+  async submitFoodRecommendationFeedback() {
+    throw new Error("Vui lòng đăng nhập để đánh giá gợi ý món ăn.");
+  },
 };
 
 // ---------------------------------------------------------------------------
@@ -442,8 +530,24 @@ interface BEMessage {
   content: string;
   food_results: Record<string, unknown>[] | null;
   feedback: string | null;
+  food_recommendation_feedbacks?: BEFoodRecommendationFeedback[] | null;
   disclaimer?: string | null;
   created_at: string;
+}
+
+interface BEFoodRecommendationFeedback {
+  id: string;
+  user_id: string;
+  thread_id: string;
+  assistant_message_id: string;
+  food_id: string;
+  verdict: "like" | "neutral" | "dislike";
+  rating?: number | null;
+  reasons?: string[] | null;
+  comment?: string | null;
+  tried: boolean;
+  created_at: string;
+  updated_at: string;
 }
 
 interface BESendResponse {
@@ -503,6 +607,25 @@ function beFoodResultToFE(f: Record<string, unknown>): BackendFoodResult {
   };
 }
 
+function beFoodRecommendationFeedbackToFE(
+  feedback: BEFoodRecommendationFeedback,
+): FoodRecommendationFeedbackResult {
+  return {
+    id: String(feedback.id),
+    userId: String(feedback.user_id),
+    threadId: String(feedback.thread_id),
+    assistantMessageId: String(feedback.assistant_message_id),
+    foodId: String(feedback.food_id),
+    verdict: feedback.verdict,
+    rating: feedback.rating ?? null,
+    reasons: Array.isArray(feedback.reasons) ? feedback.reasons : [],
+    comment: feedback.comment ?? null,
+    tried: Boolean(feedback.tried),
+    createdAt: feedback.created_at,
+    updatedAt: feedback.updated_at,
+  };
+}
+
 function beMessageToFE(m: BEMessage): ChatMessage {
   const role: ChatRole = m.role === "user" ? "human" : (m.role as ChatRole);
   return {
@@ -513,6 +636,9 @@ function beMessageToFE(m: BEMessage): ChatMessage {
     createdAt: m.created_at,
     foods: m.food_results ? m.food_results.map(beFoodResultToFE) : undefined,
     feedback: (m.feedback ?? undefined) as ChatFeedback | undefined,
+    foodRecommendationFeedbacks: (m.food_recommendation_feedbacks ?? []).map(
+      beFoodRecommendationFeedbackToFE,
+    ),
     disclaimer: m.disclaimer ?? undefined,
     status: "complete",
   };
@@ -623,6 +749,58 @@ export const remoteChatApiAdapter: ChatApiAdapter = {
     return { thread, messages: allMessages, assistantMessage };
   },
 
+  async editMessageAndResend(payload) {
+    const res = await apiFetch(
+      `/chat/threads/${payload.threadId}/messages/${payload.messageId}/edit`,
+      {
+        method: "POST",
+        signal: payload.signal,
+        body: JSON.stringify({
+          query: payload.content,
+          skip_profile: payload.skipProfile ?? false,
+        }),
+      },
+    );
+
+    if (!res.ok)
+      throw new Error(
+        await parseApiError(res, "Không chỉnh sửa được câu hỏi."),
+      );
+
+    const data: BESendResponse = await res.json();
+    const userMessage = beMessageToFE(data.user_message);
+    const baseAssistantMessage = beMessageToFE(data.assistant_message);
+    const searchResult = data.search_result;
+
+    const assistantMessage: ChatMessage = {
+      ...baseAssistantMessage,
+      foods:
+        searchResult?.results?.map(beFoodResultToFE) ??
+        baseAssistantMessage.foods,
+      aiInsight: searchResult?.ai_insight ?? baseAssistantMessage.aiInsight,
+      disclaimer: searchResult?.disclaimer ?? baseAssistantMessage.disclaimer,
+      sourceQuery: payload.content,
+    };
+
+    const thread: ChatThread = {
+      id: payload.threadId,
+      title: "Cuộc trò chuyện mới",
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      lastMessagePreview:
+        assistantMessage.content.length > 84
+          ? `${assistantMessage.content.slice(0, 81)}...`
+          : assistantMessage.content,
+      status: "idle",
+    };
+
+    return {
+      thread,
+      messages: [userMessage, assistantMessage],
+      assistantMessage,
+    };
+  },
+
   async renameThread(threadId, title) {
     const res = await apiFetch(`/chat/threads/${threadId}`, {
       method: "PATCH",
@@ -659,6 +837,29 @@ export const remoteChatApiAdapter: ChatApiAdapter = {
       );
     return beMessageToFE(await res.json());
   },
+
+  async submitFoodRecommendationFeedback(payload) {
+    const res = await apiFetch(
+      `/chat/threads/${payload.threadId}/messages/${payload.messageId}/food-feedback`,
+      {
+        method: "POST",
+        body: JSON.stringify({
+          food_id: payload.foodId,
+          verdict: payload.verdict,
+          rating: payload.rating ?? null,
+          reasons: payload.reasons,
+          comment: payload.comment ?? null,
+          tried: payload.tried,
+        }),
+      },
+    );
+    if (!res.ok) {
+      throw new Error(
+        await parseApiError(res, "Không gửi được đánh giá món gợi ý."),
+      );
+    }
+    return beFoodRecommendationFeedbackToFE(await res.json());
+  },
 };
 
 // ---------------------------------------------------------------------------
@@ -686,6 +887,11 @@ export const chatApiAdapter: ChatApiAdapter = {
       ? remoteChatApiAdapter.sendMessage(payload)
       : localChatApiAdapter.sendMessage(payload),
 
+  editMessageAndResend: (payload) =>
+    isLoggedIn()
+      ? remoteChatApiAdapter.editMessageAndResend(payload)
+      : localChatApiAdapter.editMessageAndResend(payload),
+
   renameThread: (threadId, title) =>
     isLoggedIn()
       ? remoteChatApiAdapter.renameThread(threadId, title)
@@ -708,4 +914,8 @@ export const chatApiAdapter: ChatApiAdapter = {
           messageId,
           feedback,
         ),
+  submitFoodRecommendationFeedback: (payload) =>
+    isLoggedIn()
+      ? remoteChatApiAdapter.submitFoodRecommendationFeedback(payload)
+      : localChatApiAdapter.submitFoodRecommendationFeedback(payload),
 };

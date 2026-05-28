@@ -2,6 +2,8 @@
  * Copyright (c) 2026 GTP26
  * All rights reserved.
  */
+"use client";
+
 import { useTheme } from "next-themes";
 import { Toaster as Sonner } from "sonner";
 

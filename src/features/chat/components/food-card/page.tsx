@@ -27,6 +27,7 @@ import { FoodCardProps, styles } from ".";
 export default function FoodCard({
   food,
   index,
+  recommendationFeedback,
   onOpenLocations,
   onOpenFeedback,
   sx,
@@ -209,9 +210,12 @@ export default function FoodCard({
                 size="small"
                 startIcon={<MessageSquareText size={16} />}
                 onClick={() => onOpenFeedback(food)}
-                sx={styles.getActionButtonSx("feedback")}
+                sx={styles.getActionButtonSx(
+                  "feedback",
+                  Boolean(recommendationFeedback),
+                )}
               >
-                Đánh giá gợi ý
+                {recommendationFeedback ? "Đã đánh giá" : "Đánh giá gợi ý"}
               </Button>
             )}
             {onOpenLocations && (

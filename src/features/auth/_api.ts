@@ -22,6 +22,7 @@ const KEYS = {
   ACCESS_TOKEN: "food-recommendation:access_token",
   REFRESH_TOKEN: "food-recommendation:refresh_token",
   IS_LOGGED_IN: "food-recommendation:isLoggedIn", // giữ để header dùng được
+  ROLE: "food-recommendation:role",
 } as const;
 
 export function getAccessToken(): string | null {
@@ -34,16 +35,27 @@ export function getRefreshToken(): string | null {
   return localStorage.getItem(KEYS.REFRESH_TOKEN);
 }
 
-export function saveTokens(accessToken: string, refreshToken: string): void {
+export function saveTokens(
+  accessToken: string,
+  refreshToken: string,
+  role?: string,
+): void {
   localStorage.setItem(KEYS.ACCESS_TOKEN, accessToken);
   localStorage.setItem(KEYS.REFRESH_TOKEN, refreshToken);
   localStorage.setItem(KEYS.IS_LOGGED_IN, "true");
+  if (role) localStorage.setItem(KEYS.ROLE, role);
+}
+
+export function getSavedRole(): string | null {
+  if (typeof window === "undefined") return null;
+  return localStorage.getItem(KEYS.ROLE);
 }
 
 export function clearTokens(): void {
   localStorage.removeItem(KEYS.ACCESS_TOKEN);
   localStorage.removeItem(KEYS.REFRESH_TOKEN);
   localStorage.removeItem(KEYS.IS_LOGGED_IN);
+  localStorage.removeItem(KEYS.ROLE);
 }
 
 export function isLoggedIn(): boolean {
@@ -72,7 +84,7 @@ async function _doRefresh(): Promise<void> {
     throw new Error("UNAUTHORIZED");
   }
   const data: AuthTokenResponse = await res.json();
-  saveTokens(data.access_token, data.refresh_token);
+  saveTokens(data.access_token, data.refresh_token, data.role);
 }
 
 export async function apiFetch(
