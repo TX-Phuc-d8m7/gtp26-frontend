@@ -82,7 +82,7 @@ export const DISH_TYPE_OPTIONS = [
   "Gỏi / Nộm / Trộn",
   "Hấp / Luộc",
   "Hầm / Ninh",
-  "Kho/Rim",
+  "Kho / Rim",
   "Lẩu",
   "Món khô",
   "Món nước",

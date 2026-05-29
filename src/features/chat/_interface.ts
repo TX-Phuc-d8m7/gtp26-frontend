@@ -16,9 +16,19 @@ export interface BackendFoodResult {
   id: string;
   name: string;
   description: string;
+  img_url?: string | null;
+  core_ingredients?: string[];
+  soft_tags?: string[];
+  taste_profile?: string[];
+  meal_context?: string[];
+  occasion_context?: string[];
   matchScore: number;
+  reason?: string | null;
+  /** "restaurant" | "home_cooked" | "both" — dùng để ẩn/hiện nút Quán gần đây */
+  dining_context?: string | null;
   locations?: FoodLocation[];
-  // Enhanced metadata
+
+  // Optional presentation fields if backend extends the contract later.
   image?: string;
   cookingTime?: number; // in minutes
   difficulty?: "easy" | "medium" | "hard";
@@ -28,7 +38,6 @@ export interface BackendFoodResult {
   carbs?: number;
   fat?: number;
   tags?: string[]; // e.g., ["vegetarian", "low-carb", "quick"]
-  reason?: string; // why this recipe was recommended
 }
 
 export interface FoodLocation {
@@ -40,11 +49,15 @@ export interface FoodLocation {
   lng: number;
   distanceMeters?: number;
   rating?: number;
-  openingHours?: string;
-  mapUrl?: string;
-  phoneNumber?: string;
   userRatingCount?: number;
+  /** Hours info from SerpAPI (e.g. "Open ⋅ Closes 10 PM") or operational status from Google Places. */
   businessStatus?: string;
+  priceLevel?: string;
+  mapUrl?: string;
+  websiteUrl?: string;
+  phoneNumber?: string;
+  /** "google_places_text_search" | "serpapi_google_search" */
+  provider?: string;
 }
 
 export interface BackendPlaceSearchResult {
@@ -54,8 +67,10 @@ export interface BackendPlaceSearchResult {
   rating?: number | null;
   user_rating_count?: number | null;
   google_maps_uri?: string | null;
+  website_uri?: string | null;
   phone_number?: string | null;
   business_status?: string | null;
+  price_level?: string | null;
   location?: {
     latitude: number;
     longitude: number;
@@ -71,7 +86,16 @@ export interface BackendPlaceSearchResponse {
   longitude?: number | null;
   radius_m?: number | null;
   cache_hit: boolean;
+  /** Pre-selected display list (strict results, or fallback if strict is empty). */
   results: BackendPlaceSearchResult[];
+  /** Only strict matches (name/type contains the dish). */
+  strict_results: BackendPlaceSearchResult[];
+  /** Fallback results when strict is empty (nearby related restaurants). */
+  fallback_results: BackendPlaceSearchResult[];
+  used_fallback_results: boolean;
+  /** "Khớp đúng món" or "Quán gần liên quan nhất". */
+  result_label: string;
+  /** "google_places_text_search" | "serpapi_google_search" */
   provider: string;
 }
 
@@ -94,6 +118,37 @@ export type ChatMessageStatus = "sending" | "streaming" | "complete" | "error";
 
 export type ChatFeedback = "like" | "dislike";
 
+export type FoodRecommendationFeedbackVerdict =
+  | "like"
+  | "neutral"
+  | "dislike";
+
+export interface FoodRecommendationFeedbackResult {
+  id: string;
+  userId: string;
+  threadId: string;
+  assistantMessageId: string;
+  foodId: string;
+  verdict: FoodRecommendationFeedbackVerdict;
+  rating?: number | null;
+  reasons: string[];
+  comment?: string | null;
+  tried: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface FoodRecommendationFeedbackPayload {
+  threadId: string;
+  messageId: string;
+  foodId: string;
+  verdict: FoodRecommendationFeedbackVerdict;
+  rating?: number | null;
+  reasons: string[];
+  comment?: string | null;
+  tried: boolean;
+}
+
 export type ChatThreadStatus = "idle" | "running" | "error";
 
 export interface ChatThread {
@@ -115,6 +170,7 @@ export interface ChatMessage {
   aiInsight?: BackendSearchResponse["ai_insight"];
   disclaimer?: string | null;
   feedback?: ChatFeedback;
+  foodRecommendationFeedbacks?: FoodRecommendationFeedbackResult[];
   attachments?: ComposerAttachment[];
   status: ChatMessageStatus;
   sourceQuery?: string;
@@ -125,6 +181,14 @@ export interface ChatSendPayload {
   content: string;
   attachments?: ComposerAttachment[];
   replaceMessageId?: string;
+  skipProfile?: boolean;
+  signal?: AbortSignal;
+}
+
+export interface ChatEditAndResendPayload {
+  threadId: string;
+  messageId: string;
+  content: string;
   skipProfile?: boolean;
   signal?: AbortSignal;
 }
@@ -140,6 +204,9 @@ export interface ChatApiAdapter {
   createThread: (initialMessage?: string) => Promise<ChatThread>;
   getMessages: (threadId: string) => Promise<ChatMessage[]>;
   sendMessage: (payload: ChatSendPayload) => Promise<ChatSendResponse>;
+  editMessageAndResend: (
+    payload: ChatEditAndResendPayload,
+  ) => Promise<ChatSendResponse>;
   renameThread: (threadId: string, title: string) => Promise<ChatThread>;
   deleteThread: (threadId: string) => Promise<void>;
   updateMessageFeedback: (
@@ -147,4 +214,7 @@ export interface ChatApiAdapter {
     messageId: string,
     feedback?: ChatFeedback,
   ) => Promise<ChatMessage>;
+  submitFoodRecommendationFeedback: (
+    payload: FoodRecommendationFeedbackPayload,
+  ) => Promise<FoodRecommendationFeedbackResult>;
 }

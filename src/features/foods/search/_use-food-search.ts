@@ -6,11 +6,20 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
-import { fetchFilterOptions, fetchFoodDetail, fetchFoods } from "./_api";
+import { addFavorite, fetchFavorites, removeFavorite } from "@/features/favorites/_api";
+import { isLoggedIn } from "@/features/auth/_api";
+import {
+  fetchFilterOptions,
+  fetchFoodCategories,
+  fetchFoodDetail,
+  fetchFoods,
+} from "./_api";
 import type {
   ApiFilterOptions,
   ApiFood,
+  ApiFoodCategory,
   ApiFoodDetail,
   FoodSearchUIProps,
   RankedFood,
@@ -35,12 +44,19 @@ const KNOWN_GROUPS: ReadonlyArray<keyof ApiFilterOptions> = [
 ];
 
 /** Đọc query + selectedTags từ URL hiện tại (chỉ chạy trên client). */
-function readInitialFromUrl(): { q: string; tags: string[] } {
-  if (typeof window === "undefined") return { q: "", tags: [] };
+function readInitialFromUrl(): {
+  category: string | null;
+  q: string;
+  tags: string[];
+} {
+  if (typeof window === "undefined") {
+    return { category: null, q: "", tags: [] };
+  }
   const params = new URLSearchParams(window.location.search);
+  const category = params.get("category");
   const q = params.get("q") ?? "";
   const tags = KNOWN_GROUPS.flatMap((g) => params.getAll(g));
-  return { q, tags };
+  return { category, q, tags };
 }
 
 /** Nhóm các tag đã chọn vào đúng param của API */
@@ -67,6 +83,9 @@ export function useFoodSearch({ onClose }: FoodSearchUIProps = {}) {
   const [query, setQuery] = useState<string>(() =>
     isEmbedded ? "" : readInitialFromUrl().q,
   );
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(() =>
+    isEmbedded ? null : readInitialFromUrl().category,
+  );
   const [selectedTags, setSelectedTags] = useState<string[]>(() =>
     isEmbedded ? [] : readInitialFromUrl().tags,
   );
@@ -83,22 +102,32 @@ export function useFoodSearch({ onClose }: FoodSearchUIProps = {}) {
   // ---- Detail state ----
   const [selectedFoodId, setSelectedFoodId] = useState<string | null>(null);
   const [selectedFood, setSelectedFood] = useState<ApiFoodDetail | null>(null);
+  const [favoritedIds, setFavoritedIds] = useState<Set<string>>(new Set());
+  const [favoritingId, setFavoritingId] = useState<string | null>(null);
   const [isDetailLoading, setIsDetailLoading] = useState(false);
 
   // ---- Filter options state ----
-  const [filterOptions, setFilterOptions] = useState<ApiFilterOptions | null>(null);
+  const [filterOptions, setFilterOptions] = useState<ApiFilterOptions | null>(
+    null,
+  );
+  const [foodCategories, setFoodCategories] = useState<ApiFoodCategory[]>([]);
+  const [isCategoryLoading, setIsCategoryLoading] = useState(false);
 
   // Refs
   const freshAbortRef = useRef<AbortController | null>(null);
   const moreAbortRef = useRef<AbortController | null>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const tagGroupMapRef = useRef<Record<string, string>>({});
+  // Always-current snapshot of favoritedIds — readable inside any effect closure
+  const favoritedIdsRef = useRef<Set<string>>(new Set());
 
   /**
    * Gate: nếu có URL tags khi vào trang, fetch đầu tiên phải đợi filterOptions
    * để tagGroupMapRef có dữ liệu đầy đủ trước khi gọi API với đúng param group.
    */
-  const waitForFilterOptionsRef = useRef(!isEmbedded && selectedTags.length > 0);
+  const waitForFilterOptionsRef = useRef(
+    !isEmbedded && selectedTags.length > 0,
+  );
 
   // ---------------------------------------------------------------------------
   // Load filter options once on mount
@@ -107,7 +136,15 @@ export function useFoodSearch({ onClose }: FoodSearchUIProps = {}) {
   useEffect(() => {
     fetchFilterOptions()
       .then(setFilterOptions)
-      .catch(() => {/* silent — tag chips won't show until retry */});
+      .catch(() => {
+        /* silent — tag chips won't show until retry */
+      });
+
+    setIsCategoryLoading(true);
+    fetchFoodCategories()
+      .then((data) => setFoodCategories(data.categories))
+      .catch(() => setFoodCategories([]))
+      .finally(() => setIsCategoryLoading(false));
   }, []);
 
   // ---------------------------------------------------------------------------
@@ -129,6 +166,10 @@ export function useFoodSearch({ onClose }: FoodSearchUIProps = {}) {
     tagGroupMapRef.current = tagGroupMap;
   }, [tagGroupMap]);
 
+  useEffect(() => {
+    favoritedIdsRef.current = favoritedIds;
+  }, [favoritedIds]);
+
   // ---------------------------------------------------------------------------
   // allTags — dùng cho autocomplete suggestions
   // ---------------------------------------------------------------------------
@@ -146,47 +187,51 @@ export function useFoodSearch({ onClose }: FoodSearchUIProps = {}) {
   // Fresh fetch — replaces the list, always offset=0
   // ---------------------------------------------------------------------------
 
-  const doFreshFetch = useCallback(async (q: string, tags: string[]) => {
-    freshAbortRef.current?.abort();
-    moreAbortRef.current?.abort();
+  const doFreshFetch = useCallback(
+    async (q: string, tags: string[], category: string | null) => {
+      freshAbortRef.current?.abort();
+      moreAbortRef.current?.abort();
 
-    const controller = new AbortController();
-    freshAbortRef.current = controller;
+      const controller = new AbortController();
+      freshAbortRef.current = controller;
 
-    setIsLoading(true);
-    setIsLoadingMore(false);
-    setError(null);
+      setIsLoading(true);
+      setIsLoadingMore(false);
+      setError(null);
 
-    try {
-      const result = await fetchFoods(
-        {
-          q: q.trim() || undefined,
-          sort_by: q.trim() ? "relevance" : "name",
-          limit: PAGE_LIMIT,
-          offset: 0,
-          ...groupTagsToParams(tags, tagGroupMapRef.current),
-        },
-        controller.signal,
-      );
+      try {
+        const result = await fetchFoods(
+          {
+            category: category ?? undefined,
+            q: q.trim() || undefined,
+            sort_by: q.trim() ? "relevance" : "name",
+            limit: PAGE_LIMIT,
+            offset: 0,
+            ...groupTagsToParams(tags, tagGroupMapRef.current),
+          },
+          controller.signal,
+        );
 
-      if (!controller.signal.aborted) {
-        setFoods(result.items);
-        setTotal(result.total);
-        setHasEverLoaded(true);
+        if (!controller.signal.aborted) {
+          setFoods(result.items);
+          setTotal(result.total);
+          setHasEverLoaded(true);
+        }
+      } catch (err) {
+        if (!(err instanceof Error && err.name === "AbortError")) {
+          setError("Không thể tải danh sách món ăn. Vui lòng thử lại.");
+          setFoods([]);
+          setTotal(0);
+          setHasEverLoaded(true);
+        }
+      } finally {
+        if (!controller.signal.aborted) {
+          setIsLoading(false);
+        }
       }
-    } catch (err) {
-      if (!(err instanceof Error && err.name === "AbortError")) {
-        setError("Không thể tải danh sách món ăn. Vui lòng thử lại.");
-        setFoods([]);
-        setTotal(0);
-        setHasEverLoaded(true);
-      }
-    } finally {
-      if (!controller.signal.aborted) {
-        setIsLoading(false);
-      }
-    }
-  }, []);
+    },
+    [],
+  );
 
   // ---------------------------------------------------------------------------
   // Load more — appends to the list, offset = current foods.length
@@ -204,6 +249,7 @@ export function useFoodSearch({ onClose }: FoodSearchUIProps = {}) {
       try {
         const result = await fetchFoods(
           {
+            category: selectedCategory ?? undefined,
             q: q.trim() || undefined,
             sort_by: q.trim() ? "relevance" : "name",
             limit: PAGE_LIMIT,
@@ -227,7 +273,7 @@ export function useFoodSearch({ onClose }: FoodSearchUIProps = {}) {
         }
       }
     },
-    [],
+    [selectedCategory],
   );
 
   // ---------------------------------------------------------------------------
@@ -247,14 +293,13 @@ export function useFoodSearch({ onClose }: FoodSearchUIProps = {}) {
     if (debounceRef.current) clearTimeout(debounceRef.current);
     const delay = query.trim() ? DEBOUNCE_MS : 0;
     debounceRef.current = setTimeout(() => {
-      doFreshFetch(query, selectedTags);
+      doFreshFetch(query, selectedTags, selectedCategory);
     }, delay);
 
     return () => {
       if (debounceRef.current) clearTimeout(debounceRef.current);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [query, selectedTags, doFreshFetch, filterOptions]);
+  }, [query, selectedTags, selectedCategory, doFreshFetch, filterOptions]);
 
   // ---------------------------------------------------------------------------
   // URL sync — ghi state vào URL (chỉ dùng cho non-embedded, sau khi filterOptions load)
@@ -265,6 +310,7 @@ export function useFoodSearch({ onClose }: FoodSearchUIProps = {}) {
     if (!filterOptions) return; // cần mapping để ghi đúng group key
 
     const params = new URLSearchParams();
+    if (selectedCategory) params.set("category", selectedCategory);
     if (query.trim()) params.set("q", query.trim());
 
     for (const tag of selectedTags) {
@@ -281,7 +327,45 @@ export function useFoodSearch({ onClose }: FoodSearchUIProps = {}) {
         newSearch ? `?${newSearch}` : window.location.pathname,
       );
     }
-  }, [query, selectedTags, filterOptions, isEmbedded]);
+  }, [query, selectedTags, selectedCategory, filterOptions, isEmbedded]);
+
+  // ---------------------------------------------------------------------------
+  // Load favorited IDs once on mount (only when logged in)
+  // ---------------------------------------------------------------------------
+
+  useEffect(() => {
+    if (!isLoggedIn()) return;
+    const PAGE = 50; // stay within backend's le=100 constraint
+    fetchFavorites({ limit: PAGE, offset: 0 })
+      .then(async (first) => {
+        const ids = first.items.map((item) => item.food?.id ?? item.food_id);
+
+        // If there are more pages, fetch them in parallel
+        if (first.total > PAGE) {
+          const extraPages = Math.ceil((first.total - PAGE) / PAGE);
+          const pages = await Promise.all(
+            Array.from({ length: extraPages }, (_, i) =>
+              fetchFavorites({ limit: PAGE, offset: PAGE + i * PAGE }),
+            ),
+          );
+          for (const page of pages) {
+            for (const item of page.items) {
+              ids.push(item.food?.id ?? item.food_id);
+            }
+          }
+        }
+
+        const loaded = new Set(ids);
+        // Merge — keep any optimistic changes made before this response arrived.
+        setFavoritedIds((prev) => {
+          for (const id of prev) loaded.add(id);
+          return loaded;
+        });
+      })
+      .catch((err) => {
+        console.error("[useFoodSearch] fetchFavorites failed:", err);
+      });
+  }, []);
 
   // ---------------------------------------------------------------------------
   // Load food detail when selectedFoodId changes
@@ -296,11 +380,26 @@ export function useFoodSearch({ onClose }: FoodSearchUIProps = {}) {
     setIsDetailLoading(true);
 
     fetchFoodDetail(selectedFoodId)
-      .then((detail) => { if (!cancelled) setSelectedFood(detail); })
-      .catch(() => { if (!cancelled) setSelectedFood(null); })
-      .finally(() => { if (!cancelled) setIsDetailLoading(false); });
+      .then((detail) => {
+        if (!cancelled) {
+          // Override is_favorite from favoritedIds (client source of truth)
+          // — guards against auth-less response or race with toggleFavorite.
+          setSelectedFood({
+            ...detail,
+            is_favorite: favoritedIdsRef.current.has(detail.id),
+          });
+        }
+      })
+      .catch(() => {
+        if (!cancelled) setSelectedFood(null);
+      })
+      .finally(() => {
+        if (!cancelled) setIsDetailLoading(false);
+      });
 
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, [selectedFoodId]);
 
   // ---------------------------------------------------------------------------
@@ -329,8 +428,22 @@ export function useFoodSearch({ onClose }: FoodSearchUIProps = {}) {
         type: "tag" as const,
       }));
 
-    return [...dishSuggestions, ...tagSuggestions].slice(0, 7);
-  }, [foods, allTags, query]);
+    const ingredientSuggestions = foodCategories
+      .filter((category) => category.label.toLowerCase().includes(q))
+      .slice(0, 3)
+      .map((category) => ({
+        id: `ingredient-category-${category.key}`,
+        label: category.label,
+        type: "ingredient" as const,
+        categoryKey: category.key,
+      }));
+
+    return [
+      ...dishSuggestions,
+      ...tagSuggestions,
+      ...ingredientSuggestions,
+    ].slice(0, 9);
+  }, [foods, allTags, foodCategories, query]);
 
   // ---------------------------------------------------------------------------
   // Ranked foods — server sorted; score for display badge
@@ -352,7 +465,7 @@ export function useFoodSearch({ onClose }: FoodSearchUIProps = {}) {
   const hasMore =
     !isLoading && !isLoadingMore && !error && foods.length < total;
 
-  const activeFilterCount = selectedTags.length;
+  const activeFilterCount = selectedTags.length + (selectedCategory ? 1 : 0);
 
   // ---------------------------------------------------------------------------
   // Actions
@@ -364,18 +477,31 @@ export function useFoodSearch({ onClose }: FoodSearchUIProps = {}) {
     );
   };
 
+  const toggleCategory = (categoryKey: string | null) => {
+    setSelectedCategory((prev) => (prev === categoryKey ? null : categoryKey));
+  };
+
   const clearSearch = () => {
     setQuery("");
+    setSelectedCategory(null);
     setSelectedTags([]);
     setIsSuggestionOpen(false);
   };
 
   const clearFilters = () => {
+    setSelectedCategory(null);
     setSelectedTags([]);
     setIsSuggestionOpen(false);
   };
 
   const selectSuggestion = (suggestion: SearchSuggestion) => {
+    if (suggestion.type === "ingredient" && suggestion.categoryKey) {
+      setQuery("");
+      setSelectedCategory(suggestion.categoryKey);
+      setIsSuggestionOpen(false);
+      return;
+    }
+
     setQuery(suggestion.label);
     if (suggestion.type === "tag") {
       setSelectedTags((prev) =>
@@ -386,7 +512,10 @@ export function useFoodSearch({ onClose }: FoodSearchUIProps = {}) {
   };
 
   const handleBack = () => {
-    if (onClose) { onClose(); return; }
+    if (onClose) {
+      onClose();
+      return;
+    }
     router.push("/");
   };
 
@@ -398,18 +527,82 @@ export function useFoodSearch({ onClose }: FoodSearchUIProps = {}) {
     loadMore(query, selectedTags, foods.length);
   };
 
+  const toggleFavorite = async (foodId: string) => {
+    if (!isLoggedIn()) return;
+    const isFavorited = favoritedIds.has(foodId);
+    const foodName =
+      foods.find((f) => f.id === foodId)?.name ??
+      selectedFood?.name ??
+      "Món ăn";
+    setFavoritingId(foodId);
+
+    // optimistic update
+    setFavoritedIds((prev) => {
+      const next = new Set(prev);
+      if (isFavorited) next.delete(foodId); else next.add(foodId);
+      return next;
+    });
+    // sync detail dialog if open
+    if (selectedFood?.id === foodId) {
+      setSelectedFood((prev) => prev ? { ...prev, is_favorite: !isFavorited } : prev);
+    }
+
+    try {
+      if (isFavorited) {
+        await removeFavorite(foodId);
+      } else {
+        await addFavorite({ food_id: foodId });
+      }
+      // Reconfirm after API success — guards against a late-arriving
+      // fetchFavorites response overwriting the optimistic update.
+      setFavoritedIds((prev) => {
+        const next = new Set(prev);
+        if (isFavorited) next.delete(foodId); else next.add(foodId);
+        return next;
+      });
+
+      // Toast notification
+      if (isFavorited) {
+        toast.success(`Đã xoá "${foodName}" khỏi yêu thích`);
+      } else {
+        toast.success(`Đã thêm "${foodName}" vào yêu thích`, {
+          action: {
+            label: "Xem danh sách",
+            onClick: () => router.push("/favorites"),
+          },
+        });
+      }
+    } catch {
+      // Revert optimistic update on error
+      setFavoritedIds((prev) => {
+        const next = new Set(prev);
+        if (isFavorited) next.add(foodId); else next.delete(foodId);
+        return next;
+      });
+      if (selectedFood?.id === foodId) {
+        setSelectedFood((prev) => prev ? { ...prev, is_favorite: isFavorited } : prev);
+      }
+      toast.error("Không thể thực hiện. Vui lòng thử lại.");
+    } finally {
+      setFavoritingId(null);
+    }
+  };
+
   return {
     query,
+    selectedCategory,
     selectedTags,
     selectedFood,
     allTags,
     filterOptions,
+    foodCategories,
     activeFilterCount,
     rankedFoods,
     suggestions,
     isSuggestionOpen,
     isLoading,
     isLoadingMore,
+    isCategoryLoading,
     isDetailLoading,
     hasEverLoaded,
     error,
@@ -417,12 +610,16 @@ export function useFoodSearch({ onClose }: FoodSearchUIProps = {}) {
     hasMore,
     clearSearch,
     clearFilters,
+    favoritedIds,
+    favoritingId,
     handleBack,
     handleLoadMore,
     selectSuggestion,
     setIsSuggestionOpen,
     setQuery,
     setSelectedFood: selectFood,
+    toggleCategory,
+    toggleFavorite,
     toggleTag,
   };
 }

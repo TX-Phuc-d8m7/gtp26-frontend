@@ -12,11 +12,13 @@ import {
 } from "react";
 
 import type {
+  ChatEditAndResendPayload,
   ChatFeedback,
   ChatMessage,
   ChatSendPayload,
   ChatSendResponse,
   ChatThread,
+  FoodRecommendationFeedbackPayload,
 } from "../_interface";
 import { chatApiAdapter } from "../lib/chat-api-adapter";
 
@@ -48,12 +50,18 @@ interface ThreadContextType {
   createThread: (initialMessage?: string) => Promise<ChatThread>;
   loadMessages: (threadId: string) => Promise<ChatMessage[]>;
   sendMessage: (payload: ChatSendPayload) => Promise<ChatSendResponse>;
+  editMessageAndResend: (
+    payload: ChatEditAndResendPayload,
+  ) => Promise<ChatSendResponse>;
   renameThread: (threadId: string, title: string) => Promise<void>;
   deleteThread: (threadId: string) => Promise<void>;
   updateMessageFeedback: (
     threadId: string,
     messageId: string,
     feedback?: ChatFeedback,
+  ) => Promise<void>;
+  submitFoodRecommendationFeedback: (
+    payload: FoodRecommendationFeedbackPayload,
   ) => Promise<void>;
 }
 
@@ -192,6 +200,87 @@ export function ThreadProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
+  const editMessageAndResend = useCallback(
+    async (payload: ChatEditAndResendPayload) => {
+      const previousMessages = messagesByThreadId[payload.threadId] ?? [];
+      const targetIndex = previousMessages.findIndex(
+        (message) =>
+          message.id === payload.messageId && message.role === "human",
+      );
+
+      if (targetIndex === -1) {
+        throw new Error("Không tìm thấy câu hỏi cần chỉnh sửa.");
+      }
+
+      setIsSendingMessage(true);
+      setError(null);
+      setMessagesByThreadId((prev) => ({
+        ...prev,
+        [payload.threadId]: [
+          ...previousMessages.slice(0, targetIndex),
+          {
+            ...previousMessages[targetIndex],
+            content: payload.content,
+            status: "complete",
+          },
+        ],
+      }));
+
+      try {
+        const response = await chatApiAdapter.editMessageAndResend(payload);
+        setThreads((prev) => {
+          const currentThread = prev.find(
+            (item) => item.id === response.thread.id,
+          );
+          const nextThread = currentThread
+            ? {
+                ...response.thread,
+                title:
+                  response.thread.title === "Cuộc trò chuyện mới"
+                    ? currentThread.title
+                    : response.thread.title,
+                createdAt: currentThread.createdAt,
+              }
+            : response.thread;
+
+          return [
+            nextThread,
+            ...prev.filter((item) => item.id !== response.thread.id),
+          ];
+        });
+        setMessagesByThreadId((prev) => {
+          const currentMessages = prev[payload.threadId] ?? [];
+          const currentTargetIndex = currentMessages.findIndex(
+            (message) =>
+              message.id === payload.messageId && message.role === "human",
+          );
+          const prefix =
+            currentTargetIndex >= 0
+              ? currentMessages.slice(0, currentTargetIndex)
+              : [];
+
+          return {
+            ...prev,
+            [payload.threadId]: mergeMessagesById(prefix, response.messages),
+          };
+        });
+        return response;
+      } catch (err) {
+        const message =
+          err instanceof Error ? err.message : "Không chỉnh sửa được câu hỏi.";
+        setError(message);
+        setMessagesByThreadId((prev) => ({
+          ...prev,
+          [payload.threadId]: previousMessages,
+        }));
+        throw err;
+      } finally {
+        setIsSendingMessage(false);
+      }
+    },
+    [messagesByThreadId],
+  );
+
   const renameThread = useCallback(async (threadId: string, title: string) => {
     setError(null);
     const thread = await chatApiAdapter.renameThread(threadId, title);
@@ -228,6 +317,39 @@ export function ThreadProvider({ children }: { children: ReactNode }) {
     [],
   );
 
+  const submitFoodRecommendationFeedback = useCallback(
+    async (payload: FoodRecommendationFeedbackPayload) => {
+      setError(null);
+      const feedback =
+        await chatApiAdapter.submitFoodRecommendationFeedback(payload);
+
+      setMessagesByThreadId((prev) => ({
+        ...prev,
+        [payload.threadId]: (prev[payload.threadId] ?? []).map((message) => {
+          if (message.id !== payload.messageId) return message;
+
+          const currentFeedbacks = message.foodRecommendationFeedbacks ?? [];
+          const nextFeedbacks = [
+            feedback,
+            ...currentFeedbacks.filter(
+              (item) =>
+                !(
+                  item.assistantMessageId === feedback.assistantMessageId &&
+                  item.foodId === feedback.foodId
+                ),
+            ),
+          ];
+
+          return {
+            ...message,
+            foodRecommendationFeedbacks: nextFeedbacks,
+          };
+        }),
+      }));
+    },
+    [],
+  );
+
   const value = useMemo(
     () => ({
       threads,
@@ -241,9 +363,11 @@ export function ThreadProvider({ children }: { children: ReactNode }) {
       createThread,
       loadMessages,
       sendMessage,
+      editMessageAndResend,
       renameThread,
       deleteThread,
       updateMessageFeedback,
+      submitFoodRecommendationFeedback,
     }),
     [
       threads,
@@ -256,9 +380,11 @@ export function ThreadProvider({ children }: { children: ReactNode }) {
       createThread,
       loadMessages,
       sendMessage,
+      editMessageAndResend,
       renameThread,
       deleteThread,
       updateMessageFeedback,
+      submitFoodRecommendationFeedback,
     ],
   );
 

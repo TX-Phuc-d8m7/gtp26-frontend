@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { ThemeProvider } from "@/shared/components/theme-provider";
+import { Toaster } from "@/shared/components/ui/sonner/index";
 
 export const metadata: Metadata = {
   title: "Hôm nay bạn ăn gì ?",
@@ -25,7 +26,10 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <NuqsAdapter>{children}</NuqsAdapter>
+          <NuqsAdapter>
+            {children}
+            <Toaster />
+          </NuqsAdapter>
         </ThemeProvider>
       </body>
     </html>

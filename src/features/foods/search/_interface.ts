@@ -22,6 +22,8 @@ export interface ApiFood {
   taste_profile: string[];
   meal_context: string[];
   occasion_context: string[];
+  /** "restaurant" | "home_cooked" | "both" — dùng để ẩn/hiện nút Quán gần đây */
+  dining_context?: string | null;
 }
 
 /** Chi tiết đầy đủ một món ăn — FoodDetailResponse từ backend */
@@ -39,6 +41,18 @@ export interface ApiFoodListResponse {
   limit: number;
   offset: number;
   items: ApiFood[];
+}
+
+/** Item của GET /foods/categories */
+export interface ApiFoodCategory {
+  key: string;
+  label: string;
+  count: number;
+}
+
+/** Response của GET /foods/categories */
+export interface ApiFoodCategoriesResponse {
+  categories: ApiFoodCategory[];
 }
 
 /** Response của GET /foods/filter-options */
@@ -66,6 +80,7 @@ export interface SearchSuggestion {
   id: string;
   label: string;
   type: "dish" | "tag" | "ingredient";
+  categoryKey?: string;
 }
 
 export interface FoodSearchState {

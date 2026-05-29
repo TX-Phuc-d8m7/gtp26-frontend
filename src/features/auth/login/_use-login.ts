@@ -11,11 +11,14 @@ import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 
 import { apiLogin, saveTokens } from "@/features/auth/_api";
+import { useRedirectIfLoggedIn } from "@/shared/hooks/use-auth-redirect";
 import { loginSchema, LoginFormData } from ".";
 
 export function useLogin() {
   const [isLoading, setIsLoading] = useState(false);
+  const [serverError, setServerError] = useState<string | null>(null);
   const router = useRouter();
+  useRedirectIfLoggedIn();
   const form = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
     mode: "onBlur",
@@ -23,16 +26,17 @@ export function useLogin() {
 
   const onSubmit = async (data: LoginFormData) => {
     setIsLoading(true);
+    setServerError(null);
     try {
       const result = await apiLogin(data.email, data.password);
-      saveTokens(result.access_token, result.refresh_token);
+      saveTokens(result.access_token, result.refresh_token, result.role);
 
       toast.success("Đăng nhập thành công!");
-      router.push("/");
+      router.push(result.role === "admin" ? "/admin" : "/chat");
     } catch (err) {
       const message =
         err instanceof Error ? err.message : "Đăng nhập thất bại.";
-      toast.error(message);
+      setServerError(message);
     } finally {
       setIsLoading(false);
     }
@@ -44,5 +48,6 @@ export function useLogin() {
     isLoading,
     onSubmit,
     register: form.register,
+    serverError,
   };
 }

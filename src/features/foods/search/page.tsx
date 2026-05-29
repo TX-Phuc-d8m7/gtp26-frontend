@@ -31,12 +31,12 @@ import { useTheme } from "@mui/material/styles";
 import {
   AlertCircle,
   ArrowLeft,
-  Bot,
   ChevronDown,
   ChevronUp,
   Clock3,
-  Leaf,
-  MapPinned,
+  Heart,
+  Loader2,
+  MapPin,
   Search,
   SlidersHorizontal,
   Sparkles,
@@ -44,15 +44,17 @@ import {
   Utensils,
   X,
 } from "lucide-react";
-import type { LucideIcon } from "lucide-react";
 import { useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 
 import { AppLoading } from "@/shared/components/ui/app-loading";
+import { MapInsightPanel } from "@/features/chat/components/thread/map-insight-panel";
+import type { BackendFoodResult } from "@/features/chat/_interface";
 
 import type {
   ApiFilterOptions,
   ApiFood,
+  ApiFoodCategory,
   ApiFoodDetail,
   FoodSearchUIProps,
   RankedFood,
@@ -64,33 +66,27 @@ import { useFoodSearch } from "./_use-food-search";
 const FALLBACK_IMAGE =
   "https://images.unsplash.com/photo-1555126634-323283e090fa?auto=format&fit=crop&q=80&w=900";
 
+/** Chuyển ApiFood → BackendFoodResult để truyền vào MapInsightPanel */
+function apiFoodToBackendResult(food: ApiFood): BackendFoodResult {
+  return {
+    id: food.id,
+    name: food.name,
+    description: food.description,
+    img_url: food.img_url,
+    core_ingredients: food.core_ingredients,
+    soft_tags: food.soft_tags,
+    taste_profile: food.taste_profile,
+    meal_context: food.meal_context,
+    occasion_context: food.occasion_context,
+    matchScore: 0,
+  };
+}
+
 const suggestionTypeLabels: Record<SearchSuggestion["type"], string> = {
   dish: "Món ăn",
   tag: "Thẻ gợi ý",
   ingredient: "Nguyên liệu",
 };
-
-const searchContextCards: {
-  title: string;
-  helper: string;
-  Icon: LucideIcon;
-}[] = [
-  {
-    title: "Nói tự nhiên",
-    helper: "khẩu vị, ngân sách",
-    Icon: Bot,
-  },
-  {
-    title: "Ăn nhẹ hơn",
-    helper: "ít dầu, dễ tiêu",
-    Icon: Leaf,
-  },
-  {
-    title: "Gần trải nghiệm thật",
-    helper: "món + địa điểm",
-    Icon: MapPinned,
-  },
-];
 
 const GROUP_ORDER: Array<keyof ApiFilterOptions> = [
   "meal_context",
@@ -176,16 +172,18 @@ export default function FoodSearchUI(props: FoodSearchUIProps = {}) {
   const shouldSkipMountMotion = Boolean(shouldReduceMotion || isEmbedded);
   const {
     query,
+    selectedCategory,
     selectedTags,
     selectedFood,
-    allTags,
     filterOptions,
+    foodCategories,
     activeFilterCount,
     rankedFoods,
     suggestions,
     isSuggestionOpen,
     isLoading,
     isLoadingMore,
+    isCategoryLoading,
     isDetailLoading,
     hasEverLoaded,
     error,
@@ -193,20 +191,28 @@ export default function FoodSearchUI(props: FoodSearchUIProps = {}) {
     hasMore,
     clearSearch,
     clearFilters,
+    favoritedIds,
+    favoritingId,
     handleBack,
     handleLoadMore,
     selectSuggestion,
     setIsSuggestionOpen,
     setQuery,
     setSelectedFood,
+    toggleCategory,
+    toggleFavorite,
     toggleTag,
   } = useFoodSearch(props);
 
   const [isFilterPanelOpen, setIsFilterPanelOpen] = useState(false);
+  const [mapFood, setMapFood] = useState<BackendFoodResult | null>(null);
 
   // First visit: show AppLoading until the very first fetch resolves
   const showSystemLoading = isLoading && !hasEverLoaded;
-  const hasActiveSearch = Boolean(query.trim()) || selectedTags.length > 0;
+  const hasActiveSearch =
+    Boolean(query.trim()) ||
+    selectedTags.length > 0 ||
+    Boolean(selectedCategory);
   const suggestionGroups = (
     ["dish", "tag", "ingredient"] as SearchSuggestion["type"][]
   )
@@ -352,18 +358,37 @@ export default function FoodSearchUI(props: FoodSearchUIProps = {}) {
             </AnimatePresence>
           </Box>
 
+          <CategoryBrowser
+            categories={foodCategories}
+            isLoading={isCategoryLoading}
+            selectedCategory={selectedCategory}
+            onSelectCategory={toggleCategory}
+          />
+
           {/* Filter toggle button row */}
           <Box sx={styles.filterBarStyles}>
             <Button
-              onClick={() => setIsFilterPanelOpen(p => !p)}
+              onClick={() => setIsFilterPanelOpen((p) => !p)}
               startIcon={<SlidersHorizontal size={16} />}
-              endIcon={isFilterPanelOpen ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
-              sx={styles.filterToggleButtonStyles(isFilterPanelOpen, activeFilterCount > 0)}
+              endIcon={
+                isFilterPanelOpen ? (
+                  <ChevronUp size={14} />
+                ) : (
+                  <ChevronDown size={14} />
+                )
+              }
+              sx={styles.filterToggleButtonStyles(
+                isFilterPanelOpen,
+                activeFilterCount > 0,
+              )}
             >
               Bộ lọc{activeFilterCount > 0 ? ` (${activeFilterCount})` : ""}
             </Button>
             {activeFilterCount > 0 && (
-              <Button onClick={clearFilters} sx={styles.filterClearAllButtonStyles}>
+              <Button
+                onClick={clearFilters}
+                sx={styles.filterClearAllButtonStyles}
+              >
                 Xóa bộ lọc
               </Button>
             )}
@@ -381,7 +406,9 @@ export default function FoodSearchUI(props: FoodSearchUIProps = {}) {
 
         <Box sx={styles.statusRowStyles}>
           {error ? (
-            <Typography sx={{ ...styles.resultCountStyles, color: "error.main" }}>
+            <Typography
+              sx={{ ...styles.resultCountStyles, color: "error.main" }}
+            >
               {error}
             </Typography>
           ) : isLoading ? (
@@ -407,7 +434,10 @@ export default function FoodSearchUI(props: FoodSearchUIProps = {}) {
         ) : rankedFoods.length > 0 ? (
           <>
             <Box sx={styles.gridStyles}>
-              <AnimatePresence mode="popLayout" initial={!shouldSkipMountMotion}>
+              <AnimatePresence
+                mode="popLayout"
+                initial={!shouldSkipMountMotion}
+              >
                 {rankedFoods.map((result, index) => (
                   <Box
                     key={result.food.id}
@@ -432,7 +462,11 @@ export default function FoodSearchUI(props: FoodSearchUIProps = {}) {
                   >
                     <FoodResultCard
                       result={result}
+                      isFavorited={favoritedIds.has(result.food.id)}
+                      isFavoritingId={favoritingId}
                       onSelect={() => setSelectedFood(result.food)}
+                      onToggleFavorite={() => void toggleFavorite(result.food.id)}
+                      onOpenLocations={() => setMapFood(apiFoodToBackendResult(result.food))}
                     />
                   </Box>
                 ))}
@@ -455,9 +489,111 @@ export default function FoodSearchUI(props: FoodSearchUIProps = {}) {
       <FoodDetailDialog
         food={selectedFood}
         fullScreen={isMobile}
+        isFavoriteLoading={favoritingId === selectedFood?.id}
         isLoading={isDetailLoading}
         onClose={() => setSelectedFood(null)}
+        onToggleFavorite={() => void toggleFavorite(selectedFood?.id ?? "")}
+        onOpenLocations={
+          selectedFood?.dining_context === "restaurant"
+            ? () => {
+                // selectedFood is non-null — dining_context wouldn't be "restaurant" if null
+                setMapFood(apiFoodToBackendResult(selectedFood!));
+                setSelectedFood(null);
+              }
+            : undefined
+        }
       />
+
+      {/* Quán gần đây panel — hiện khi user nhấn nút MapPin */}
+      <MapInsightPanel food={mapFood} onClose={() => setMapFood(null)} />
+    </Box>
+  );
+}
+
+function CategoryBrowser({
+  categories,
+  isLoading,
+  selectedCategory,
+  onSelectCategory,
+}: {
+  categories: ApiFoodCategory[];
+  isLoading: boolean;
+  selectedCategory: string | null;
+  onSelectCategory: (categoryKey: string | null) => void;
+}) {
+  if (isLoading) {
+    return (
+      <Box sx={styles.categorySectionStyles}>
+        <Box sx={styles.categoryHeaderStyles}>
+          <Skeleton variant="text" animation="wave" width={150} height={22} />
+          <Skeleton variant="text" animation="wave" width={96} height={18} />
+        </Box>
+        <Box sx={styles.categoryRailStyles}>
+          {Array.from({ length: 6 }).map((_, index) => (
+            <Skeleton
+              key={index}
+              variant="rounded"
+              animation="wave"
+              width={index % 2 === 0 ? 132 : 104}
+              height={44}
+              sx={{ borderRadius: 999, flexShrink: 0 }}
+            />
+          ))}
+        </Box>
+      </Box>
+    );
+  }
+
+  if (categories.length === 0) return null;
+
+  const totalCount = categories.reduce(
+    (sum, category) => sum + category.count,
+    0,
+  );
+
+  return (
+    <Box sx={styles.categorySectionStyles}>
+      <Box sx={styles.categoryHeaderStyles}>
+        <Typography sx={styles.categoryTitleStyles}>
+          Duyệt theo nhóm nguyên liệu
+        </Typography>
+        <Typography sx={styles.categoryMetaStyles}>
+          {categories.length} nhóm
+        </Typography>
+      </Box>
+      <Box sx={styles.categoryRailStyles}>
+        <Box
+          component="button"
+          type="button"
+          onClick={() => onSelectCategory(null)}
+          sx={styles.categoryPillStyles(!selectedCategory)}
+        >
+          <Typography sx={styles.categoryPillLabelStyles}>Tất cả</Typography>
+          <Typography sx={styles.categoryPillCountStyles}>
+            {totalCount} món
+          </Typography>
+        </Box>
+
+        {categories.map((category) => {
+          const isSelected = selectedCategory === category.key;
+          return (
+            <Box
+              key={category.key}
+              component="button"
+              type="button"
+              onClick={() => onSelectCategory(category.key)}
+              sx={styles.categoryPillStyles(isSelected)}
+            >
+              <Typography sx={styles.categoryPillLabelStyles}>
+                {category.label}
+              </Typography>
+              <Typography sx={styles.categoryPillCountStyles}>
+                {category.count} món
+              </Typography>
+            </Box>
+          );
+        })}
+      </Box>
     </Box>
   );
 }
@@ -510,16 +646,46 @@ function FoodCardSkeleton() {
         {/* Food name */}
         <Skeleton variant="text" animation="wave" width="65%" height={28} />
         {/* Description — 2 lines */}
-        <Skeleton variant="text" animation="wave" width="100%" height={18} sx={{ mt: 0.5 }} />
+        <Skeleton
+          variant="text"
+          animation="wave"
+          width="100%"
+          height={18}
+          sx={{ mt: 0.5 }}
+        />
         <Skeleton variant="text" animation="wave" width="80%" height={18} />
         {/* Tag chips */}
         <Box sx={{ display: "flex", gap: 0.75, mt: 1 }}>
-          <Skeleton variant="rounded" animation="wave" width={56} height={24} sx={{ borderRadius: 99 }} />
-          <Skeleton variant="rounded" animation="wave" width={72} height={24} sx={{ borderRadius: 99 }} />
-          <Skeleton variant="rounded" animation="wave" width={48} height={24} sx={{ borderRadius: 99 }} />
+          <Skeleton
+            variant="rounded"
+            animation="wave"
+            width={56}
+            height={24}
+            sx={{ borderRadius: 99 }}
+          />
+          <Skeleton
+            variant="rounded"
+            animation="wave"
+            width={72}
+            height={24}
+            sx={{ borderRadius: 99 }}
+          />
+          <Skeleton
+            variant="rounded"
+            animation="wave"
+            width={48}
+            height={24}
+            sx={{ borderRadius: 99 }}
+          />
         </Box>
         {/* Meta line */}
-        <Skeleton variant="text" animation="wave" width="55%" height={16} sx={{ mt: 1 }} />
+        <Skeleton
+          variant="text"
+          animation="wave"
+          width="55%"
+          height={16}
+          sx={{ mt: 1 }}
+        />
       </CardContent>
     </Card>
   );
@@ -527,86 +693,163 @@ function FoodCardSkeleton() {
 
 function FoodResultCard({
   result,
+  isFavorited,
+  isFavoritingId,
   onSelect,
+  onToggleFavorite,
+  onOpenLocations,
 }: {
   result: RankedFood;
+  isFavorited: boolean;
+  isFavoritingId: string | null;
   onSelect: () => void;
+  onToggleFavorite: () => void;
+  onOpenLocations?: () => void;
 }) {
   const { food, score } = result;
   const scoreLabel = score > 0 ? `${Math.min(99, score)}% hợp` : "Nên thử";
   const imageUrl = food.img_url ?? FALLBACK_IMAGE;
+  const isThisToggling = isFavoritingId === food.id;
 
   return (
-    <Card elevation={0} sx={styles.cardStyles}>
-      <CardActionArea onClick={onSelect} sx={styles.cardActionStyles}>
-        <Box sx={styles.cardMediaWrapStyles}>
-          <CardMedia
-            image={imageUrl}
-            title={food.name}
-            sx={styles.cardMediaStyles}
+    /* Wrapper gives the heart button a containing block that is completely
+       outside the Card/CardActionArea DOM tree — no shared ancestors means
+       the heart click can never propagate into CardActionArea. */
+    <Box sx={{ position: "relative", height: "100%" }}>
+      <Card elevation={0} sx={styles.cardStyles}>
+        <CardActionArea onClick={onSelect} sx={styles.cardActionStyles}>
+          <Box sx={styles.cardMediaWrapStyles}>
+            <CardMedia
+              image={imageUrl}
+              title={food.name}
+              sx={styles.cardMediaStyles}
+            />
+            <Box sx={styles.cardMediaOverlayStyles}>
+              <Box sx={styles.scoreBadgeStyles}>{scoreLabel}</Box>
+            </Box>
+          </Box>
+          <CardContent sx={styles.cardContentStyles}>
+            <Box sx={styles.cardHeaderStyles}>
+              <Typography component="h2" sx={styles.foodNameStyles}>
+                {food.name}
+              </Typography>
+            </Box>
+
+            <Typography sx={styles.descriptionStyles}>
+              {food.description}
+            </Typography>
+
+            <Box sx={styles.chipWrapStyles}>
+              {food.soft_tags.slice(0, 3).map((tag) => (
+                <Chip
+                  key={tag}
+                  label={tag}
+                  size="small"
+                  sx={styles.softTagStyles}
+                />
+              ))}
+              {food.meal_context.slice(0, 1).map((ctx) => (
+                <Chip
+                  key={ctx}
+                  label={ctx}
+                  size="small"
+                  sx={styles.softTagStyles}
+                />
+              ))}
+            </Box>
+
+            {food.taste_profile.length > 0 ? (
+              <Typography sx={styles.helperTextStyles}>
+                Vị: {food.taste_profile.join(", ")}
+              </Typography>
+            ) : null}
+
+            {food.core_ingredients.length > 0 ? (
+              <Typography sx={styles.helperTextStyles}>
+                NL chính: {food.core_ingredients.slice(0, 3).join(", ")}
+                {food.core_ingredients.length > 3 ? "…" : ""}
+              </Typography>
+            ) : null}
+          </CardContent>
+        </CardActionArea>
+      </Card>
+
+      {/* Quán gần đây button — chỉ hiện nếu là món restaurant */}
+      {onOpenLocations && food.dining_context === "restaurant" && (
+        <IconButton
+          aria-label="Quán gần đây"
+          onClick={onOpenLocations}
+          size="small"
+          sx={{
+            position: "absolute",
+            top: 6,
+            right: 42,
+            zIndex: 2,
+            backgroundColor: "rgba(0,0,0,0.45)",
+            backdropFilter: "blur(4px)",
+            color: "#fff",
+            "&:hover": { backgroundColor: "rgba(0,0,0,0.65)" },
+            width: 30,
+            height: 30,
+          }}
+        >
+          <MapPin size={14} />
+        </IconButton>
+      )}
+
+      {/* Heart button — lives in the wrapper Box, NOT inside Card at all */}
+      <IconButton
+        aria-label={isFavorited ? "Xoá khỏi yêu thích" : "Thêm vào yêu thích"}
+        disabled={isThisToggling}
+        onClick={onToggleFavorite}
+        size="small"
+        sx={{
+          position: "absolute",
+          top: 6,
+          right: 6,
+          zIndex: 2,
+          backgroundColor: "rgba(0,0,0,0.45)",
+          backdropFilter: "blur(4px)",
+          color: "#fff",
+          "&:hover": { backgroundColor: "rgba(0,0,0,0.65)" },
+          "&.Mui-disabled": { backgroundColor: "rgba(0,0,0,0.3)", color: "#fff" },
+          width: 30,
+          height: 30,
+        }}
+      >
+        {isThisToggling ? (
+          <Loader2
+            size={14}
+            style={{ animation: "spin 1s linear infinite" }}
           />
-          <Box sx={styles.cardMediaOverlayStyles}>
-            <Box sx={styles.scoreBadgeStyles}>{scoreLabel}</Box>
-          </Box>
-        </Box>
-        <CardContent sx={styles.cardContentStyles}>
-          <Box sx={styles.cardHeaderStyles}>
-            <Typography component="h2" sx={styles.foodNameStyles}>
-              {food.name}
-            </Typography>
-          </Box>
-
-          <Typography sx={styles.descriptionStyles}>
-            {food.description}
-          </Typography>
-
-          <Box sx={styles.chipWrapStyles}>
-            {food.soft_tags.slice(0, 3).map((tag) => (
-              <Chip
-                key={tag}
-                label={tag}
-                size="small"
-                sx={styles.softTagStyles}
-              />
-            ))}
-            {food.meal_context.slice(0, 1).map((ctx) => (
-              <Chip
-                key={ctx}
-                label={ctx}
-                size="small"
-                sx={styles.softTagStyles}
-              />
-            ))}
-          </Box>
-
-          {food.taste_profile.length > 0 ? (
-            <Typography sx={styles.helperTextStyles}>
-              Vị: {food.taste_profile.join(", ")}
-            </Typography>
-          ) : null}
-
-          {food.core_ingredients.length > 0 ? (
-            <Typography sx={styles.helperTextStyles}>
-              NL chính: {food.core_ingredients.slice(0, 3).join(", ")}
-              {food.core_ingredients.length > 3 ? "…" : ""}
-            </Typography>
-          ) : null}
-        </CardContent>
-      </CardActionArea>
-    </Card>
+        ) : (
+          <Heart
+            size={14}
+            fill={isFavorited ? "#F97316" : "none"}
+            color={isFavorited ? "#F97316" : "#fff"}
+          />
+        )}
+      </IconButton>
+    </Box>
   );
 }
 
 function FoodDetailDialog({
   food,
   fullScreen,
+  isFavoriteLoading,
   isLoading,
   onClose,
+  onToggleFavorite,
+  onOpenLocations,
 }: {
   food: ApiFoodDetail | null;
   fullScreen: boolean;
+  isFavoriteLoading: boolean;
   isLoading: boolean;
   onClose: () => void;
+  onToggleFavorite: () => void;
+  onOpenLocations?: () => void;
 }) {
   const isOpen = Boolean(food) || isLoading;
   if (!isOpen) return null;
@@ -651,6 +894,48 @@ function FoodDetailDialog({
               >
                 <X size={20} />
               </IconButton>
+              {onOpenLocations && (
+                <IconButton
+                  aria-label="Tìm quán gần bạn"
+                  onClick={onOpenLocations}
+                  sx={{
+                    position: "absolute",
+                    top: 12,
+                    right: food.is_favorite !== undefined ? 100 : 52,
+                    backgroundColor: "rgba(0,0,0,0.45)",
+                    backdropFilter: "blur(4px)",
+                    color: "#fff",
+                    "&:hover": { backgroundColor: "rgba(0,0,0,0.6)" },
+                  }}
+                >
+                  <MapPin size={18} />
+                </IconButton>
+              )}
+              {food.is_favorite !== undefined && (
+                <IconButton
+                  aria-label={food.is_favorite ? "Xoá khỏi yêu thích" : "Thêm vào yêu thích"}
+                  disabled={isFavoriteLoading}
+                  onClick={onToggleFavorite}
+                  sx={{
+                    position: "absolute",
+                    top: 12,
+                    right: 52,
+                    backgroundColor: "rgba(0,0,0,0.45)",
+                    backdropFilter: "blur(4px)",
+                    color: food.is_favorite ? "#F97316" : "#fff",
+                    "&:hover": { backgroundColor: "rgba(0,0,0,0.6)" },
+                  }}
+                >
+                  {isFavoriteLoading ? (
+                    <Loader2 size={18} style={{ animation: "spin 0.8s linear infinite" }} />
+                  ) : (
+                    <Heart
+                      size={18}
+                      fill={food.is_favorite ? "#F97316" : "none"}
+                    />
+                  )}
+                </IconButton>
+              )}
               <Box sx={styles.detailTitleWrapStyles}>
                 <Typography component="h2" sx={styles.titleStyles}>
                   {food.name}
@@ -669,8 +954,8 @@ function FoodDetailDialog({
               </Typography>
 
               {/* Taste & occasion tags */}
-              {(food.taste_profile.length > 0 ||
-                food.occasion_context.length > 0) ? (
+              {food.taste_profile.length > 0 ||
+              food.occasion_context.length > 0 ? (
                 <Box sx={styles.detailSectionStyles}>
                   <Typography sx={{ fontWeight: 800, marginBottom: 1 }}>
                     Khẩu vị & dịp ăn
@@ -766,17 +1051,23 @@ function FoodDetailDialog({
                 </Box>
               ) : null}
 
-              {/* Favorite status */}
-              {food.is_favorite !== null &&
-              food.is_favorite !== undefined ? (
+              {/* Favorite status badge */}
+              {food.is_favorite === true && (
                 <Box sx={styles.detailSectionStyles}>
-                  <Typography sx={{ color: "text.secondary", fontSize: 13 }}>
-                    {food.is_favorite
-                      ? "❤️ Đã thêm vào yêu thích"
-                      : "Chưa trong danh sách yêu thích"}
-                  </Typography>
+                  <Chip
+                    size="small"
+                    icon={<Heart size={12} fill="#F97316" color="#F97316" />}
+                    label="Đã thêm vào yêu thích"
+                    sx={{
+                      fontSize: 12,
+                      fontWeight: 700,
+                      backgroundColor: "rgba(249,115,22,0.1)",
+                      color: "#EA580C",
+                      border: "1px solid rgba(249,115,22,0.25)",
+                    }}
+                  />
                 </Box>
-              ) : null}
+              )}
             </Box>
           </>
         )}
@@ -890,10 +1181,7 @@ function EmptyState({
       </Box>
 
       {/* Title */}
-      <Typography
-        variant="h6"
-        sx={{ color, fontWeight: 700, mb: 1 }}
-      >
+      <Typography variant="h6" sx={{ color, fontWeight: 700, mb: 1 }}>
         {title}
       </Typography>
 
