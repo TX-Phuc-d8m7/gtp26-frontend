@@ -12,7 +12,7 @@ import type {
 } from "./_interface";
 
 const BASE_URL =
-  process.env.NEXT_PUBLIC_FOOD_AI_API_URL ?? "http://localhost:8000";
+  process.env.NEXT_PUBLIC_FOOD_AI_API_URL ?? "/api/backend";
 
 // ---------------------------------------------------------------------------
 // Filter options — module-level cache

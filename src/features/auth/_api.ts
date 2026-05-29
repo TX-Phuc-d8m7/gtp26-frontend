@@ -6,13 +6,13 @@
 /**
  * Auth & User API client
  * ─────────────────────
- * - Token CRUD (localStorage)
+ * - Token CRUD (sessionStorage)
  * - apiFetch với auto-refresh khi nhận 401
  * - Tất cả các hàm gọi API cho auth, account, health-profile
  */
 
 const BASE_URL =
-  process.env.NEXT_PUBLIC_FOOD_AI_API_URL ?? "http://localhost:8000";
+  process.env.NEXT_PUBLIC_FOOD_AI_API_URL ?? "/api/backend";
 
 // ---------------------------------------------------------------------------
 // Token storage keys
@@ -25,14 +25,22 @@ const KEYS = {
   ROLE: "food-recommendation:role",
 } as const;
 
-export function getAccessToken(): string | null {
+function getTokenStorage(): Storage | null {
   if (typeof window === "undefined") return null;
-  return localStorage.getItem(KEYS.ACCESS_TOKEN);
+  return window.sessionStorage;
+}
+
+function clearLegacyLocalTokens(): void {
+  if (typeof window === "undefined") return;
+  Object.values(KEYS).forEach((key) => window.localStorage.removeItem(key));
+}
+
+export function getAccessToken(): string | null {
+  return getTokenStorage()?.getItem(KEYS.ACCESS_TOKEN) ?? null;
 }
 
 export function getRefreshToken(): string | null {
-  if (typeof window === "undefined") return null;
-  return localStorage.getItem(KEYS.REFRESH_TOKEN);
+  return getTokenStorage()?.getItem(KEYS.REFRESH_TOKEN) ?? null;
 }
 
 export function saveTokens(
@@ -40,22 +48,23 @@ export function saveTokens(
   refreshToken: string,
   role?: string,
 ): void {
-  localStorage.setItem(KEYS.ACCESS_TOKEN, accessToken);
-  localStorage.setItem(KEYS.REFRESH_TOKEN, refreshToken);
-  localStorage.setItem(KEYS.IS_LOGGED_IN, "true");
-  if (role) localStorage.setItem(KEYS.ROLE, role);
+  const storage = getTokenStorage();
+  if (!storage) return;
+  clearLegacyLocalTokens();
+  storage.setItem(KEYS.ACCESS_TOKEN, accessToken);
+  storage.setItem(KEYS.REFRESH_TOKEN, refreshToken);
+  storage.setItem(KEYS.IS_LOGGED_IN, "true");
+  if (role) storage.setItem(KEYS.ROLE, role);
 }
 
 export function getSavedRole(): string | null {
-  if (typeof window === "undefined") return null;
-  return localStorage.getItem(KEYS.ROLE);
+  return getTokenStorage()?.getItem(KEYS.ROLE) ?? null;
 }
 
 export function clearTokens(): void {
-  localStorage.removeItem(KEYS.ACCESS_TOKEN);
-  localStorage.removeItem(KEYS.REFRESH_TOKEN);
-  localStorage.removeItem(KEYS.IS_LOGGED_IN);
-  localStorage.removeItem(KEYS.ROLE);
+  const storage = getTokenStorage();
+  Object.values(KEYS).forEach((key) => storage?.removeItem(key));
+  clearLegacyLocalTokens();
 }
 
 export function isLoggedIn(): boolean {

@@ -118,8 +118,8 @@ export const brandLogoLockupStyles = {
 };
 
 export const brandLogoImageStyles = {
-  width: 36,
-  height: 36,
+  width: 30,
+  height: 30,
   flexShrink: 0,
 };
 
@@ -136,6 +136,7 @@ export const brandHeaderTextStyles = {
 };
 
 export const brandHeaderAccentStyles = {
+  flexWrap: 'none',
   background: "linear-gradient(135deg, #EA580C 0%, #D84315 54%, #B71C1C 100%)",
   backgroundClip: "text",
   WebkitBackgroundClip: "text",
@@ -338,12 +339,12 @@ export const emptyStateStyles = {
   display: "flex",
   flex: 1,
   minHeight: 0,
-  alignItems: { xs: "flex-start", md: "center" },
+  alignItems: { xs: "flex-start", sm: "center" },
   justifyContent: "center",
   overflowY: "auto",
-  px: { xs: 1, sm: 3 },
-  pt: { xs: 1.5, sm: 4, md: 8 },
-  pb: { xs: 2, sm: 4, md: 8 },
+  px: { xs: 1.25, sm: 3 },
+  pt: { xs: 2.25, sm: 3, md: 4 },
+  pb: { xs: 1.25, sm: 3, md: 4 },
   scrollbarGutter: "stable",
   "&::-webkit-scrollbar": {
     width: 8,
@@ -365,27 +366,28 @@ export const emptyStateStyles = {
 export const emptyHeroPanelStyles = (theme: Theme) => ({
   position: "relative",
   width: "100%",
-  maxWidth: 900,
+  maxWidth: 760,
   mx: "auto",
-  borderRadius: { xs: "20px", sm: "28px", md: "34px" },
-  p: { xs: 1.5, sm: 4, md: 5 },
+  borderRadius: { xs: "18px", sm: "24px" },
+  p: { xs: 0.25, sm: 2, md: 2.5 },
   overflow: "hidden",
-  border: `1px solid ${lightWarm.border}`,
-  background: alpha(lightWarm.surface, 0.85),
-  boxShadow:
-    "0 24px 64px rgba(15, 23, 42, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.86)",
-  backdropFilter: "blur(22px) saturate(1.12)",
-  WebkitBackdropFilter: "blur(22px) saturate(1.12)",
+  border: "1px solid transparent",
+  background: "transparent",
+  boxShadow: "none",
+  backdropFilter: "none",
+  WebkitBackdropFilter: "none",
+  justifyItems: "center",
+  textAlign: "center",
   "&::before": {
     content: '""',
     position: "absolute",
-    inset: 0,
+    inset: { xs: -16, sm: -28 },
     pointerEvents: "none",
     backgroundImage: lightFoodMapPattern,
-    backgroundPosition: "right -72px top -42px, left top",
+    backgroundPosition: "right -160px top -118px, left top",
     backgroundRepeat: "no-repeat",
-    backgroundSize: "min(92%, 760px) auto, 100% 100%",
-    opacity: 0.2,
+    backgroundSize: "min(82%, 620px) auto, 100% 100%",
+    opacity: 0.09,
     mixBlendMode: "multiply",
   },
   "& > *": {
@@ -393,18 +395,18 @@ export const emptyHeroPanelStyles = (theme: Theme) => ({
     zIndex: 1,
   },
   ".dark &": {
-    borderColor: darkFoodChat.border,
-    background: `linear-gradient(135deg, ${alpha(darkFoodChat.surface, 0.98)} 0%, ${alpha(darkFoodChat.surfaceSoft, 0.96)} 100%)`,
-    boxShadow: `0 28px 90px ${alpha("#000000", 0.52)}, 0 0 42px ${darkFoodChat.glow}`,
+    borderColor: "transparent",
+    background: "transparent",
+    boxShadow: "none",
     "&::before": {
-      opacity: 0.5,
+      opacity: 0.2,
       mixBlendMode: "screen",
-      filter: "saturate(1.45)",
+      filter: "saturate(1.25)",
     },
   },
   "@media (max-width: 420px)": {
-    borderRadius: "18px",
-    p: 1.25,
+    borderRadius: "16px",
+    p: 0,
   },
 });
 
@@ -412,57 +414,68 @@ export const emptyEyebrowStyles = {
   display: "inline-flex",
   alignItems: "center",
   gap: 0.75,
-  mb: { xs: 1.25, sm: 2 },
+  mx: "auto",
+  mb: { xs: 1, sm: 1.55 },
   borderRadius: "999px",
-  px: { xs: 1.1, sm: 1.5 },
-  py: { xs: 0.55, sm: 0.75 },
-  color: colors.base.brand[700],
-  backgroundColor: alpha(colors.base.brand[500], 0.18),
-  fontSize: { xs: "0.68rem", sm: "0.78rem" },
+  px: { xs: 0.95, sm: 1.35 },
+  py: { xs: 0.45, sm: 0.65 },
+  color: "#EA580C",
+  background:
+    "linear-gradient(135deg, rgba(249, 115, 22, 0.18) 0%, rgba(234, 88, 12, 0.08) 100%)",
+  boxShadow: `inset 0 0 0 1px ${alpha("#F97316", 0.16)}`,
+  fontSize: { xs: "0.64rem", sm: "0.78rem" },
   fontWeight: fontWeights.bold,
+  width: "fit-content",
+  justifyItems: "center",
   ".dark &": {
     color: darkFoodChat.orange,
-    backgroundColor: "rgba(249, 115, 22, 0.16)",
+    backgroundColor: "rgba(249, 115, 22, 0.13)",
     boxShadow: `inset 0 0 0 1px ${alpha(colors.base.brand[500], 0.2)}`,
   },
 };
 
 export const emptyTitleStyles = {
-  maxWidth: 680,
+  maxWidth: 720,
+  mx: "auto",
   fontFamily: "var(--font-display)",
-  fontSize: { xs: "1.95rem", sm: "3.4rem", md: "4.2rem" },
+  fontSize: { xs: "1.82rem", sm: "3rem", md: "3.7rem" },
   fontWeight: fontWeights.extrabold,
-  lineHeight: { xs: 0.94, sm: 0.98 },
+  lineHeight: { xs: 1.04, sm: 1.02 },
   letterSpacing: 0,
   color: "var(--foreground)",
+  textAlign: "center",
   textWrap: "balance",
   "@media (max-width: 420px)": {
-    maxWidth: 260,
+    maxWidth: 300,
     fontSize: "1.72rem",
-    lineHeight: 0.98,
+    lineHeight: 1.05,
   },
 };
 
 export const emptyDescriptionStyles = {
-  mt: { xs: 1.15, sm: 2 },
-  maxWidth: 600,
-  fontSize: { xs: "0.9rem", sm: "1.05rem" },
-  lineHeight: { xs: 1.5, sm: 1.7 },
+  mt: { xs: 0.65, sm: 1.2 },
+  maxWidth: 610,
+  mx: "auto",
+  fontSize: { xs: "0.78rem", sm: "0.98rem" },
+  lineHeight: { xs: 1.42, sm: 1.65 },
   color: "var(--muted-foreground)",
+  textAlign: "center",
   ".dark &": {
     color: darkFoodChat.muted,
   },
   "@media (max-width: 420px)": {
-    fontSize: "0.84rem",
-    lineHeight: 1.45,
+    maxWidth: 340,
+    fontSize: "0.76rem",
+    lineHeight: 1.4,
   },
 };
 
 export const emptySignalRowStyles = {
   display: "flex",
   flexWrap: "wrap",
-  gap: { xs: 0.55, sm: 1 },
-  mt: { xs: 1.4, sm: 2.75 },
+  justifyContent: "center",
+  gap: { xs: 0.45, sm: 1 },
+  mt: { xs: 0.85, sm: 1.7 },
 };
 
 export const emptySignalChipStyles = {
@@ -470,11 +483,11 @@ export const emptySignalChipStyles = {
   alignItems: "center",
   borderRadius: "999px",
   border: "1px solid rgba(255, 255, 255, 0.76)",
-  px: { xs: 0.9, sm: 1.25 },
-  py: { xs: 0.38, sm: 0.55 },
+  px: { xs: 0.72, sm: 1.25 },
+  py: { xs: 0.3, sm: 0.55 },
   color: "var(--muted-foreground)",
   backgroundColor: alpha(lightWarm.surface, 0.86),
-  fontSize: { xs: "0.68rem", sm: "0.76rem" },
+  fontSize: { xs: "0.62rem", sm: "0.76rem" },
   fontWeight: fontWeights.bold,
   borderColor: "rgba(231, 229, 228, 0.8)",
   ".dark &": {
@@ -486,29 +499,35 @@ export const emptySignalChipStyles = {
 
 export const promptGridStyles = {
   display: "grid",
-  gridTemplateColumns: { xs: "1fr", sm: "repeat(2, minmax(0, 1fr))" },
-  gap: { xs: 0.85, sm: 1.5 },
-  mt: { xs: 1.6, sm: 4 },
+  gridTemplateColumns: {
+    xs: "repeat(3, minmax(0, 1fr))",
+    sm: "repeat(3, minmax(0, 1fr))",
+  },
+  gap: { xs: 0.65, sm: 0.9 },
+  maxWidth: { xs: 360, sm: 680 },
+  mx: "auto",
+  mt: { xs: 1, sm: 2.25 },
 };
 
 export const promptCardStyles = (theme: Theme) => ({
   display: "flex",
-  minHeight: { xs: 58, sm: 92 },
+  flexDirection: "column",
+  minHeight: { xs: 76, sm: 76 },
   alignItems: "center",
-  gap: { xs: 1, sm: 1.5 },
+  gap: { xs: 0.75, sm: 1.2 },
   border: `1px solid rgba(231, 229, 228, 0.8)`,
-  borderRadius: { xs: "16px", sm: effects.borderRadius.xl },
-  p: { xs: 1.05, sm: 2 },
-  backgroundColor: alpha(lightWarm.surface, 0.78),
+  borderRadius: { xs: "15px", sm: "18px" },
+  p: { xs: 1, sm: 1.25 },
+  backgroundColor: alpha(lightWarm.surface, 0.84),
   color: "var(--foreground)",
   textAlign: "left",
   cursor: "pointer",
   outline: "2px solid transparent",
   outlineOffset: 3,
   boxShadow:
-    "0 16px 38px rgba(15, 23, 42, 0.07), inset 0 1px 0 rgba(255, 255, 255, 0.78)",
-  backdropFilter: "blur(16px) saturate(1.12)",
-  WebkitBackdropFilter: "blur(16px) saturate(1.12)",
+    "0 12px 30px rgba(15, 23, 42, 0.055), inset 0 1px 0 rgba(255, 255, 255, 0.78)",
+  backdropFilter: "blur(12px) saturate(1.06)",
+  WebkitBackdropFilter: "blur(12px) saturate(1.06)",
   transition:
     "transform 160ms ease, border-color 160ms ease, background 160ms ease",
   "&:hover": {
@@ -523,51 +542,52 @@ export const promptCardStyles = (theme: Theme) => ({
   },
   ".dark &": {
     borderColor: darkFoodChat.borderSoft,
-    background: `linear-gradient(145deg, ${alpha(darkFoodChat.surface, 0.98)} 0%, ${alpha(darkFoodChat.surfaceRaised, 0.96)} 100%)`,
-    boxShadow: `0 16px 34px ${alpha("#000", 0.42)}, 0 0 24px ${alpha(colors.base.brand[500], 0.08)}`,
+    background: alpha(darkFoodChat.surfaceSoft, 0.56),
+    boxShadow: `0 12px 30px ${alpha("#000", 0.3)}`,
     "&:hover": {
       borderColor: alpha(colors.base.brand[400], 0.42),
       background: alpha(colors.base.brand[500], 0.14),
     },
   },
   "@media (max-width: 420px)": {
-    minHeight: 54,
-    p: 0.9,
+    minHeight: 74,
+    p: 0.75,
     borderRadius: "15px",
   },
 });
 
 export const promptIconStyles = {
   display: "grid",
-  width: { xs: 34, sm: 38 },
-  height: { xs: 34, sm: 38 },
+  width: { xs: 30, sm: 36 },
+  height: { xs: 30, sm: 36 },
   flexShrink: 0,
   placeItems: "center",
-  borderRadius: { xs: "12px", sm: "14px" },
+  borderRadius: { xs: "11px", sm: "14px" },
   color: "#fff",
   background: colors.food.accentGradient,
-  boxShadow: `0 12px 30px ${alpha(colors.base.brand[600], 0.32)}`,
+  boxShadow: `0 10px 22px ${alpha(colors.base.brand[600], 0.22)}`,
 };
 
 export const promptCardContentStyles = {
   display: "flex",
+  textAlign: "center",
   minWidth: 0,
   flexDirection: "column",
-  gap: 0.4,
+  gap: { xs: 0.24, sm: 0.4 },
 };
 
 export const promptTextStyles = {
-  fontSize: { xs: "0.84rem", sm: "0.92rem" },
+  fontSize: { xs: "0.74rem", sm: "0.9rem" },
   fontWeight: fontWeights.semibold,
-  lineHeight: { xs: 1.25, sm: 1.35 },
+  lineHeight: { xs: 1.18, sm: 1.35 },
   textWrap: "pretty",
 };
 
 export const promptTagStyles = {
   color: "var(--muted-foreground)",
-  fontSize: { xs: "0.68rem", sm: "0.76rem" },
+  fontSize: { xs: "0.6rem", sm: "0.76rem" },
   fontWeight: fontWeights.bold,
-  lineHeight: 1.25,
+  lineHeight: { xs: 1.18, sm: 1.25 },
   ".dark &": {
     color: darkFoodChat.muted,
   },

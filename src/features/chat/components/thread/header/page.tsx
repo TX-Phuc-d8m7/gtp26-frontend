@@ -27,7 +27,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { FoodSearchUI } from "@/features/foods/search";
 import { HeaderProps, styles, useHeader } from ".";
-import favicon2 from "@/app/favicon2.svg";
+import gtp26logo from "@/app/gtp26-logo.png";
 
 export default function Header({
   chatHistoryOpen,
@@ -99,7 +99,7 @@ export default function Header({
               <Box sx={styles.brandLogoLockupStyles}>
                 <Box
                   component="img"
-                  src={favicon2.src}
+                  src={gtp26logo.src}
                   alt="App Icon"
                   sx={styles.brandLogoImageStyles}
                 />

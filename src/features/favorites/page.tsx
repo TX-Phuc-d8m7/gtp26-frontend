@@ -31,6 +31,7 @@ import Link from "next/link";
 
 import { Box } from "@/shared/components/ui/box/index";
 import { Button } from "@/shared/components/ui/button/index";
+import { Image } from "@/shared/components/ui/image/index";
 import { Typography } from "@/shared/components/ui/typography/index";
 
 import { styles } from "./_styles";
@@ -149,16 +150,10 @@ function FavoriteCard({
 
   return (
     <Box sx={styles.cardStyles}>
-      <img
+      <Image
         src={food.img_url ?? FALLBACK_IMAGE}
         alt={food.name}
-        style={{
-          width: "100%",
-          aspectRatio: "16/9",
-          objectFit: "cover",
-          display: "block",
-          borderRadius: "12px",
-        }}
+        sx={styles.cardImageStyles}
         onError={(e) => {
           (e.target as HTMLImageElement).src = FALLBACK_IMAGE;
         }}

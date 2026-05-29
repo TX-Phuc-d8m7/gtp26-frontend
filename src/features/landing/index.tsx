@@ -23,7 +23,7 @@ import {
   Timer,
   ChevronDown,
 } from "lucide-react";
-import favicon2 from "../../app/favicon2.svg";
+import gtp26logo from "../../app/gtp26-logo.png";
 
 const IMG = {
   heroMain:
@@ -128,7 +128,7 @@ export function LandingPage() {
         <div className="max-w-7xl mx-auto px-5 sm:px-8 flex items-center justify-between h-16">
           <div className="flex items-center gap-2.5">
             <Image
-              src={favicon2}
+              src={gtp26logo}
               alt="App Icon"
               width={36}
               height={36}
@@ -414,10 +414,10 @@ export function LandingPage() {
       >
         <div className="max-w-5xl mx-auto px-5 grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
           {[
-            { value: "500+", label: "Món ăn Việt Nam" },
+            { value: "450+", label: "Món ăn Việt Nam" },
             { value: "12K+", label: "Người dùng tin tưởng" },
             { value: "4.9★", label: "Đánh giá trung bình" },
-            { value: "<3s", label: "Thời gian gợi ý" },
+            { value: "<15s", label: "Thời gian gợi ý" },
           ].map((s, i) => (
             <FadeIn key={s.label} delay={i * 0.08}>
               <div className="text-3xl font-extrabold text-gradient">

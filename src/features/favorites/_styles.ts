@@ -151,6 +151,7 @@ export const iconButtonStyles = (theme: Theme) => ({
 // ─── Toolbar section — sits below header, same card style as profile ──────────
 
 export const toolbarCardStyles = (theme: Theme) => ({
+  marginBottom: "1rem",
   scrollMarginTop: "7rem",
   border: "1px solid rgba(15, 23, 42, 0.12)",
   borderRadius: { xs: "20px", md: "24px" },

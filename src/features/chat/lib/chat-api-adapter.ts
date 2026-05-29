@@ -5,6 +5,7 @@
 import { v4 as uuidv4 } from "uuid";
 
 import { apiFetch, isLoggedIn } from "@/features/auth/_api";
+import { getFoodImageFromRecord } from "./food-image";
 import type {
   ChatEditAndResendPayload,
   BackendFoodResult,
@@ -20,7 +21,7 @@ import type {
 } from "../_interface";
 
 const FOOD_AI_API_URL =
-  process.env.NEXT_PUBLIC_FOOD_AI_API_URL ?? "http://localhost:8000";
+  process.env.NEXT_PUBLIC_FOOD_AI_API_URL ?? "/api/backend";
 const STORAGE_KEY = "foodie-suggest:chat-store:v1";
 const SEARCH_API_TIMEOUT_MS = 30000;
 
@@ -573,10 +574,6 @@ function beThreadToFE(t: BEThread): ChatThread {
   };
 }
 
-function optionalString(value: unknown): string | undefined {
-  return typeof value === "string" && value.trim() ? value : undefined;
-}
-
 function stringArrayFromUnknown(value: unknown): string[] {
   return Array.isArray(value)
     ? value.filter((item): item is string => typeof item === "string")
@@ -585,13 +582,14 @@ function stringArrayFromUnknown(value: unknown): string[] {
 
 function beFoodResultToFE(f: Record<string, unknown>): BackendFoodResult {
   const softTags = stringArrayFromUnknown(f.soft_tags);
-  const imgUrl = optionalString(f.img_url) ?? null;
+  const imgUrl = getFoodImageFromRecord(f) ?? null;
 
   return {
     id: String(f.id ?? ""),
     name: String(f.name ?? ""),
     description: String(f.description ?? ""),
     img_url: imgUrl,
+    image: imgUrl ?? undefined,
     core_ingredients: stringArrayFromUnknown(f.core_ingredients),
     soft_tags: softTags,
     taste_profile: stringArrayFromUnknown(f.taste_profile),
@@ -604,6 +602,7 @@ function beFoodResultToFE(f: Record<string, unknown>): BackendFoodResult {
           ? f.match_score
           : 0,
     reason: (f.reason as string | null | undefined) ?? null,
+    dining_context: (f.dining_context as string | null | undefined) ?? null,
   };
 }
 

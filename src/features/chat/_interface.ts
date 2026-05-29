@@ -24,6 +24,8 @@ export interface BackendFoodResult {
   occasion_context?: string[];
   matchScore: number;
   reason?: string | null;
+  /** "restaurant" | "home_cooked" | "both" — dùng để ẩn/hiện nút Quán gần đây */
+  dining_context?: string | null;
   locations?: FoodLocation[];
 
   // Optional presentation fields if backend extends the contract later.

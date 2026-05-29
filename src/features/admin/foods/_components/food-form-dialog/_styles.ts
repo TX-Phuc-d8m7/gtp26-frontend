@@ -128,6 +128,7 @@ export const editorShellStyles = (theme: Theme) => ({
 });
 
 export const tabsPanelStyles = (theme: Theme) => ({
+  alingnItems: "center",
   position: {
     lg: "sticky",
   },
@@ -149,7 +150,7 @@ export const tabsPanelStyles = (theme: Theme) => ({
 });
 
 export const tabStyles = (theme: Theme) => ({
-  alignItems: "flex-start",
+  alignItems: "center",
   minHeight: 42,
   borderRadius: 2.25,
   color: light.textSub,
@@ -426,6 +427,7 @@ export const previewChipStyles = (theme: Theme) => ({
 
 export const metricGridStyles = (theme: Theme) => ({
   display: "grid",
+  marginBottom: '1rem',
   gridTemplateColumns: {
     xs: "1fr",
     sm: "repeat(3, minmax(0, 1fr))",
@@ -467,6 +469,7 @@ export const metricValueStyles = (theme: Theme) => ({
 });
 
 export const indexingNoticeStyles = (theme: Theme) => ({
+  marginBottom: '1rem',
   borderRadius: 3,
   border: "1px solid rgba(37,99,235,0.18)",
   backgroundColor: "rgba(37,99,235,0.06)",
@@ -491,6 +494,96 @@ export const charCounterStyles = (theme: Theme) => ({
   ".dark &": {
     color: dark.textMuted,
   },
+});
+
+// ─── Dining-context select block ─────────────────────────────────────────────
+
+export const diningContextLabelStyles = (theme: Theme) => ({
+  fontSize: 13,
+  fontWeight: 700,
+  mb: 0.5,
+  color: light.text,
+  ".dark &": { color: dark.textSub },
+});
+
+export const diningContextHintStyles = (theme: Theme) => ({
+  fontSize: 12,
+  fontWeight: 650,
+  mb: 1,
+  lineHeight: 1.55,
+  color: light.textMuted,
+  ".dark &": { color: dark.textMuted },
+});
+
+/**
+ * Extends fieldStyles with Select-specific overrides:
+ * - arrow icon color
+ * - selected value font weight
+ */
+export const selectInputStyles = (theme: Theme) => ({
+  ...fieldStyles(theme),
+  // Arrow icon
+  "& .MuiSelect-icon": {
+    color: light.textSub,
+  },
+  "& .MuiSelect-select": {
+    color: light.text,
+    fontWeight: 700,
+  },
+  ".dark &": {
+    ...((fieldStyles(theme) as Record<string, unknown>)[".dark &"] ?? {}),
+    "& .MuiSelect-icon": {
+      color: dark.textSub,
+    },
+    "& .MuiSelect-select": {
+      color: dark.text,
+    },
+  },
+});
+
+/** sx passed to MenuProps.PaperProps so the dropdown popup matches the theme */
+export const selectMenuPaperStyles = (theme: Theme) => ({
+  borderRadius: 3,
+  border: `1px solid ${light.cardBorder}`,
+  backgroundColor: light.cardBg,
+  boxShadow: "0 8px 32px rgba(0,0,0,0.12)",
+  ".dark &": {
+    borderColor: dark.cardBorder,
+    backgroundColor: dark.cardBg,
+    boxShadow: "0 12px 40px rgba(0,0,0,0.5)",
+  },
+  "& .MuiMenuItem-root": {
+    color: light.text,
+    borderRadius: 2,
+    mx: 0.5,
+    "&:hover": { backgroundColor: "rgba(249,115,22,0.06)" },
+    "&.Mui-selected": {
+      backgroundColor: "rgba(249,115,22,0.1)",
+      color: "#C2410C",
+    },
+    ".dark &": {
+      color: dark.text,
+      "&:hover": { backgroundColor: "rgba(249,115,22,0.1)" },
+      "&.Mui-selected": {
+        backgroundColor: "rgba(249,115,22,0.16)",
+        color: "#FDBA74",
+      },
+    },
+  },
+});
+
+export const menuItemTitleStyles = (theme: Theme) => ({
+  fontSize: 13,
+  fontWeight: 700,
+  color: "inherit",
+});
+
+export const menuItemDescStyles = (theme: Theme) => ({
+  fontSize: 12,
+  mt: 0.25,
+  lineHeight: 1.5,
+  color: light.textSub,
+  ".dark &": { color: dark.textSub },
 });
 
 // ─── Actions ─────────────────────────────────────────────────────────────────
@@ -536,6 +629,8 @@ export const styles = {
   chipFieldHintStyles,
   charCounterStyles,
   contentStyles,
+  diningContextHintStyles,
+  diningContextLabelStyles,
   editorShellStyles,
   fieldGridStyles,
   fieldStyles,
@@ -543,6 +638,8 @@ export const styles = {
   formSectionHeaderStyles,
   formSectionStyles,
   indexingNoticeStyles,
+  menuItemDescStyles,
+  menuItemTitleStyles,
   metricCardStyles,
   metricGridStyles,
   metricLabelStyles,
@@ -557,6 +654,8 @@ export const styles = {
   previewImageStyles,
   previewTitleStyles,
   sectionIntroStyles,
+  selectInputStyles,
+  selectMenuPaperStyles,
   submitButtonStyles,
   subtitleStyles,
   switchPanelStyles,

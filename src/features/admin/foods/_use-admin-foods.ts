@@ -42,6 +42,7 @@ const emptyFormData: AdminFoodFormState = {
   taste_profile: [],
   meal_context: [],
   occasion_context: [],
+  dining_context: "both",
   autoEmbed: true,
 };
 
@@ -67,6 +68,7 @@ function foodToForm(food: AdminFoodResult): AdminFoodFormState {
     autoEmbed: true,
     core_ingredients: listToText(food.core_ingredients),
     description: food.description,
+    dining_context: food.dining_context ?? "both",
     img_url: food.img_url ?? "",
     meal_context: food.meal_context,
     name: food.name,
@@ -82,6 +84,7 @@ function formToPayload(formData: AdminFoodFormState): AdminFoodPayload {
   return {
     core_ingredients: textToList(formData.core_ingredients),
     description: formData.description.trim(),
+    dining_context: formData.dining_context || "both",
     img_url: formData.img_url.trim() || null,
     meal_context: formData.meal_context,
     name: formData.name.trim(),

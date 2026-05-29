@@ -504,6 +504,44 @@ export const statusChipStyles = (isReady: boolean) => (theme: Theme) => ({
   },
 });
 
+/** Chip màu riêng cho từng giá trị dining_context */
+export const diningContextChipStyles = (ctx?: string | null) => () => {
+  const isRestaurant = ctx === "restaurant";
+  const isHome = ctx === "home_cooked";
+  return {
+    borderRadius: 999,
+    border: "1px solid",
+    borderColor: isRestaurant
+      ? "rgba(59, 130, 246, 0.25)"
+      : isHome
+        ? "rgba(34, 197, 94, 0.22)"
+        : "rgba(120, 90, 60, 0.2)",
+    backgroundColor: isRestaurant
+      ? "rgba(59, 130, 246, 0.08)"
+      : isHome
+        ? "rgba(34, 197, 94, 0.08)"
+        : "rgba(120, 90, 60, 0.06)",
+    color: isRestaurant ? "#1D4ED8" : isHome ? "#15803D" : "#78350F",
+    fontSize: 12,
+    fontWeight: 900,
+    px: 1,
+    py: 0.35,
+    ".dark &": {
+      borderColor: isRestaurant
+        ? "rgba(147, 197, 253, 0.25)"
+        : isHome
+          ? "rgba(132, 204, 22, 0.22)"
+          : "rgba(200, 170, 120, 0.2)",
+      backgroundColor: isRestaurant
+        ? "rgba(147, 197, 253, 0.1)"
+        : isHome
+          ? "rgba(132, 204, 22, 0.1)"
+          : "rgba(200, 170, 120, 0.08)",
+      color: isRestaurant ? "#93C5FD" : isHome ? "#BEF264" : "#D4A574",
+    },
+  };
+};
+
 // ─── Action buttons ──────────────────────────────────────────────────────────
 
 export const actionStackStyles = (theme: Theme) => ({
@@ -607,6 +645,7 @@ export const styles = {
   filterPillGroupStyles,
   filterPillStyles,
   foodCellStyles,
+  diningContextChipStyles,
   headerActionStyles,
   iconActionButtonStyles,
   imageStyles,

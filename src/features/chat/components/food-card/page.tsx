@@ -15,6 +15,8 @@ import {
   ChefHat,
   Clock,
   Flame,
+  Heart,
+  Info,
   MapPinned,
   MessageSquareText,
   Users,
@@ -22,14 +24,22 @@ import {
 } from "lucide-react";
 
 import { mergeSx } from "@/shared/shared.styles";
+import {
+  FALLBACK_FOOD_IMAGE,
+  resolveFoodImageUrl,
+} from "@/features/chat/lib/food-image";
 import { FoodCardProps, styles } from ".";
 
 export default function FoodCard({
   food,
   index,
+  isFavoriteLoading = false,
+  isFavorited = false,
   recommendationFeedback,
+  onOpenDetail,
   onOpenLocations,
   onOpenFeedback,
+  onToggleFavorite,
   sx,
 }: FoodCardProps) {
   const [imageFailed, setImageFailed] = useState(false);
@@ -39,12 +49,16 @@ export default function FoodCard({
   const difficultyConfig = difficulty
     ? styles.difficultyConfig[difficulty]
     : undefined;
-  const imageSrc = food.img_url ?? food.image;
+  const preferredImageSrc =
+    resolveFoodImageUrl(food.img_url) ??
+    resolveFoodImageUrl(food.image) ??
+    FALLBACK_FOOD_IMAGE;
+  const imageSrc = imageFailed ? FALLBACK_FOOD_IMAGE : preferredImageSrc;
   const displayTags =
     food.soft_tags && food.soft_tags.length > 0
       ? food.soft_tags
       : (food.tags ?? []);
-  const shouldShowImage = Boolean(imageSrc && !imageFailed);
+  const shouldShowImage = Boolean(imageSrc);
 
   return (
     <Card sx={mergeSx(styles.getRootSx(), sx)}>
@@ -53,10 +67,16 @@ export default function FoodCard({
           <Box sx={styles.imageWrapSx}>
             <Box
               component="img"
-              src={imageSrc}
+              src={imageSrc ?? undefined}
               alt={food.name}
+              loading="lazy"
+              referrerPolicy="no-referrer"
               sx={styles.imageSx}
-              onError={() => setImageFailed(true)}
+              onError={() => {
+                if (imageSrc !== FALLBACK_FOOD_IMAGE) {
+                  setImageFailed(true);
+                }
+              }}
             />
             <Box sx={styles.rankBadgeSx}>{index + 1}</Box>
             <Box sx={styles.heroOverlaySx}>
@@ -203,6 +223,41 @@ export default function FoodCard({
           </Box>
 
           <Box sx={styles.actionsGridSx}>
+            {onOpenDetail && (
+              <Button
+                type="button"
+                variant="outlined"
+                size="small"
+                startIcon={<Info size={16} />}
+                onClick={() => onOpenDetail(food)}
+                sx={styles.getActionButtonSx("detail")}
+              >
+                Chi tiết
+              </Button>
+            )}
+            {onToggleFavorite && (
+              <Button
+                type="button"
+                variant="outlined"
+                size="small"
+                startIcon={
+                  <Heart
+                    size={16}
+                    fill={isFavorited ? "currentColor" : "none"}
+                  />
+                }
+                disabled={isFavoriteLoading}
+                onClick={() => onToggleFavorite(food)}
+                sx={styles.getActionButtonSx("favorite", isFavorited)}
+                aria-label={
+                  isFavorited
+                    ? "Xoá khỏi món yêu thích"
+                    : "Thêm vào món yêu thích"
+                }
+              >
+                {isFavorited ? "Đã yêu thích" : "Yêu thích"}
+              </Button>
+            )}
             {onOpenFeedback && (
               <Button
                 type="button"
@@ -218,7 +273,7 @@ export default function FoodCard({
                 {recommendationFeedback ? "Đã đánh giá" : "Đánh giá gợi ý"}
               </Button>
             )}
-            {onOpenLocations && (
+            {onOpenLocations && food.dining_context === "restaurant" && (
               <Button
                 type="button"
                 variant="outlined"

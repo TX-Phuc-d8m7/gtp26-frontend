@@ -4,8 +4,6 @@
  */
 import type { Theme } from "@mui/material/styles";
 
-import type { UserRoleFilter, UserStatusFilter } from ".";
-
 // ─── Design tokens ──────────────────────────────────────────────────────────
 
 const light = {

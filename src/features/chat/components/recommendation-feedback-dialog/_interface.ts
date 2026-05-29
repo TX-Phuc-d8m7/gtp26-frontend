@@ -8,11 +8,10 @@ import type {
   FoodRecommendationFeedbackVerdict,
 } from "../../_interface";
 
-export interface RecommendationFeedbackDialogValue
-  extends Omit<
-    FoodRecommendationFeedbackPayload,
-    "threadId" | "messageId" | "foodId"
-  > {}
+export type RecommendationFeedbackDialogValue = Omit<
+  FoodRecommendationFeedbackPayload,
+  "threadId" | "messageId" | "foodId"
+>;
 
 export interface RecommendationFeedbackDialogProps {
   foodName: string;

@@ -12,6 +12,8 @@ import {
   DialogContent,
   DialogTitle,
   FormControlLabel,
+  MenuItem,
+  Select,
   Switch,
   Tab,
   Tabs,
@@ -26,6 +28,7 @@ import { MultiSelectPills } from "@/shared/components/ui/multi-select-pills/inde
 import { Typography } from "@/shared/components/ui/typography/index";
 
 import {
+  ADMIN_FOOD_DINING_CONTEXT_OPTIONS,
   ADMIN_FOOD_MEAL_CONTEXT_OPTIONS,
   ADMIN_FOOD_OCCASION_OPTIONS,
   ADMIN_FOOD_SOFT_TAG_GROUPS,
@@ -181,14 +184,25 @@ export default function FoodFormDialog({
     key,
     label,
     options,
+    strictOptions = false,
   }: {
     field: AdminFoodChipFormField;
     hint?: string;
     key?: string;
     label: string;
     options: readonly string[];
+    /**
+     * true  → chỉ hiện đúng options của group, không append selected values
+     *         từ group khác (dùng cho ADMIN_FOOD_SOFT_TAG_GROUPS).
+     * false → append custom/legacy values đang chọn vào cuối list
+     *         (dùng cho taste_profile, meal_context, occasion_context).
+     */
+    strictOptions?: boolean;
   }) => {
     const value = formData[field];
+    const displayOptions = strictOptions
+      ? [...options]
+      : getMergedOptions(options, value);
     return (
       <Box key={key ?? label} sx={styles.formSectionStyles}>
         <Typography as="p" sx={styles.chipFieldLabelStyles}>
@@ -200,7 +214,7 @@ export default function FoodFormDialog({
           </Typography>
         )}
         <MultiSelectPills
-          options={getMergedOptions(options, value)}
+          options={displayOptions}
           value={value}
           onChange={(value) => onChange(field, value)}
         />
@@ -266,6 +280,40 @@ export default function FoodFormDialog({
                     <Box sx={styles.fieldGridStyles}>
                       {basicFields.map(renderTextField)}
                     </Box>
+
+                    {/* Dining context */}
+                    <Box sx={styles.wideFieldStyles}>
+                      <Typography as="p" sx={styles.diningContextLabelStyles}>
+                        Ngữ cảnh phục vụ
+                      </Typography>
+                      <Typography as="p" sx={styles.diningContextHintStyles}>
+                        Quyết định nút "Quán gần đây" có hiện không. Gemini đã
+                        phân loại tự động — chỉnh sửa khi phân loại sai.
+                      </Typography>
+                      <Select
+                        fullWidth
+                        size="small"
+                        value={formData.dining_context || "both"}
+                        onChange={(e) => onChange("dining_context", e.target.value)}
+                        sx={styles.selectInputStyles}
+                        MenuProps={{
+                          slotProps: { paper: { sx: styles.selectMenuPaperStyles } },
+                        }}
+                      >
+                        {ADMIN_FOOD_DINING_CONTEXT_OPTIONS.map((opt) => (
+                          <MenuItem key={opt.value} value={opt.value}>
+                            <Box>
+                              <Typography as="span" sx={styles.menuItemTitleStyles}>
+                                {opt.label}
+                              </Typography>
+                              <Typography as="p" sx={styles.menuItemDescStyles}>
+                                {opt.description}
+                              </Typography>
+                            </Box>
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </Box>
                   </Box>
 
                   <Box sx={styles.previewCardStyles}>
@@ -329,6 +377,7 @@ export default function FoodFormDialog({
                       hint: "Nhóm này vẫn được gom vào field soft_tags khi lưu.",
                       label: group.label,
                       options: group.options,
+                      strictOptions: true,
                     }),
                   )}
                   {legacySoftTags.length > 0 &&
@@ -337,6 +386,7 @@ export default function FoodFormDialog({
                       hint: "Các tag này đang có trong database nhưng chưa nằm trong bộ option chuẩn.",
                       label: "Tags dữ liệu cũ / ngoài chuẩn",
                       options: legacySoftTags,
+                      strictOptions: true,
                     })}
                 </>
               )}

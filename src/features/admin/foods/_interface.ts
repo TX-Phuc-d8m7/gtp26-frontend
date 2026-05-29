@@ -17,6 +17,8 @@ export interface AdminFoodResult {
   meal_context: string[];
   occasion_context: string[];
   has_embedding: boolean;
+  /** "restaurant" | "home_cooked" | "both" */
+  dining_context?: string | null;
 }
 
 export interface AdminFoodListResponse {
@@ -37,6 +39,7 @@ export interface AdminFoodPayload {
   taste_profile: string[];
   meal_context: string[];
   occasion_context: string[];
+  dining_context?: string | null;
 }
 
 export type AdminFoodUpdatePayload = Partial<AdminFoodPayload>;
@@ -76,7 +79,8 @@ export type AdminFoodFormField =
   | "soft_tags"
   | "taste_profile"
   | "meal_context"
-  | "occasion_context";
+  | "occasion_context"
+  | "dining_context";
 
 /** Chip-based fields (multi-select) */
 export type AdminFoodChipFormField =
@@ -114,112 +118,78 @@ export const ADMIN_FOOD_OCCASION_OPTIONS = [
   "Tráng miệng",
 ] as const;
 
+/**
+ * Toàn bộ valid soft_tags — khớp 1:1 với VALID_SOFT_TAGS ở backend.
+ * Dùng để phát hiện "legacy tags" (tag trong DB nhưng ngoài chuẩn).
+ */
 export const ADMIN_FOOD_SOFT_TAG_OPTIONS = [
-  "Ẩm thực đường phố",
-  "Bánh ngọt",
-  "Cháo",
-  "Chiên / Rán",
-  "Cuốn / Gói",
-  "Dai / Sần sật",
-  "Dễ tiêu",
-  "Đặc sản Đà Nẵng",
-  "Giàu chất xơ",
-  "Giàu đạm",
-  "Giàu tinh bột",
-  "Giàu vitamin",
-  "Giòn / Giòn rụm",
-  "Gỏi / Nộm / Trộn",
-  "Hải sản",
-  "Hấp / Luộc",
-  "Healthy / Eat Clean",
-  "Hầm / Ninh",
-  "Kho/Rim",
-  "Khó tiêu / Nặng bụng",
-  "Lẩu",
-  "Mềm",
-  "Món Á",
-  "Món Âu",
-  "Món chay",
-  "Món khô",
-  "Món lạnh",
-  "Món nước",
-  "Món Việt truyền thống",
-  "Nhiều dầu mỡ / Calo cao",
-  "Nóng hổi",
-  "Nội tạng",
-  "Nướng",
-  "Nước sền sệt",
-  "Rang",
-  "Sống/Chín tái",
-  "Súp",
-  "Thanh mát/Giải nhiệt",
-  "Thức ăn nhanh",
-  "Thực phẩm chế biến sẵn",
-  "Từ sữa / Phô mai",
-  "Xào",
+  // Vị chủ đạo
+  "Đậm đà", "Thanh đạm", "Chua", "Cay", "Mặn", "Ngọt", "Đắng", "Béo ngậy",
+  // Nhiệt độ & cảm giác
+  "Nóng hổi", "Thanh mát / Giải nhiệt", "Món lạnh",
+  // Kết cấu
+  "Giòn / Giòn rụm", "Dai / Sần sật", "Mềm", "Sống / Chín tái",
+  // Dạng món
+  "Món nước", "Món khô", "Nước sền sệt",
+  // Phương pháp chế biến
+  "Chiên / Rán", "Nướng", "Hấp / Luộc", "Xào",
+  "Gỏi / Nộm / Trộn", "Cuốn / Gói", "Hầm / Ninh",
+  "Lẩu", "Kho / Rim", "Súp", "Cháo", "Rang",
+  // Địa phương & Danh mục
+  "Đặc sản Đà Nẵng", "Ẩm thực đường phố", "Món Việt truyền thống",
+  "Món Á", "Món Âu", "Thức ăn nhanh", "Món chay", "Hải sản",
+  "Ăn sáng", "Ăn trưa", "Ăn tối", "Ăn chiều / xế", "Ăn khuya",
+  "Ăn no", "Ăn vặt", "Mồi nhậu", "Tráng miệng",
+  "Giải rượu", "Giải cảm", "Ấm bụng",
+  // Dinh dưỡng
+  "Giàu chất xơ", "Giàu đạm", "Giàu vitamin", "Giàu tinh bột",
+  "Nội tạng", "Từ sữa / Phô mai", "Thực phẩm chế biến sẵn", "Bánh ngọt",
+  // Tiêu hoá
+  "Dễ tiêu", "Khó tiêu / Nặng bụng", "Healthy / Eat Clean", "Nhiều dầu mỡ / Calo cao",
 ] as const;
 
+/**
+ * Các nhóm hiển thị trong form admin — khớp cấu trúc VALID_SOFT_TAGS backend.
+ * Mỗi tag chỉ xuất hiện trong DUY NHẤT một group.
+ */
 export const ADMIN_FOOD_SOFT_TAG_GROUPS = [
   {
-    label: "Cách nấu",
+    label: "Phương pháp chế biến",
     options: [
-      "Lẩu",
-      "Nướng",
-      "Hấp / Luộc",
-      "Chiên / Rán",
-      "Xào",
-      "Rang",
-      "Hầm / Ninh",
-      "Kho/Rim",
-      "Gỏi / Nộm / Trộn",
-      "Cuốn / Gói",
-      "Súp",
-      "Cháo",
-      "Món nước",
-      "Món khô",
-      "Nước sền sệt",
+      "Chiên / Rán", "Nướng", "Hấp / Luộc", "Xào",
+      "Gỏi / Nộm / Trộn", "Cuốn / Gói", "Hầm / Ninh",
+      "Lẩu", "Kho / Rim", "Súp", "Cháo", "Rang",
     ],
   },
   {
-    label: "Phong cách món",
+    label: "Dạng món",
+    options: ["Món nước", "Món khô", "Nước sền sệt"],
+  },
+  {
+    label: "Kết cấu & Nhiệt độ",
     options: [
-      "Món chay",
-      "Healthy / Eat Clean",
-      "Ẩm thực đường phố",
-      "Món Việt truyền thống",
-      "Món Á",
-      "Món Âu",
-      "Thức ăn nhanh",
-      "Đặc sản Đà Nẵng",
+      "Giòn / Giòn rụm", "Dai / Sần sật", "Mềm", "Sống / Chín tái",
+      "Nóng hổi", "Thanh mát / Giải nhiệt", "Món lạnh",
+    ],
+  },
+  {
+    label: "Phong cách & Địa phương",
+    options: [
+      "Đặc sản Đà Nẵng", "Ẩm thực đường phố", "Món Việt truyền thống",
+      "Món Á", "Món Âu", "Thức ăn nhanh", "Món chay", "Hải sản",
     ],
   },
   {
     label: "Dinh dưỡng",
     options: [
-      "Giàu chất xơ",
-      "Giàu đạm",
-      "Giàu vitamin",
-      "Giàu tinh bột",
-      "Từ sữa / Phô mai",
-      "Thực phẩm chế biến sẵn",
-      "Bánh ngọt",
-      "Nội tạng",
-      "Hải sản",
-      "Dễ tiêu",
-      "Khó tiêu / Nặng bụng",
-      "Nhiều dầu mỡ / Calo cao",
+      "Giàu chất xơ", "Giàu đạm", "Giàu vitamin", "Giàu tinh bột",
+      "Nội tạng", "Từ sữa / Phô mai", "Thực phẩm chế biến sẵn", "Bánh ngọt",
     ],
   },
   {
-    label: "Texture / nhiệt độ",
+    label: "Tiêu hoá & Sức khoẻ",
     options: [
-      "Nóng hổi",
-      "Thanh mát/Giải nhiệt",
-      "Món lạnh",
-      "Giòn / Giòn rụm",
-      "Dai / Sần sật",
-      "Mềm",
-      "Sống/Chín tái",
+      "Dễ tiêu", "Khó tiêu / Nặng bụng", "Healthy / Eat Clean", "Nhiều dầu mỡ / Calo cao",
     ],
   },
 ] as const;
@@ -235,8 +205,15 @@ export interface AdminFoodFormState {
   taste_profile: string[];
   meal_context: string[];
   occasion_context: string[];
+  dining_context: string;
   autoEmbed: boolean;
 }
+
+export const ADMIN_FOOD_DINING_CONTEXT_OPTIONS = [
+  { value: "both", label: "Cả hai (mặc định)", description: "Hiện ở cả chat và food library, nhưng không gợi ý quán" },
+  { value: "restaurant", label: "Chỉ quán / nhà hàng", description: "Hiện nút \"Quán gần đây\" — dùng cho phở, bún, hủ tiếu…" },
+  { value: "home_cooked", label: "Chỉ nấu tại nhà", description: "Ẩn nút \"Quán gần đây\" — dùng cho canh, cơm nhà…" },
+] as const;
 
 export type AdminFoodFormErrors = Partial<
   Record<AdminFoodFormField, string>

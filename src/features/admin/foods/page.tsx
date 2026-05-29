@@ -69,6 +69,9 @@ function FoodTableSkeleton() {
             <Skeleton variant="text" animation="wave" width={120} />
           </TableCell>
           <TableCell>
+            <Skeleton variant="rounded" animation="wave" width={56} height={22} sx={{ borderRadius: 999 }} />
+          </TableCell>
+          <TableCell>
             <Skeleton variant="text" animation="wave" width={80} />
           </TableCell>
           <TableCell align="right">
@@ -228,6 +231,7 @@ export default function AdminFoods() {
                   <TableRow>
                     <TableCell>Món ăn</TableCell>
                     <TableCell>Phân loại</TableCell>
+                    <TableCell sx={{ width: 130 }}>Gợi ý quán</TableCell>
                     <TableCell>Embedding</TableCell>
                     <TableCell align="right" sx={{ width: 80 }}>
                       Thao tác
@@ -322,6 +326,20 @@ export default function AdminFoods() {
                             </Box>
                           </TableCell>
 
+                          {/* Gợi ý quán */}
+                          <TableCell>
+                            <Box
+                              component="span"
+                              sx={styles.diningContextChipStyles(food.dining_context)}
+                            >
+                              {food.dining_context === "restaurant"
+                                ? "Quán"
+                                : food.dining_context === "home_cooked"
+                                  ? "Nhà"
+                                  : "Cả hai"}
+                            </Box>
+                          </TableCell>
+
                           {/* Embedding */}
                           <TableCell>
                             <Box
@@ -374,7 +392,7 @@ export default function AdminFoods() {
                     })
                   ) : (
                     <TableRow>
-                      <TableCell colSpan={4}>
+                      <TableCell colSpan={5}>
                         <Box sx={styles.emptyStateStyles}>
                           <UtensilsCrossed size={42} strokeWidth={1.5} />
                           <Typography as="p" sx={styles.emptyStateTitleStyles}>

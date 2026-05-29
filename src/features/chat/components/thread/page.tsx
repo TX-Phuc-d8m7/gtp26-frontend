@@ -4,12 +4,17 @@
  */
 "use client";
 
-import { useEffect, useRef } from "react";
+import { FormEvent, useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { motion, useReducedMotion } from "framer-motion";
 import { useStreamContext } from "@/features/chat/providers/stream-provider";
 import { useThreads } from "@/features/chat/providers/thread-provider";
 import { isLoggedIn } from "@/features/auth/_api";
-import { useState, FormEvent } from "react";
+import {
+  addFavorite,
+  fetchFavorites,
+  removeFavorite,
+} from "@/features/favorites/_api";
 import { Button } from "@/shared/components/ui/button/index";
 import { Box } from "@mui/material";
 import { Typography } from "@/shared/components/ui/typography/index";
@@ -29,7 +34,6 @@ import {
   Sparkles,
   ThumbsDown,
   ThumbsUp,
-  WalletCards,
   X,
 } from "lucide-react";
 import { useQueryState, parseAsBoolean } from "nuqs";
@@ -39,6 +43,7 @@ import { toast } from "sonner";
 import { useMediaQuery } from "@/shared/hooks/use-media-query";
 import { Header } from "./header";
 import { ComposerAttachment, InputArea } from "./input-area";
+import { FoodDetailDrawer } from "./food-detail-drawer";
 import { MapInsightPanel } from "./map-insight-panel";
 import { FoodCard } from "../food-card";
 import { RecommendationFeedbackDialog } from "../recommendation-feedback-dialog";
@@ -64,12 +69,6 @@ const EMPTY_STATE_PROMPTS: EmptyStatePrompt[] = [
     meta: "15 phút · ít dầu mỡ",
     prompt: "Gợi ý món tối nhanh, ít dầu mỡ",
     Icon: Clock3,
-  },
-  {
-    title: "Sinh viên tiết kiệm",
-    meta: "3 ngày · dễ mua",
-    prompt: "Tạo thực đơn 3 ngày cho sinh viên",
-    Icon: WalletCards,
   },
   {
     title: "Nhẹ bụng hơn",
@@ -202,18 +201,26 @@ function LocalMessageActions({
 function FoodRecommendationCard({
   food,
   index,
+  isFavoriteLoading,
+  isFavorited,
   recommendationFeedback,
   message,
+  onOpenDetail,
   onOpenLocations,
   onOpenFeedback,
+  onToggleFavorite,
 }: FoodRecommendationCardProps) {
   return (
     <FoodCard
       food={food}
       index={index}
+      isFavoriteLoading={isFavoriteLoading}
+      isFavorited={isFavorited}
       recommendationFeedback={recommendationFeedback}
+      onOpenDetail={(nextFood) => onOpenDetail(nextFood, message)}
       onOpenFeedback={(nextFood) => onOpenFeedback(nextFood, message)}
       onOpenLocations={onOpenLocations}
+      onToggleFavorite={onToggleFavorite}
     />
   );
 }
@@ -247,6 +254,7 @@ function ScrollToBottom() {
 }
 
 export default function Thread() {
+  const router = useRouter();
   const [threadId, setThreadId] = useQueryState("threadId");
   const [chatHistoryOpen, setChatHistoryOpen] = useQueryState(
     "chatHistoryOpen",
@@ -264,8 +272,16 @@ export default function Thread() {
     food: BackendFoodResult;
     message: ChatMessage;
   } | null>(null);
+  const [detailTarget, setDetailTarget] = useState<{
+    food: BackendFoodResult;
+    message: ChatMessage;
+  } | null>(null);
   const [isSubmittingFoodFeedback, setIsSubmittingFoodFeedback] =
     useState(false);
+  const [favoritedFoodIds, setFavoritedFoodIds] = useState<Set<string>>(
+    () => new Set(),
+  );
+  const [favoritingFoodId, setFavoritingFoodId] = useState<string | null>(null);
   const [editingMessageId, setEditingMessageId] = useState<string | null>(null);
   const [editingContent, setEditingContent] = useState("");
   const isLargeScreen = useMediaQuery("(min-width: 1024px)");
@@ -365,6 +381,58 @@ export default function Thread() {
     if (!threadId || messagesByThreadId[threadId]) return;
     loadMessages(threadId).catch(console.error);
   }, [loadMessages, messagesByThreadId, threadId]);
+
+  useEffect(() => {
+    if (!isLoggedIn()) {
+      setFavoritedFoodIds(new Set());
+      return;
+    }
+
+    let isMounted = true;
+    const pageSize = 50;
+
+    const loadFavoriteIds = async () => {
+      try {
+        const firstPage = await fetchFavorites({ limit: pageSize, offset: 0 });
+        const ids = firstPage.items.map((item) => item.food?.id ?? item.food_id);
+
+        if (firstPage.total > pageSize) {
+          const extraPageCount = Math.ceil(
+            (firstPage.total - pageSize) / pageSize,
+          );
+          const extraPages = await Promise.all(
+            Array.from({ length: extraPageCount }, (_, index) =>
+              fetchFavorites({
+                limit: pageSize,
+                offset: pageSize + index * pageSize,
+              }),
+            ),
+          );
+
+          for (const page of extraPages) {
+            for (const item of page.items) {
+              ids.push(item.food?.id ?? item.food_id);
+            }
+          }
+        }
+
+        if (!isMounted) return;
+        setFavoritedFoodIds((prev) => {
+          const next = new Set(ids);
+          for (const id of prev) next.add(id);
+          return next;
+        });
+      } catch (error) {
+        console.error("[Thread] fetchFavorites failed:", error);
+      }
+    };
+
+    void loadFavoriteIds();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -503,6 +571,66 @@ export default function Thread() {
     }
 
     setFeedbackTarget({ food, message });
+  };
+
+  const handleToggleFavoriteFood = async (food: BackendFoodResult) => {
+    if (!isLoggedIn()) {
+      toast.error("Vui lòng đăng nhập để lưu món yêu thích.");
+      return;
+    }
+
+    const wasFavorited = favoritedFoodIds.has(food.id);
+    setFavoritingFoodId(food.id);
+    setFavoritedFoodIds((prev) => {
+      const next = new Set(prev);
+      if (wasFavorited) {
+        next.delete(food.id);
+      } else {
+        next.add(food.id);
+      }
+      return next;
+    });
+
+    try {
+      if (wasFavorited) {
+        await removeFavorite(food.id);
+        toast.success(`Đã xoá "${food.name}" khỏi yêu thích.`);
+      } else {
+        await addFavorite({ food_id: food.id });
+        toast.success(`Đã thêm "${food.name}" vào yêu thích.`, {
+          action: {
+            label: "Xem danh sách",
+            onClick: () => router.push("/favorites"),
+          },
+        });
+      }
+    } catch (error) {
+      if (
+        !wasFavorited &&
+        error instanceof Error &&
+        error.message.includes("409")
+      ) {
+        setFavoritedFoodIds((prev) => new Set(prev).add(food.id));
+        toast.success(`"${food.name}" đã có trong danh sách yêu thích.`);
+        return;
+      }
+
+      setFavoritedFoodIds((prev) => {
+        const next = new Set(prev);
+        if (wasFavorited) {
+          next.add(food.id);
+        } else {
+          next.delete(food.id);
+        }
+        return next;
+      });
+      toast.error("Không thể cập nhật món yêu thích.", {
+        description:
+          error instanceof Error ? error.message : "Vui lòng thử lại sau.",
+      });
+    } finally {
+      setFavoritingFoodId((current) => (current === food.id ? null : current));
+    }
   };
 
   const getFoodFeedbackForMessage = (
@@ -879,13 +1007,24 @@ export default function Thread() {
                                       key={food.id}
                                       food={food}
                                       index={index}
+                                      isFavoriteLoading={
+                                        favoritingFoodId === food.id
+                                      }
+                                      isFavorited={favoritedFoodIds.has(food.id)}
                                       message={message}
                                       recommendationFeedback={getFoodFeedbackForMessage(
                                         message,
                                         food,
                                       )}
                                       onOpenFeedback={handleOpenFoodFeedback}
+                                      onOpenDetail={(nextFood, nextMessage) =>
+                                        setDetailTarget({
+                                          food: nextFood,
+                                          message: nextMessage,
+                                        })
+                                      }
                                       onOpenLocations={setMapFood}
+                                      onToggleFavorite={handleToggleFavoriteFood}
                                     />
                                   ))}
                                 </Box>
@@ -934,6 +1073,28 @@ export default function Thread() {
           />
         </Box>
       </Box>
+      <FoodDetailDrawer
+        food={detailTarget?.food ?? null}
+        isFavoriteLoading={
+          detailTarget ? favoritingFoodId === detailTarget.food.id : false
+        }
+        isFavorited={
+          detailTarget ? favoritedFoodIds.has(detailTarget.food.id) : false
+        }
+        open={Boolean(detailTarget)}
+        recommendationFeedback={
+          detailTarget
+            ? getFoodFeedbackForMessage(detailTarget.message, detailTarget.food)
+            : undefined
+        }
+        onClose={() => setDetailTarget(null)}
+        onOpenFeedback={(food) => {
+          if (!detailTarget) return;
+          handleOpenFoodFeedback(food, detailTarget.message);
+        }}
+        onOpenLocations={setMapFood}
+        onToggleFavorite={handleToggleFavoriteFood}
+      />
       <MapInsightPanel food={mapFood} onClose={() => setMapFood(null)} />
       <RecommendationFeedbackDialog
         foodName={feedbackTarget?.food.name ?? ""}

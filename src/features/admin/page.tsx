@@ -363,7 +363,7 @@ export default function Admin() {
                                     fill: centerSubFill,
                                   }}
                                 >
-                                  món
+                                  đánh giá
                                 </text>
                               </g>
                             );

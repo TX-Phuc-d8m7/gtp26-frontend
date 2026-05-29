@@ -6,7 +6,7 @@ import type {
 } from "../_interface";
 
 const FOOD_AI_API_URL =
-  process.env.NEXT_PUBLIC_FOOD_AI_API_URL ?? "http://localhost:8000";
+  process.env.NEXT_PUBLIC_FOOD_AI_API_URL ?? "/api/backend";
 
 const DEFAULT_LOCATION_TEXT = "Đà Nẵng";
 const DEFAULT_RADIUS_M = 3000;

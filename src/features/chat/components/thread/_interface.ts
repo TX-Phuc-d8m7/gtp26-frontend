@@ -33,9 +33,13 @@ export interface LocalMessageActionsProps {
 export interface FoodRecommendationCardProps {
   food: BackendFoodResult;
   index: number;
+  isFavoriteLoading?: boolean;
+  isFavorited?: boolean;
   recommendationFeedback?: FoodRecommendationFeedbackResult;
+  onOpenDetail: (food: BackendFoodResult, message: ChatMessage) => void;
   onOpenLocations: (food: BackendFoodResult) => void;
   onOpenFeedback: (food: BackendFoodResult, message: ChatMessage) => void;
+  onToggleFavorite: (food: BackendFoodResult) => void;
   message: ChatMessage;
 }
 
