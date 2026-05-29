@@ -539,7 +539,10 @@ export const reasonTextSx: SxProps<Theme> = {
 
 export const actionsGridSx: SxProps<Theme> = {
   display: "grid",
-  gridTemplateColumns: { xs: "1fr", sm: "repeat(2, minmax(0, 1fr))" },
+  gridTemplateColumns: {
+    xs: "1fr",
+    sm: "repeat(auto-fit, minmax(150px, 1fr))",
+  },
   gap: 1,
   mt: 1,
 };
@@ -584,23 +587,69 @@ const actionBaseSx = {
 
 export const getActionButtonSx = (
   actionType: FoodCardActionType,
+  isActive = false,
 ): SxProps<Theme> => {
-  const lightConfig =
-    actionType === "feedback"
+  let lightConfig = {
+    color: "#0F766E",
+    hoverBorder: "rgba(20, 184, 166, 0.38)",
+    hoverColor: "#0F766E",
+  };
+
+  if (actionType === "feedback") {
+    lightConfig = {
+      color: "#475569",
+      hoverBorder: "rgba(99, 102, 241, 0.34)",
+      hoverColor: "#4F46E5",
+    };
+  }
+
+  if (actionType === "favorite") {
+    lightConfig = {
+      color: "#9F1239",
+      hoverBorder: "rgba(244, 63, 94, 0.34)",
+      hoverColor: "#BE123C",
+    };
+  }
+
+  if (actionType === "detail") {
+    lightConfig = {
+      color: "#7C2D12",
+      hoverBorder: "rgba(234, 88, 12, 0.36)",
+      hoverColor: "#C2410C",
+    };
+  }
+
+  const activeConfig =
+    actionType === "favorite"
       ? {
-          color: "#475569",
-          hoverBorder: "rgba(99, 102, 241, 0.34)",
-          hoverColor: "#4F46E5",
+          color: "#BE123C",
+          borderColor: "rgba(244, 63, 94, 0.3)",
+          background:
+            "linear-gradient(135deg, rgba(255,241,242,0.86), rgba(255,255,255,0.7))",
+          ".dark &": {
+            borderColor: "rgba(251, 113, 133, 0.34)",
+            background:
+              "linear-gradient(135deg, rgba(76, 5, 25, 0.44), rgba(24,24,27,0.68))",
+            color: "#FDA4AF",
+          },
         }
       : {
-          color: "#0F766E",
-          hoverBorder: "rgba(20, 184, 166, 0.38)",
-          hoverColor: "#0F766E",
+          color: "#15803D",
+          borderColor: "rgba(22, 163, 74, 0.28)",
+          background:
+            "linear-gradient(135deg, rgba(240,253,244,0.82), rgba(255,255,255,0.68))",
+          ".dark &": {
+            borderColor: "rgba(163, 230, 53, 0.34)",
+            background:
+              "linear-gradient(135deg, rgba(63, 98, 18, 0.34), rgba(24,24,27,0.68))",
+            color: "#D9F99D",
+          },
         };
 
   return {
     ...actionBaseSx,
-    color: lightConfig.color,
+    color: isActive ? activeConfig.color : lightConfig.color,
+    ...(isActive ? activeConfig : {}),
     "&:hover": {
       ...actionBaseHoverSx,
       borderColor: lightConfig.hoverBorder,

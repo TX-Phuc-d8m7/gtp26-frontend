@@ -22,6 +22,8 @@ export interface ApiFood {
   taste_profile: string[];
   meal_context: string[];
   occasion_context: string[];
+  /** "restaurant" | "home_cooked" | "both" — dùng để ẩn/hiện nút Quán gần đây */
+  dining_context?: string | null;
 }
 
 /** Chi tiết đầy đủ một món ăn — FoodDetailResponse từ backend */

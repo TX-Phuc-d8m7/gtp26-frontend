@@ -2,6 +2,7 @@
  * Copyright (c) 2026 GTP26
  * All rights reserved.
  */
+import type { CSSProperties } from "react";
 import { Theme } from "@mui/material/styles";
 
 const inputBaseStyles = (theme: Theme) => ({
@@ -123,14 +124,16 @@ export const inputIconStyles = (theme: Theme) => ({
   width: 20,
 });
 
-export const inputStyles = (hasError?: boolean) => (theme: Theme) => ({
-  ...inputBaseStyles(theme),
-  borderColor: hasError ? "#ef4444" : "var(--input)",
-  "&:focus-visible": {
-    outline: "none",
-    boxShadow: `0 0 0 2px ${hasError ? "#ef4444" : "var(--ring)"}`,
-  },
-});
+export const inputStyles =
+  (hasError?: boolean, hasToggle?: boolean) => (theme: Theme) => ({
+    ...inputBaseStyles(theme),
+    padding: `0.5rem ${hasToggle ? "2.5rem" : "0.75rem"} 0.5rem 2.5rem`,
+    borderColor: hasError ? "#ef4444" : "var(--input)",
+    "&:focus-visible": {
+      outline: "none",
+      boxShadow: `0 0 0 2px ${hasError ? "#ef4444" : "var(--ring)"}`,
+    },
+  });
 
 export const errorTextStyles = (theme: Theme) => ({
   marginTop: "0.25rem",
@@ -139,6 +142,34 @@ export const errorTextStyles = (theme: Theme) => ({
   fontWeight: 500,
   color: "#ef4444",
 });
+
+export const serverErrorBannerStyles = (theme: Theme) => ({
+  display: "flex",
+  alignItems: "flex-start",
+  gap: "0.5rem",
+  borderRadius: "0.375rem",
+  border: "1px solid #fca5a5",
+  backgroundColor: "#fef2f2",
+  padding: "0.75rem",
+  fontSize: "0.875rem",
+  fontWeight: 500,
+  color: "#b91c1c",
+  lineHeight: 1.5,
+});
+
+export const eyeToggleButtonStyles: CSSProperties = {
+  position: "absolute",
+  top: 0,
+  bottom: 0,
+  right: 0,
+  display: "flex",
+  alignItems: "center",
+  paddingInline: "0.75rem",
+  background: "none",
+  border: "none",
+  cursor: "pointer",
+  color: "var(--muted-foreground)",
+};
 
 export const optionsRowStyles = (theme: Theme) => ({
   display: "flex",
@@ -252,6 +283,8 @@ export const styles = {
   inputIconStyles,
   inputStyles,
   errorTextStyles,
+  serverErrorBannerStyles,
+  eyeToggleButtonStyles,
   optionsRowStyles,
   rememberWrapperStyles,
   checkboxStyles,

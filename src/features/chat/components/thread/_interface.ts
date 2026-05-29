@@ -6,7 +6,12 @@ import type { ReactNode } from "react";
 import type { SxProps, Theme } from "@mui/material/styles";
 import type { LucideIcon } from "lucide-react";
 
-import type { BackendFoodResult, ChatFeedback } from "../../_interface";
+import type {
+  BackendFoodResult,
+  ChatFeedback,
+  ChatMessage,
+  FoodRecommendationFeedbackResult,
+} from "../../_interface";
 
 export interface EmptyStatePrompt {
   title: string;
@@ -20,6 +25,7 @@ export interface LocalMessageActionsProps {
   feedback?: ChatFeedback;
   isAiMessage?: boolean;
   isLoading: boolean;
+  onEdit?: () => void;
   onFeedback?: (feedback: ChatFeedback) => void;
   onRetry?: () => void;
 }
@@ -27,8 +33,14 @@ export interface LocalMessageActionsProps {
 export interface FoodRecommendationCardProps {
   food: BackendFoodResult;
   index: number;
+  isFavoriteLoading?: boolean;
+  isFavorited?: boolean;
+  recommendationFeedback?: FoodRecommendationFeedbackResult;
+  onOpenDetail: (food: BackendFoodResult, message: ChatMessage) => void;
   onOpenLocations: (food: BackendFoodResult) => void;
-  onOpenFeedback: (food: BackendFoodResult) => void;
+  onOpenFeedback: (food: BackendFoodResult, message: ChatMessage) => void;
+  onToggleFavorite: (food: BackendFoodResult) => void;
+  message: ChatMessage;
 }
 
 export interface StickyToBottomContentProps {

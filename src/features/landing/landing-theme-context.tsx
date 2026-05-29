@@ -1,6 +1,12 @@
 "use client";
 
-import { createContext, useContext, useState, ReactNode, useEffect } from "react";
+import {
+  createContext,
+  useContext,
+  useState,
+  ReactNode,
+  useEffect,
+} from "react";
 
 interface LandingThemeContextType {
   isDark: boolean;
@@ -13,15 +19,16 @@ const LandingThemeContext = createContext<LandingThemeContextType | undefined>(
 
 export function LandingThemeProvider({ children }: { children: ReactNode }) {
   const [isDark, setIsDark] = useState(true);
-  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     // Get saved theme from localStorage
-    const savedTheme = typeof window !== "undefined" ? localStorage.getItem("landing-theme") : null;
+    const savedTheme =
+      typeof window !== "undefined"
+        ? localStorage.getItem("landing-theme")
+        : null;
     if (savedTheme) {
       setIsDark(savedTheme === "dark");
     }
-    setMounted(true);
   }, []);
 
   const toggleTheme = () => {

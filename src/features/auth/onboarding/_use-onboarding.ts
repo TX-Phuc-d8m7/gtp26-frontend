@@ -11,6 +11,7 @@ import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 
 import { apiUpsertHealthProfile, isLoggedIn } from "@/features/auth/_api";
+import { useRequireAuth } from "@/shared/hooks/use-auth-redirect";
 import {
   MEDICAL_CONDITION_OPTIONS,
   PROFILE_ALLERGY_OPTIONS,
@@ -36,6 +37,7 @@ function splitHealthRisks(healthRisks: string[]): {
 }
 
 export function useOnboarding() {
+  useRequireAuth();
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const form = useForm<OnboardingFormData>({
@@ -66,7 +68,7 @@ export function useOnboarding() {
         });
       }
       toast.success("Đã lưu thông tin sở thích!");
-      router.push("/");
+      router.push("/chat");
     } catch (err) {
       const message =
         err instanceof Error ? err.message : "Có lỗi xảy ra. Vui lòng thử lại.";
@@ -77,7 +79,7 @@ export function useOnboarding() {
   };
 
   const handleSkip = () => {
-    router.push("/");
+    router.push("/chat");
   };
 
   return {

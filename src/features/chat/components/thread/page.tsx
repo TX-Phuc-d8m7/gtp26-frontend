@@ -4,17 +4,24 @@
  */
 "use client";
 
-import { useEffect, useRef } from "react";
+import { FormEvent, useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { motion, useReducedMotion } from "framer-motion";
 import { useStreamContext } from "@/features/chat/providers/stream-provider";
 import { useThreads } from "@/features/chat/providers/thread-provider";
-import { useState, FormEvent } from "react";
+import { isLoggedIn } from "@/features/auth/_api";
+import {
+  addFavorite,
+  fetchFavorites,
+  removeFavorite,
+} from "@/features/favorites/_api";
 import { Button } from "@/shared/components/ui/button/index";
 import { Box } from "@mui/material";
 import { Typography } from "@/shared/components/ui/typography/index";
 import { GeminiSparkleSVG } from "@/shared/components/icons/gemini-sparkle";
 import {
   ArrowDown,
+  Check,
   CircleAlert,
   Clock3,
   Copy,
@@ -22,11 +29,12 @@ import {
   Leaf,
   MapPinned,
   Paperclip,
+  Pencil,
   RefreshCcw,
   Sparkles,
   ThumbsDown,
   ThumbsUp,
-  WalletCards,
+  X,
 } from "lucide-react";
 import { useQueryState, parseAsBoolean } from "nuqs";
 import { StickToBottom, useStickToBottomContext } from "use-stick-to-bottom";
@@ -35,13 +43,16 @@ import { toast } from "sonner";
 import { useMediaQuery } from "@/shared/hooks/use-media-query";
 import { Header } from "./header";
 import { ComposerAttachment, InputArea } from "./input-area";
+import { FoodDetailDrawer } from "./food-detail-drawer";
 import { MapInsightPanel } from "./map-insight-panel";
 import { FoodCard } from "../food-card";
-import { RecipeFeedbackDialog } from "../recipe-feedback-dialog";
+import { RecommendationFeedbackDialog } from "../recommendation-feedback-dialog";
 import type {
   BackendFoodResult,
   ChatFeedback,
   ChatMessage,
+  FoodRecommendationFeedbackPayload,
+  FoodRecommendationFeedbackResult,
 } from "../../_interface";
 import { DEFAULT_ASSISTANT_DISCLAIMER } from "../../_interface";
 import type {
@@ -58,12 +69,6 @@ const EMPTY_STATE_PROMPTS: EmptyStatePrompt[] = [
     meta: "15 phút · ít dầu mỡ",
     prompt: "Gợi ý món tối nhanh, ít dầu mỡ",
     Icon: Clock3,
-  },
-  {
-    title: "Sinh viên tiết kiệm",
-    meta: "3 ngày · dễ mua",
-    prompt: "Tạo thực đơn 3 ngày cho sinh viên",
-    Icon: WalletCards,
   },
   {
     title: "Nhẹ bụng hơn",
@@ -88,6 +93,7 @@ function LocalMessageActions({
   feedback,
   isAiMessage,
   isLoading,
+  onEdit,
   onFeedback,
   onRetry,
 }: LocalMessageActionsProps) {
@@ -116,6 +122,19 @@ function LocalMessageActions({
           <Copy size={16} />
         )}
       </Button>
+      {!isAiMessage && onEdit && (
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          sx={{ width: 30, height: 30, borderRadius: "999px" }}
+          onClick={onEdit}
+          disabled={isLoading}
+          aria-label="Chỉnh sửa câu hỏi"
+        >
+          <Pencil size={16} />
+        </Button>
+      )}
       {isAiMessage && (
         <>
           <Button
@@ -182,15 +201,26 @@ function LocalMessageActions({
 function FoodRecommendationCard({
   food,
   index,
+  isFavoriteLoading,
+  isFavorited,
+  recommendationFeedback,
+  message,
+  onOpenDetail,
   onOpenLocations,
   onOpenFeedback,
+  onToggleFavorite,
 }: FoodRecommendationCardProps) {
   return (
     <FoodCard
       food={food}
       index={index}
-      onOpenFeedback={onOpenFeedback}
+      isFavoriteLoading={isFavoriteLoading}
+      isFavorited={isFavorited}
+      recommendationFeedback={recommendationFeedback}
+      onOpenDetail={(nextFood) => onOpenDetail(nextFood, message)}
+      onOpenFeedback={(nextFood) => onOpenFeedback(nextFood, message)}
       onOpenLocations={onOpenLocations}
+      onToggleFavorite={onToggleFavorite}
     />
   );
 }
@@ -224,6 +254,7 @@ function ScrollToBottom() {
 }
 
 export default function Thread() {
+  const router = useRouter();
   const [threadId, setThreadId] = useQueryState("threadId");
   const [chatHistoryOpen, setChatHistoryOpen] = useQueryState(
     "chatHistoryOpen",
@@ -237,9 +268,22 @@ export default function Thread() {
   const [firstTokenReceived, setFirstTokenReceived] = useState(false);
   const [attachments, setAttachments] = useState<ComposerAttachment[]>([]);
   const [mapFood, setMapFood] = useState<BackendFoodResult | null>(null);
-  const [feedbackFood, setFeedbackFood] = useState<BackendFoodResult | null>(
-    null,
+  const [feedbackTarget, setFeedbackTarget] = useState<{
+    food: BackendFoodResult;
+    message: ChatMessage;
+  } | null>(null);
+  const [detailTarget, setDetailTarget] = useState<{
+    food: BackendFoodResult;
+    message: ChatMessage;
+  } | null>(null);
+  const [isSubmittingFoodFeedback, setIsSubmittingFoodFeedback] =
+    useState(false);
+  const [favoritedFoodIds, setFavoritedFoodIds] = useState<Set<string>>(
+    () => new Set(),
   );
+  const [favoritingFoodId, setFavoritingFoodId] = useState<string | null>(null);
+  const [editingMessageId, setEditingMessageId] = useState<string | null>(null);
+  const [editingContent, setEditingContent] = useState("");
   const isLargeScreen = useMediaQuery("(min-width: 1024px)");
   const shouldReduceMotion = useReducedMotion();
   const backendAbortController = useRef<AbortController | null>(null);
@@ -248,7 +292,9 @@ export default function Thread() {
     loadMessages,
     createThread,
     sendMessage,
+    editMessageAndResend,
     updateMessageFeedback,
+    submitFoodRecommendationFeedback,
     isSendingMessage,
     messagesLoading,
   } = useThreads();
@@ -336,6 +382,58 @@ export default function Thread() {
     loadMessages(threadId).catch(console.error);
   }, [loadMessages, messagesByThreadId, threadId]);
 
+  useEffect(() => {
+    if (!isLoggedIn()) {
+      setFavoritedFoodIds(new Set());
+      return;
+    }
+
+    let isMounted = true;
+    const pageSize = 50;
+
+    const loadFavoriteIds = async () => {
+      try {
+        const firstPage = await fetchFavorites({ limit: pageSize, offset: 0 });
+        const ids = firstPage.items.map((item) => item.food?.id ?? item.food_id);
+
+        if (firstPage.total > pageSize) {
+          const extraPageCount = Math.ceil(
+            (firstPage.total - pageSize) / pageSize,
+          );
+          const extraPages = await Promise.all(
+            Array.from({ length: extraPageCount }, (_, index) =>
+              fetchFavorites({
+                limit: pageSize,
+                offset: pageSize + index * pageSize,
+              }),
+            ),
+          );
+
+          for (const page of extraPages) {
+            for (const item of page.items) {
+              ids.push(item.food?.id ?? item.food_id);
+            }
+          }
+        }
+
+        if (!isMounted) return;
+        setFavoritedFoodIds((prev) => {
+          const next = new Set(ids);
+          for (const id of prev) next.add(id);
+          return next;
+        });
+      } catch (error) {
+        console.error("[Thread] fetchFavorites failed:", error);
+      }
+    };
+
+    void loadFavoriteIds();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (!input.trim() || isLoading) return;
@@ -398,6 +496,55 @@ export default function Thread() {
     }
   };
 
+  const handleStartEditMessage = (message: ChatMessage) => {
+    if (isLoading) return;
+    setEditingMessageId(message.id);
+    setEditingContent(message.content);
+  };
+
+  const handleCancelEditMessage = () => {
+    setEditingMessageId(null);
+    setEditingContent("");
+  };
+
+  const handleSubmitEditedMessage = async (message: ChatMessage) => {
+    const nextContent = editingContent.trim();
+    if (!nextContent || isLoading) return;
+
+    if (nextContent === message.content.trim()) {
+      handleCancelEditMessage();
+      return;
+    }
+
+    const controller = new AbortController();
+    backendAbortController.current = controller;
+    setFirstTokenReceived(false);
+
+    try {
+      await editMessageAndResend({
+        threadId: message.threadId,
+        messageId: message.id,
+        content: nextContent,
+        skipProfile: !useHealthProfile,
+        signal: controller.signal,
+      });
+      setFirstTokenReceived(true);
+      handleCancelEditMessage();
+      toast.success("Đã cập nhật câu hỏi và tạo lại gợi ý.");
+    } catch (error) {
+      toast.error("Không chỉnh sửa được câu hỏi.", {
+        description:
+          error instanceof Error
+            ? error.message
+            : "Vui lòng thử lại sau ít phút.",
+      });
+    } finally {
+      if (backendAbortController.current === controller) {
+        backendAbortController.current = null;
+      }
+    }
+  };
+
   const handleLocalFeedback = async (
     message: ChatMessage,
     feedback: ChatFeedback,
@@ -414,10 +561,119 @@ export default function Thread() {
     );
   };
 
+  const handleOpenFoodFeedback = (
+    food: BackendFoodResult,
+    message: ChatMessage,
+  ) => {
+    if (!isLoggedIn()) {
+      toast.error("Vui lòng đăng nhập để đánh giá gợi ý món ăn.");
+      return;
+    }
+
+    setFeedbackTarget({ food, message });
+  };
+
+  const handleToggleFavoriteFood = async (food: BackendFoodResult) => {
+    if (!isLoggedIn()) {
+      toast.error("Vui lòng đăng nhập để lưu món yêu thích.");
+      return;
+    }
+
+    const wasFavorited = favoritedFoodIds.has(food.id);
+    setFavoritingFoodId(food.id);
+    setFavoritedFoodIds((prev) => {
+      const next = new Set(prev);
+      if (wasFavorited) {
+        next.delete(food.id);
+      } else {
+        next.add(food.id);
+      }
+      return next;
+    });
+
+    try {
+      if (wasFavorited) {
+        await removeFavorite(food.id);
+        toast.success(`Đã xoá "${food.name}" khỏi yêu thích.`);
+      } else {
+        await addFavorite({ food_id: food.id });
+        toast.success(`Đã thêm "${food.name}" vào yêu thích.`, {
+          action: {
+            label: "Xem danh sách",
+            onClick: () => router.push("/favorites"),
+          },
+        });
+      }
+    } catch (error) {
+      if (
+        !wasFavorited &&
+        error instanceof Error &&
+        error.message.includes("409")
+      ) {
+        setFavoritedFoodIds((prev) => new Set(prev).add(food.id));
+        toast.success(`"${food.name}" đã có trong danh sách yêu thích.`);
+        return;
+      }
+
+      setFavoritedFoodIds((prev) => {
+        const next = new Set(prev);
+        if (wasFavorited) {
+          next.add(food.id);
+        } else {
+          next.delete(food.id);
+        }
+        return next;
+      });
+      toast.error("Không thể cập nhật món yêu thích.", {
+        description:
+          error instanceof Error ? error.message : "Vui lòng thử lại sau.",
+      });
+    } finally {
+      setFavoritingFoodId((current) => (current === food.id ? null : current));
+    }
+  };
+
+  const getFoodFeedbackForMessage = (
+    message: ChatMessage,
+    food: BackendFoodResult,
+  ): FoodRecommendationFeedbackResult | undefined =>
+    message.foodRecommendationFeedbacks?.find(
+      (feedback) => feedback.foodId === food.id,
+    );
+
+  const handleSubmitFoodFeedback = async (
+    value: Omit<
+      FoodRecommendationFeedbackPayload,
+      "threadId" | "messageId" | "foodId"
+    >,
+  ) => {
+    if (!feedbackTarget) return;
+
+    setIsSubmittingFoodFeedback(true);
+    try {
+      await submitFoodRecommendationFeedback({
+        ...value,
+        threadId: feedbackTarget.message.threadId,
+        messageId: feedbackTarget.message.id,
+        foodId: feedbackTarget.food.id,
+      });
+      setFeedbackTarget(null);
+      toast.success("Đã ghi nhận đánh giá cho món gợi ý.");
+    } catch (err) {
+      toast.error("Không gửi được đánh giá món gợi ý.", {
+        description:
+          err instanceof Error ? err.message : "Vui lòng thử lại sau.",
+      });
+    } finally {
+      setIsSubmittingFoodFeedback(false);
+    }
+  };
+
   const handleNewThread = () => {
     setThreadId(null);
     setAttachments([]);
     setInput("");
+    handleCancelEditMessage();
     backendAbortController.current?.abort();
   };
 
@@ -560,17 +816,85 @@ export default function Thread() {
                 sx={styles.messageScrollStyles(chatStarted)}
                 content={
                   <Box sx={styles.messageContentStyles}>
-                    {localMessages.map((message) =>
-                      message.role === "human" ? (
+                    {localMessages.map((message) => {
+                      const isEditingMessage = editingMessageId === message.id;
+
+                      return message.role === "human" ? (
                         <Box
                           key={message.id}
+                          data-message-group="true"
                           sx={styles.localHumanGroupStyles}
                         >
                           <Box sx={styles.localHumanBubbleStyles}>
-                            <Typography as="p" sx={{ whiteSpace: "pre-wrap" }}>
-                              {message.content}
-                            </Typography>
-                            {message.attachments &&
+                            {isEditingMessage ? (
+                              <Box
+                                component="form"
+                                sx={styles.humanMessageEditFormStyles}
+                                onSubmit={(event) => {
+                                  event.preventDefault();
+                                  void handleSubmitEditedMessage(message);
+                                }}
+                              >
+                                <Box
+                                  component="textarea"
+                                  value={editingContent}
+                                  onChange={(event) =>
+                                    setEditingContent(event.target.value)
+                                  }
+                                  onKeyDown={(event) => {
+                                    if (
+                                      event.key === "Enter" &&
+                                      !event.shiftKey &&
+                                      !event.metaKey &&
+                                      !event.nativeEvent.isComposing
+                                    ) {
+                                      event.preventDefault();
+                                      void handleSubmitEditedMessage(message);
+                                    }
+                                  }}
+                                  autoFocus
+                                  aria-label="Chỉnh sửa câu hỏi đã gửi"
+                                  placeholder="Nhập lại câu hỏi..."
+                                  sx={styles.humanMessageEditTextareaStyles}
+                                />
+                                <Box sx={styles.humanMessageEditActionsStyles}>
+                                  <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="sm"
+                                    sx={
+                                      styles.humanMessageEditCancelButtonStyles
+                                    }
+                                    onClick={handleCancelEditMessage}
+                                  >
+                                    <X size={15} />
+                                    Hủy
+                                  </Button>
+                                  <Button
+                                    type="submit"
+                                    size="sm"
+                                    sx={
+                                      styles.humanMessageEditSubmitButtonStyles
+                                    }
+                                    disabled={
+                                      !editingContent.trim() || isLoading
+                                    }
+                                  >
+                                    <Check size={15} />
+                                    Gửi lại
+                                  </Button>
+                                </Box>
+                              </Box>
+                            ) : (
+                              <Typography
+                                as="p"
+                                sx={{ whiteSpace: "pre-wrap" }}
+                              >
+                                {message.content}
+                              </Typography>
+                            )}
+                            {!isEditingMessage &&
+                              message.attachments &&
                               message.attachments.length > 0 && (
                                 <Box
                                   sx={{
@@ -614,14 +938,18 @@ export default function Thread() {
                                 </Box>
                               )}
                           </Box>
-                          <LocalMessageActions
-                            content={message.content}
-                            isLoading={isLoading}
-                          />
+                          {!isEditingMessage && (
+                            <LocalMessageActions
+                              content={message.content}
+                              isLoading={isLoading}
+                              onEdit={() => handleStartEditMessage(message)}
+                            />
+                          )}
                         </Box>
                       ) : (
                         <Box
                           key={message.id}
+                          data-message-group="true"
                           sx={styles.localAssistantGroupStyles}
                         >
                           <Box sx={styles.assistantAvatarStyles}>
@@ -679,8 +1007,24 @@ export default function Thread() {
                                       key={food.id}
                                       food={food}
                                       index={index}
-                                      onOpenFeedback={setFeedbackFood}
+                                      isFavoriteLoading={
+                                        favoritingFoodId === food.id
+                                      }
+                                      isFavorited={favoritedFoodIds.has(food.id)}
+                                      message={message}
+                                      recommendationFeedback={getFoodFeedbackForMessage(
+                                        message,
+                                        food,
+                                      )}
+                                      onOpenFeedback={handleOpenFoodFeedback}
+                                      onOpenDetail={(nextFood, nextMessage) =>
+                                        setDetailTarget({
+                                          food: nextFood,
+                                          message: nextMessage,
+                                        })
+                                      }
                                       onOpenLocations={setMapFood}
+                                      onToggleFavorite={handleToggleFavoriteFood}
                                     />
                                   ))}
                                 </Box>
@@ -702,8 +1046,8 @@ export default function Thread() {
                             />
                           </Box>
                         </Box>
-                      ),
-                    )}
+                      );
+                    })}
                     {isAwaitingAssistant && <AssistantMessageLoading />}
                   </Box>
                 }
@@ -729,19 +1073,40 @@ export default function Thread() {
           />
         </Box>
       </Box>
-      <MapInsightPanel food={mapFood} onClose={() => setMapFood(null)} />
-      <RecipeFeedbackDialog
-        open={Boolean(feedbackFood)}
-        recipeName={feedbackFood?.name ?? ""}
-        onClose={() => setFeedbackFood(null)}
-        onSubmit={(feedback) => {
-          setFeedbackFood(null);
-          toast.success("Đã ghi nhận đánh giá gợi ý.", {
-            description: `${feedback.rating}/5 sao${
-              feedback.comment ? ` · ${feedback.comment}` : ""
-            }`,
-          });
+      <FoodDetailDrawer
+        food={detailTarget?.food ?? null}
+        isFavoriteLoading={
+          detailTarget ? favoritingFoodId === detailTarget.food.id : false
+        }
+        isFavorited={
+          detailTarget ? favoritedFoodIds.has(detailTarget.food.id) : false
+        }
+        open={Boolean(detailTarget)}
+        recommendationFeedback={
+          detailTarget
+            ? getFoodFeedbackForMessage(detailTarget.message, detailTarget.food)
+            : undefined
+        }
+        onClose={() => setDetailTarget(null)}
+        onOpenFeedback={(food) => {
+          if (!detailTarget) return;
+          handleOpenFoodFeedback(food, detailTarget.message);
         }}
+        onOpenLocations={setMapFood}
+        onToggleFavorite={handleToggleFavoriteFood}
+      />
+      <MapInsightPanel food={mapFood} onClose={() => setMapFood(null)} />
+      <RecommendationFeedbackDialog
+        foodName={feedbackTarget?.food.name ?? ""}
+        initialValue={
+          feedbackTarget
+            ? getFoodFeedbackForMessage(feedbackTarget.message, feedbackTarget.food)
+            : undefined
+        }
+        isLoading={isSubmittingFoodFeedback}
+        open={Boolean(feedbackTarget)}
+        onClose={() => setFeedbackTarget(null)}
+        onSubmit={handleSubmitFoodFeedback}
       />
     </Box>
   );
@@ -756,10 +1121,7 @@ export function AssistantMessageLoading() {
       sx={styles.assistantLoadingGroupStyles}
     >
       <Box
-        sx={[
-          styles.assistantAvatarStyles,
-          styles.assistantLoadingAvatarStyles,
-        ]}
+        sx={[styles.assistantAvatarStyles, styles.assistantLoadingAvatarStyles]}
       >
         <GeminiSparkleSVG width={18} height={18} color="#f97316" />
       </Box>

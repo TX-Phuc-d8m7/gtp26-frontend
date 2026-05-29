@@ -11,7 +11,6 @@ import {
   ArrowUp,
   FileText,
   LoaderCircle,
-  Paperclip,
   SlidersHorizontal,
   X,
   Clock3,

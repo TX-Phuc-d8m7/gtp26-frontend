@@ -3,6 +3,7 @@
  * All rights reserved.
  */
 
+import { apiFetch } from "@/features/auth/_api";
 import type {
   ApiFilterOptions,
   ApiFoodCategoriesResponse,
@@ -11,7 +12,7 @@ import type {
 } from "./_interface";
 
 const BASE_URL =
-  process.env.NEXT_PUBLIC_FOOD_AI_API_URL ?? "http://localhost:8000";
+  process.env.NEXT_PUBLIC_FOOD_AI_API_URL ?? "/api/backend";
 
 // ---------------------------------------------------------------------------
 // Filter options — module-level cache
@@ -152,9 +153,10 @@ export async function fetchFoods(
 // Food detail
 // ---------------------------------------------------------------------------
 
-/** Chi tiết đầy đủ một món ăn + trạng thái yêu thích (nếu đã đăng nhập) */
+/** Chi tiết đầy đủ một món ăn + trạng thái yêu thích (nếu đã đăng nhập).
+ *  Dùng apiFetch để gửi Authorization header — backend trả is_favorite đúng. */
 export async function fetchFoodDetail(foodId: string): Promise<ApiFoodDetail> {
-  const res = await fetch(`${BASE_URL}/foods/${foodId}`);
+  const res = await apiFetch(`/foods/${foodId}`);
   if (!res.ok) throw new Error(`fetchFoodDetail: HTTP ${res.status}`);
   return res.json() as Promise<ApiFoodDetail>;
 }

@@ -4,8 +4,9 @@
  */
 "use client";
 
-import { ArrowRight, Loader2, Lock, Mail } from "lucide-react";
+import { AlertCircle, ArrowRight, Eye, EyeOff, Loader2, Lock, Mail } from "lucide-react";
 import Link from "next/link";
+import { useState } from "react";
 
 import { styles, useLogin } from ".";
 import { Box } from "@/shared/components/ui/box/index";
@@ -16,7 +17,9 @@ import { Label } from "@/shared/components/ui/label/index";
 import { Typography } from "@/shared/components/ui/typography/index";
 
 export default function Login() {
-  const { register, handleSubmit, errors, isLoading, onSubmit } = useLogin();
+  const { register, handleSubmit, errors, isLoading, onSubmit, serverError } =
+    useLogin();
+  const [showPassword, setShowPassword] = useState(false);
 
   return (
     <Box sx={styles.pageShellStyles}>
@@ -32,6 +35,13 @@ export default function Login() {
         </Box>
 
         <Form onSubmit={handleSubmit(onSubmit)} sx={styles.formStyles}>
+          {serverError && (
+            <Box sx={styles.serverErrorBannerStyles}>
+              <Box component={AlertCircle} sx={{ width: 16, height: 16, flexShrink: 0, mt: "1px" }} />
+              {serverError}
+            </Box>
+          )}
+
           <Box sx={styles.fieldStyles}>
             <Label sx={styles.labelStyles} htmlFor="email">
               Email
@@ -65,11 +75,19 @@ export default function Login() {
               </Box>
               <Input
                 id="password"
-                type="password"
+                type={showPassword ? "text" : "password"}
                 placeholder="••••••••"
-                sx={styles.inputStyles(Boolean(errors.password))}
+                sx={styles.inputStyles(Boolean(errors.password), true)}
                 {...register("password")}
               />
+              <button
+                type="button"
+                aria-label={showPassword ? "Ẩn mật khẩu" : "Hiện mật khẩu"}
+                style={styles.eyeToggleButtonStyles}
+                onClick={() => setShowPassword((v) => !v)}
+              >
+                {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+              </button>
             </Box>
             {errors.password && (
               <Typography sx={styles.errorTextStyles}>

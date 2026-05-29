@@ -6,6 +6,7 @@ import { Button } from "@/shared/components/ui/button/index";
 import { Box } from "@mui/material";
 import { Typography } from "@/shared/components/ui/typography/index";
 import {
+  Heart,
   Menu,
   SquarePen,
   User,
@@ -13,9 +14,6 @@ import {
   Settings,
   LogIn,
   Search,
-  Check,
-  ChevronDown,
-  Soup,
 } from "lucide-react";
 import { ThemeToggle } from "@/shared/components/theme-toggle";
 import { GitHubSVG } from "@/shared/components/icons/github";
@@ -27,9 +25,9 @@ import {
 } from "@/shared/components/ui/tooltip/index";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
-import { FoodSearchUI, prewarmFilterOptions } from "@/features/foods/search";
+import { FoodSearchUI } from "@/features/foods/search";
 import { HeaderProps, styles, useHeader } from ".";
-import favicon2 from "@/app/favicon2.svg";
+import gtp26logo from "@/app/gtp26-logo.png";
 
 export default function Header({
   chatHistoryOpen,
@@ -43,16 +41,11 @@ export default function Header({
     handleSearchBackdropMouseDown,
     handleSearchOverlayBlur,
     isLoggedIn,
-    isModelMenuOpen,
     isSearchOpen,
     isUserMenuOpen,
     menuRef,
-    modelOptions,
-    selectedModel,
-    setIsModelMenuOpen,
     setIsSearchOpen,
     setIsUserMenuOpen,
-    setSelectedModel,
     searchOverlayRef,
   } = useHeader();
 
@@ -106,7 +99,7 @@ export default function Header({
               <Box sx={styles.brandLogoLockupStyles}>
                 <Box
                   component="img"
-                  src={favicon2.src}
+                  src={gtp26logo.src}
                   alt="App Icon"
                   sx={styles.brandLogoImageStyles}
                 />
@@ -258,6 +251,21 @@ export default function Header({
                               user@example.com
                             </Typography>
                           </Box>
+                        </Box>
+                        <Box
+                          component={Link}
+                          href="/favorites"
+                          sx={[
+                            styles.dropdownItemStyles,
+                            {
+                              justifyContent: "flex-start",
+                              textDecoration: "none",
+                            },
+                          ]}
+                          onClick={() => setIsUserMenuOpen(false)}
+                        >
+                          <Heart size={16} color="var(--muted-foreground)" />
+                          Món yêu thích
                         </Box>
                         <Box
                           component={Link}

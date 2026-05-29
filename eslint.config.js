@@ -9,7 +9,7 @@ export default tseslint.config(
   { ignores: ["dist"] },
   {
     extends: [js.configs.recommended, ...tseslint.configs.recommended],
-    files: ["**/*.{ts,tsx}"],
+    files: ["**/*.{js,jsx,ts,tsx}"],
     languageOptions: {
       ecmaVersion: 2020,
       globals: globals.browser,
@@ -32,6 +32,17 @@ export default tseslint.config(
         "warn",
         { allowConstantExport: true },
       ],
+    },
+  },
+  {
+    files: [
+      "src/app/**/*.tsx",
+      "src/features/**/index.tsx",
+      "src/features/**/providers/**/*.tsx",
+      "src/features/landing/landing-theme-context.tsx",
+    ],
+    rules: {
+      "react-refresh/only-export-components": "off",
     },
   },
 );
