@@ -824,6 +824,22 @@ export const dialogPaperStyles = (theme: Theme) => ({
   },
 });
 
+export const foodDetailDrawerPaperStyles = (isMobile: boolean) => (theme: Theme) => ({
+  width: isMobile ? "100%" : 520,
+  height: isMobile ? "92dvh" : "100dvh",
+  maxHeight: "100dvh",
+  borderRadius: isMobile ? "24px 24px 0 0" : 0,
+  display: "flex",
+  flexDirection: "column",
+  overflow: "hidden",
+  backgroundColor: "rgba(255, 251, 245, 0.99)",
+  color: "var(--foreground)",
+  ".dark &": {
+    backgroundColor: darkFoodTheme.background,
+    color: darkFoodTheme.text,
+  },
+});
+
 export const detailHeroStyles = (theme: Theme) => ({
   position: "relative",
   height: {
@@ -867,9 +883,23 @@ export const detailTitleWrapStyles = (theme: Theme) => ({
 });
 
 export const detailContentStyles = (theme: Theme) => ({
+  flex: 1,
+  overflowY: "auto",
   padding: {
     xs: 2,
     sm: 3,
+  },
+  scrollbarWidth: "thin",
+  scrollbarColor: "rgba(249, 115, 22, 0.28) transparent",
+  "&::-webkit-scrollbar": {
+    width: 4,
+  },
+  "&::-webkit-scrollbar-track": {
+    background: "transparent",
+  },
+  "&::-webkit-scrollbar-thumb": {
+    background: "rgba(249, 115, 22, 0.28)",
+    borderRadius: 4,
   },
 });
 
@@ -906,6 +936,86 @@ export const mapLinkStyles = (theme: Theme) => ({
   textDecoration: "none",
   ".dark &": {
     color: darkFoodTheme.orange,
+  },
+});
+
+export const detailSectionLabelStyles = (theme: Theme) => ({
+  fontWeight: 800,
+  marginBottom: 1,
+  color: "var(--foreground)",
+  ".dark &": {
+    color: darkFoodTheme.text,
+  },
+});
+
+export const detailListItemStyles = (theme: Theme) => ({
+  color: "var(--muted-foreground)",
+  fontSize: 14,
+  ".dark &": {
+    color: darkFoodTheme.muted,
+  },
+});
+
+export const detailBodyTextStyles = (theme: Theme) => ({
+  color: "var(--muted-foreground)",
+  fontSize: 14,
+  lineHeight: 1.7,
+  whiteSpace: "pre-wrap",
+  ".dark &": {
+    color: darkFoodTheme.muted,
+  },
+});
+
+export const instructionStepStyles = (theme: Theme) => ({
+  display: "flex",
+  gap: 1.25,
+  alignItems: "flex-start",
+});
+
+export const instructionStepBadgeStyles = (theme: Theme) => ({
+  flexShrink: 0,
+  display: "inline-flex",
+  alignItems: "center",
+  justifyContent: "center",
+  width: 22,
+  height: 22,
+  borderRadius: "50%",
+  fontSize: 11,
+  fontWeight: 800,
+  lineHeight: 1,
+  mt: "1px",
+  background: "linear-gradient(135deg, #FF8A1F 0%, #D9480F 100%)",
+  color: "#fff",
+});
+
+export const instructionStepTextStyles = (theme: Theme) => ({
+  color: "var(--muted-foreground)",
+  fontSize: 14,
+  lineHeight: 1.7,
+  flex: 1,
+  ".dark &": {
+    color: darkFoodTheme.muted,
+  },
+});
+
+export const detailFavoriteBadgeStyles = (theme: Theme) => ({
+  fontSize: 12,
+  fontWeight: 700,
+  backgroundColor: "rgba(249,115,22,0.1)",
+  color: "#EA580C",
+  border: "1px solid rgba(249,115,22,0.25)",
+  ".dark &": {
+    backgroundColor: "rgba(249,115,22,0.16)",
+    color: "#FB923C",
+    borderColor: "rgba(249,115,22,0.32)",
+  },
+});
+
+export const suggestionSecondaryTextStyles = (theme: Theme) => ({
+  color: "var(--muted-foreground)",
+  fontSize: 13,
+  ".dark &": {
+    color: darkFoodTheme.mutedSoft,
   },
 });
 
@@ -1267,12 +1377,21 @@ export const styles = {
   locationTextStyles,
   emptyStateStyles,
   dialogPaperStyles,
+  foodDetailDrawerPaperStyles,
   detailHeroStyles,
   detailImageStyles,
   detailOverlayStyles,
   detailTitleWrapStyles,
   detailContentStyles,
   detailSectionStyles,
+  detailSectionLabelStyles,
+  detailListItemStyles,
+  detailBodyTextStyles,
+  instructionStepStyles,
+  instructionStepBadgeStyles,
+  instructionStepTextStyles,
+  detailFavoriteBadgeStyles,
+  suggestionSecondaryTextStyles,
   locationCardStyles,
   mapLinkStyles,
   closeButtonStyles,

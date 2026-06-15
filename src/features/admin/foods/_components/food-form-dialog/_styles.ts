@@ -9,23 +9,23 @@ import type { Theme } from "@mui/material/styles";
 
 const light = {
   cardBg: "#FFFFFF",
-  cardBorder: "rgba(0,0,0,0.055)",
-  sectionBg: "rgba(249,115,22,0.03)",
-  sectionBorder: "rgba(0,0,0,0.05)",
-  text: "#1C1917",
-  textSub: "#78716C",
-  textMuted: "#A8A29E",
+  cardBorder: "#E5E7EB",
+  sectionBg: "#FFF7ED",
+  sectionBorder: "#E5E7EB",
+  text: "#1F2937",
+  textSub: "#4B5563",
+  textMuted: "#6B7280",
 } as const;
 
 const dark = {
-  cardBg: "#1E1B18",
-  cardBorder: "rgba(255,247,237,0.07)",
+  cardBg: "#1C1917",
+  cardBorder: "rgba(255,247,237,0.12)",
   sectionBg: "rgba(255,247,237,0.03)",
-  sectionBorder: "rgba(255,247,237,0.06)",
-  text: "#F5EFE8",
-  textSub: "rgba(245,239,232,0.55)",
-  textMuted: "rgba(245,239,232,0.35)",
-  orange: "#F97316",
+  sectionBorder: "rgba(255,247,237,0.1)",
+  text: "#FFF7ED",
+  textSub: "rgba(255,247,237,0.62)",
+  textMuted: "rgba(255,247,237,0.42)",
+  orange: "#FF9A1F",
 } as const;
 
 // ─── Dialog paper ────────────────────────────────────────────────────────────
@@ -135,7 +135,7 @@ export const tabsPanelStyles = (theme: Theme) => ({
   top: 0,
   borderRadius: 3,
   border: `1px solid ${light.sectionBorder}`,
-  backgroundColor: "rgba(0,0,0,0.018)",
+  backgroundColor: "#F9FAFB",
   p: 0.75,
   ".MuiTabs-indicator": {
     display: "none",
@@ -159,14 +159,14 @@ export const tabStyles = (theme: Theme) => ({
   textAlign: "left",
   textTransform: "none",
   "&.Mui-selected": {
-    backgroundColor: "rgba(249,115,22,0.1)",
-    color: "#C2410C",
+    backgroundColor: "#FFF7ED",
+    color: "#EA580C",
   },
   ".dark &": {
     color: dark.textSub,
     "&.Mui-selected": {
-      backgroundColor: "rgba(249,115,22,0.16)",
-      color: "#FDBA74",
+      backgroundColor: "rgba(255,154,31,0.12)",
+      color: dark.orange,
     },
   },
 });
@@ -252,13 +252,13 @@ export const switchPanelStyles = (theme: Theme) => ({
   alignItems: "center",
   borderRadius: 3,
   border: `1px solid ${light.cardBorder}`,
-  backgroundColor: "rgba(0,0,0,0.02)",
+  backgroundColor: "#FFFFFF",
   justifyContent: "space-between",
   m: 0,
   px: 1.25,
   py: 1,
   ".MuiFormControlLabel-label": {
-    color: "#44403C",
+    color: light.text,
     fontSize: 13,
     fontWeight: 850,
   },
@@ -291,8 +291,8 @@ export const fieldStyles = (theme: Theme) => ({
       borderColor: "rgba(249, 115, 22, 0.4)",
     },
     "&.Mui-focused fieldset": {
-      borderColor: "#F97316",
-      boxShadow: "0 0 0 3px rgba(249, 115, 22, 0.1)",
+      borderColor: "#EA580C",
+      boxShadow: "0 0 0 3px rgba(234, 88, 12, 0.1)",
     },
   },
   "& .MuiInputLabel-root": {
@@ -412,16 +412,16 @@ export const previewChipWrapStyles = (theme: Theme) => ({
 export const previewChipStyles = (theme: Theme) => ({
   borderRadius: 999,
   border: `1px solid ${light.sectionBorder}`,
-  backgroundColor: "rgba(249,115,22,0.08)",
-  color: "#C2410C",
+  backgroundColor: "#FFF7ED",
+  color: "#EA580C",
   fontSize: 12,
   fontWeight: 850,
   px: 1,
   py: 0.45,
   ".dark &": {
     borderColor: dark.sectionBorder,
-    backgroundColor: "rgba(249,115,22,0.12)",
-    color: "#FDBA74",
+    backgroundColor: "rgba(255,154,31,0.12)",
+    color: dark.orange,
   },
 });
 
@@ -471,17 +471,17 @@ export const metricValueStyles = (theme: Theme) => ({
 export const indexingNoticeStyles = (theme: Theme) => ({
   marginBottom: '1rem',
   borderRadius: 3,
-  border: "1px solid rgba(37,99,235,0.18)",
-  backgroundColor: "rgba(37,99,235,0.06)",
-  color: "#1D4ED8",
+  border: "1px solid #FED7AA",
+  backgroundColor: "#FFF7ED",
+  color: "#EA580C",
   p: 1.5,
   fontSize: 13,
   fontWeight: 800,
   lineHeight: 1.65,
   ".dark &": {
-    borderColor: "rgba(56,189,248,0.18)",
-    backgroundColor: "rgba(56,189,248,0.08)",
-    color: "#7DD3FC",
+    borderColor: "rgba(255,154,31,0.28)",
+    backgroundColor: "rgba(255,154,31,0.1)",
+    color: dark.orange,
   },
 });
 
@@ -558,15 +558,15 @@ export const selectMenuPaperStyles = (theme: Theme) => ({
     mx: 0.5,
     "&:hover": { backgroundColor: "rgba(249,115,22,0.06)" },
     "&.Mui-selected": {
-      backgroundColor: "rgba(249,115,22,0.1)",
-      color: "#C2410C",
+      backgroundColor: "#FFF7ED",
+      color: "#EA580C",
     },
     ".dark &": {
       color: dark.text,
       "&:hover": { backgroundColor: "rgba(249,115,22,0.1)" },
       "&.Mui-selected": {
-        backgroundColor: "rgba(249,115,22,0.16)",
-        color: "#FDBA74",
+        backgroundColor: "rgba(255,154,31,0.14)",
+        color: dark.orange,
       },
     },
   },
@@ -600,7 +600,7 @@ export const actionsStyles = (theme: Theme) => ({
 
 export const cancelButtonStyles = (theme: Theme) => ({
   borderColor: light.cardBorder,
-  color: "#44403C",
+  color: light.textSub,
   ".dark &": {
     borderColor: dark.cardBorder,
     color: dark.text,
@@ -608,15 +608,185 @@ export const cancelButtonStyles = (theme: Theme) => ({
 });
 
 export const submitButtonStyles = (theme: Theme) => ({
-  background: "#F97316",
+  background: "#EA580C",
   color: "#FFFFFF",
-  boxShadow: "0 4px 14px rgba(249, 115, 22, 0.3)",
+  boxShadow: "0 10px 24px rgba(234, 88, 12, 0.18)",
   "&:hover": {
-    background: "#EA580C",
-    boxShadow: "0 6px 18px rgba(249, 115, 22, 0.4)",
+    background: "#C2410C",
+    boxShadow: "0 14px 30px rgba(234, 88, 12, 0.24)",
   },
   ".dark &": {
-    boxShadow: "0 4px 14px rgba(249, 115, 22, 0.2)",
+    background: "#FF7A00",
+    boxShadow: "0 12px 28px rgba(255, 122, 0, 0.18)",
+    "&:hover": {
+      background: "#FF9A1F",
+    },
+  },
+});
+
+// ─── Ingredient list input ────────────────────────────────────────────────────
+
+export const ingredientListHeaderStyles = (theme: Theme) => ({
+  display: "flex",
+  justifyContent: "space-between",
+  alignItems: "center",
+  mb: 1.5,
+});
+
+export const ingredientListTitleStyles = (theme: Theme) => ({
+  color: light.textMuted,
+  fontSize: 11,
+  fontWeight: 900,
+  letterSpacing: "0.08em",
+  textTransform: "uppercase",
+  ".dark &": { color: dark.textMuted },
+});
+
+export const addIngredientButtonStyles = (theme: Theme) => ({
+  gap: 0.5,
+  height: 30,
+  px: 1.25,
+  borderRadius: 2,
+  fontSize: 12,
+  fontWeight: 850,
+  border: `1px solid ${light.cardBorder}`,
+  color: "#EA580C",
+  "&:hover": {
+    backgroundColor: "#FFF7ED",
+    borderColor: "#FDBA74",
+  },
+  ".dark &": {
+    borderColor: dark.cardBorder,
+    color: dark.orange,
+    "&:hover": {
+      backgroundColor: "rgba(255,154,31,0.1)",
+      borderColor: "rgba(255,154,31,0.28)",
+    },
+  },
+});
+
+export const ingredientColHeaderStyles = (theme: Theme) => ({
+  display: "flex",
+  gap: 1,
+  mb: 0.5,
+  px: 0.25,
+  alignItems: "center",
+});
+
+export const ingredientColLabelStyles = (theme: Theme) => ({
+  color: light.textMuted,
+  fontSize: 10,
+  fontWeight: 900,
+  letterSpacing: "0.06em",
+  textTransform: "uppercase",
+  ".dark &": { color: dark.textMuted },
+});
+
+export const ingredientRowsContainerStyles = (theme: Theme) => ({
+  display: "flex",
+  flexDirection: "column",
+  gap: 0.85,
+  mb: 1.5,
+});
+
+export const ingredientRowStyles = (theme: Theme) => ({
+  display: "flex",
+  alignItems: "center",
+  gap: 0.85,
+});
+
+export const ingredientDeleteButtonStyles = (theme: Theme) => ({
+  minWidth: "unset",
+  width: 30,
+  height: 30,
+  p: 0,
+  borderRadius: 2,
+  flexShrink: 0,
+  color: light.textMuted,
+  border: `1px solid transparent`,
+  "&:hover": {
+    color: "#DC2626",
+    borderColor: "rgba(239,68,68,0.3)",
+    backgroundColor: "rgba(239,68,68,0.06)",
+  },
+  ".dark &": {
+    color: dark.textMuted,
+    "&:hover": {
+      color: "#FCA5A5",
+      borderColor: "rgba(239,68,68,0.35)",
+      backgroundColor: "rgba(239,68,68,0.1)",
+    },
+  },
+});
+
+export const ingredientEmptyStateStyles = (theme: Theme) => ({
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  py: 3,
+  mb: 1.5,
+  borderRadius: 3,
+  border: `1px dashed ${light.cardBorder}`,
+  backgroundColor: "rgba(0,0,0,0.012)",
+  ".dark &": {
+    borderColor: dark.cardBorder,
+    backgroundColor: "rgba(255,247,237,0.02)",
+  },
+});
+
+export const ingredientEmptyTextStyles = (theme: Theme) => ({
+  color: light.textMuted,
+  fontSize: 13,
+  fontWeight: 700,
+  ".dark &": { color: dark.textMuted },
+});
+
+export const ingredientErrorStyles = (theme: Theme) => ({
+  color: "#B91C1C",
+  fontSize: 12,
+  fontWeight: 700,
+  mt: 0.5,
+  ".dark &": { color: "#FCA5A5" },
+});
+
+export const derivedSectionStyles = (theme: Theme) => ({
+  mt: 1.5,
+  borderRadius: 3,
+  border: `1px solid ${light.sectionBorder}`,
+  backgroundColor: "rgba(0,0,0,0.015)",
+  p: 1.5,
+  ".dark &": {
+    borderColor: dark.sectionBorder,
+    backgroundColor: "rgba(255,247,237,0.02)",
+  },
+});
+
+export const derivedLabelStyles = (theme: Theme) => ({
+  mb: 1,
+  color: light.textMuted,
+  fontSize: 10,
+  fontWeight: 900,
+  letterSpacing: "0.06em",
+  textTransform: "uppercase",
+  display: "flex",
+  alignItems: "center",
+  gap: 0.5,
+  ".dark &": { color: dark.textMuted },
+});
+
+export const coreIngredientChipStyles = (theme: Theme) => ({
+  borderRadius: 999,
+  border: `1px solid ${light.sectionBorder}`,
+  backgroundColor: "#F9FAFB",
+  color: light.textSub,
+  fontSize: 12,
+  fontWeight: 850,
+  px: 1,
+  py: 0.4,
+  ".dark &": {
+    borderColor: dark.sectionBorder,
+    backgroundColor: "rgba(255,247,237,0.05)",
+    color: dark.textSub,
   },
 });
 
@@ -624,11 +794,15 @@ export const submitButtonStyles = (theme: Theme) => ({
 
 export const styles = {
   actionsStyles,
+  addIngredientButtonStyles,
   cancelButtonStyles,
   chipFieldLabelStyles,
   chipFieldHintStyles,
   charCounterStyles,
   contentStyles,
+  coreIngredientChipStyles,
+  derivedLabelStyles,
+  derivedSectionStyles,
   diningContextHintStyles,
   diningContextLabelStyles,
   editorShellStyles,
@@ -638,6 +812,16 @@ export const styles = {
   formSectionHeaderStyles,
   formSectionStyles,
   indexingNoticeStyles,
+  ingredientColHeaderStyles,
+  ingredientColLabelStyles,
+  ingredientDeleteButtonStyles,
+  ingredientEmptyStateStyles,
+  ingredientEmptyTextStyles,
+  ingredientErrorStyles,
+  ingredientListHeaderStyles,
+  ingredientListTitleStyles,
+  ingredientRowStyles,
+  ingredientRowsContainerStyles,
   menuItemDescStyles,
   menuItemTitleStyles,
   metricCardStyles,

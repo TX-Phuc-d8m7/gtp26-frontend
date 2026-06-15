@@ -2,7 +2,7 @@ import { FavoritesPage } from "@/features/favorites";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Món yêu thích | Chatbot Ẩm Thực Đà Nẵng",
+  title: "Món yêu thích",
   description: "Danh sách món ăn yêu thích của bạn",
 };
 

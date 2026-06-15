@@ -28,6 +28,10 @@ export interface BackendFoodResult {
   dining_context?: string | null;
   locations?: FoodLocation[];
 
+  // Detailed cooking data — present when fetched from food detail API.
+  raw_ingredients?: string[];
+  raw_instructions?: string | null;
+
   // Optional presentation fields if backend extends the contract later.
   image?: string;
   cookingTime?: number; // in minutes

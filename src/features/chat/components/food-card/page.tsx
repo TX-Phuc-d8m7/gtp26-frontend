@@ -43,7 +43,6 @@ export default function FoodCard({
   sx,
 }: FoodCardProps) {
   const [imageFailed, setImageFailed] = useState(false);
-  const score = Math.max(0, Math.min(100, food.matchScore));
   const locationCount = food.locations?.length ?? 0;
   const difficulty = food.difficulty;
   const difficultyConfig = difficulty
@@ -84,7 +83,6 @@ export default function FoodCard({
                 <Box sx={styles.heroEyebrowSx}>Gợi ý món phù hợp</Box>
                 <Box sx={styles.heroTitleSx}>{food.name}</Box>
               </Box>
-              <Box sx={styles.heroScoreSx}>{Math.round(score)}% hợp</Box>
             </Box>
           </Box>
         )}
@@ -101,13 +99,8 @@ export default function FoodCard({
                     {food.name}
                   </Typography>
                 </Box>
-                <Box sx={styles.heroScoreSx}>{Math.round(score)}% hợp</Box>
               </Box>
             )}
-
-            <Box sx={styles.scoreTrackSx}>
-              <Box sx={styles.getScoreFillSx(score)} />
-            </Box>
 
             <Typography sx={styles.descriptionSx}>
               {food.description}

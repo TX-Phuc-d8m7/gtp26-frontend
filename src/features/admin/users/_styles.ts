@@ -8,26 +8,26 @@ import type { Theme } from "@mui/material/styles";
 
 const light = {
   cardBg: "#FFFFFF",
-  cardBorder: "rgba(0,0,0,0.055)",
-  cardShadow: "0 2px 12px rgba(0,0,0,0.07)",
-  text: "#1C1917",
-  textSub: "#78716C",
-  textMuted: "#A8A29E",
+  cardBorder: "#E5E7EB",
+  cardShadow: "0 12px 28px rgba(15, 23, 42, 0.06)",
+  text: "#1F2937",
+  textSub: "#4B5563",
+  textMuted: "#6B7280",
   green: "#15803D",
-  orange: "#C2410C",
-  blue: "#1D4ED8",
+  orange: "#EA580C",
+  blue: "#475569",
 } as const;
 
 const dark = {
-  cardBg: "#1E1B18",
-  cardBorder: "rgba(255,247,237,0.07)",
-  cardShadow: "0 4px 24px rgba(0,0,0,0.4)",
-  text: "#F5EFE8",
-  textSub: "rgba(245,239,232,0.55)",
-  textMuted: "rgba(245,239,232,0.35)",
-  green: "#84CC16",
-  orange: "#F97316",
-  blue: "#38BDF8",
+  cardBg: "#1C1917",
+  cardBorder: "rgba(255,247,237,0.12)",
+  cardShadow: "0 18px 42px rgba(0,0,0,0.46)",
+  text: "#FFF7ED",
+  textSub: "rgba(255,247,237,0.62)",
+  textMuted: "rgba(255,247,237,0.42)",
+  green: "#86EFAC",
+  orange: "#FF9A1F",
+  blue: "#CBD5E1",
 } as const;
 
 // ─── Stats bar ───────────────────────────────────────────────────────────────
@@ -69,12 +69,12 @@ const statsPalette: Record<
     darkBorder: "rgba(249,115,22,0.2)",
   },
   admin: {
-    color: "#7C3AED",
-    bg: "rgba(124,58,237,0.07)",
-    border: "rgba(124,58,237,0.16)",
-    darkColor: "#C4B5FD",
-    darkBg: "rgba(124,58,237,0.1)",
-    darkBorder: "rgba(124,58,237,0.18)",
+    color: light.blue,
+    bg: "#F8FAFC",
+    border: "#CBD5E1",
+    darkColor: dark.blue,
+    darkBg: "rgba(203,213,225,0.08)",
+    darkBorder: "rgba(203,213,225,0.16)",
   },
 };
 
@@ -131,8 +131,8 @@ export const fieldStyles = (theme: Theme) => ({
     "& fieldset": { borderColor: light.cardBorder },
     "&:hover fieldset": { borderColor: "rgba(249,115,22,0.4)" },
     "&.Mui-focused fieldset": {
-      borderColor: "#F97316",
-      boxShadow: "0 0 0 3px rgba(249,115,22,0.1)",
+      borderColor: light.orange,
+      boxShadow: "0 0 0 3px rgba(234,88,12,0.1)",
     },
   },
   "& .MuiInputLabel-root": { color: light.textSub, fontWeight: 800 },
@@ -142,7 +142,7 @@ export const fieldStyles = (theme: Theme) => ({
       color: dark.text,
       "& fieldset": { borderColor: dark.cardBorder },
       "&:hover fieldset": { borderColor: "rgba(249,115,22,0.3)" },
-      "&.Mui-focused fieldset": { borderColor: "#F97316" },
+      "&.Mui-focused fieldset": { borderColor: dark.orange },
     },
     "& .MuiInputLabel-root": { color: dark.textSub },
   },
@@ -190,17 +190,17 @@ export const filterPillStyles =
     fontWeight: 800,
     cursor: "pointer",
     transition: "background-color 120ms ease, color 120ms ease",
-    borderColor: active ? "#F97316" : light.cardBorder,
-    backgroundColor: active ? "#F97316" : "transparent",
+    borderColor: active ? "#FDBA74" : light.cardBorder,
+    backgroundColor: active ? light.orange : "transparent",
     color: active ? "#FFFFFF" : light.textSub,
     "&:hover": {
-      borderColor: "#F97316",
-      backgroundColor: active ? "#EA580C" : "rgba(249,115,22,0.08)",
-      color: active ? "#FFFFFF" : "#C2410C",
+      borderColor: "#FDBA74",
+      backgroundColor: active ? "#C2410C" : "#FFF7ED",
+      color: active ? "#FFFFFF" : light.orange,
     },
     ".dark &": {
-      borderColor: active ? "#F97316" : dark.cardBorder,
-      backgroundColor: active ? "#F97316" : "transparent",
+      borderColor: active ? "rgba(255,154,31,0.48)" : dark.cardBorder,
+      backgroundColor: active ? "#FF7A00" : "transparent",
       color: active ? "#FFFFFF" : dark.textSub,
     },
   });
@@ -274,11 +274,11 @@ export const avatarStyles = (isAdmin: boolean) => (theme: Theme) => ({
   fontWeight: 900,
   color: "#FFFFFF",
   background: isAdmin
-    ? "linear-gradient(135deg, #7C3AED 0%, #5B21B6 100%)"
+    ? "linear-gradient(135deg, #475569 0%, #1F2937 100%)"
     : "linear-gradient(135deg, #F97316 0%, #EA580C 100%)",
   boxShadow: isAdmin
-    ? "0 3px 10px rgba(124,58,237,0.25)"
-    : "0 3px 10px rgba(234,88,12,0.25)",
+    ? "0 8px 18px rgba(15,23,42,0.14)"
+    : "0 8px 18px rgba(234,88,12,0.16)",
 });
 
 export const userNameStyles = (theme: Theme) => ({
@@ -316,13 +316,13 @@ export const roleBadgeStyles = (role: string) => (theme: Theme) => ({
   letterSpacing: "0.04em",
   ...(role === "admin"
     ? {
-        color: "#7C3AED",
-        backgroundColor: "rgba(124,58,237,0.08)",
-        border: "1px solid rgba(124,58,237,0.18)",
+        color: light.blue,
+        backgroundColor: "#F8FAFC",
+        border: "1px solid #CBD5E1",
         ".dark &": {
-          color: "#C4B5FD",
-          backgroundColor: "rgba(124,58,237,0.12)",
-          borderColor: "rgba(124,58,237,0.22)",
+          color: dark.blue,
+          backgroundColor: "rgba(203,213,225,0.08)",
+          borderColor: "rgba(203,213,225,0.16)",
         },
       }
     : {
@@ -358,7 +358,7 @@ export const statusBadgeStyles = (isActive: boolean) => (theme: Theme) => ({
         },
       }
     : {
-        color: "#C2410C",
+        color: light.orange,
         backgroundColor: "rgba(239,68,68,0.08)",
         border: "1px solid rgba(239,68,68,0.18)",
         ".dark &": {
@@ -387,16 +387,16 @@ export const iconActionButtonStyles = (theme: Theme) => ({
   color: light.textSub,
   border: `1px solid transparent`,
   "&:hover": {
-    color: "#C2410C",
-    borderColor: "rgba(249,115,22,0.25)",
-    backgroundColor: "rgba(249,115,22,0.07)",
+    color: light.orange,
+    borderColor: "#FDBA74",
+    backgroundColor: "#FFF7ED",
   },
   ".dark &": {
     color: dark.textSub,
     "&:hover": {
-      color: "#FDBA74",
-      borderColor: "rgba(249,115,22,0.25)",
-      backgroundColor: "rgba(249,115,22,0.1)",
+      color: dark.orange,
+      borderColor: "rgba(255,154,31,0.28)",
+      backgroundColor: "rgba(255,154,31,0.1)",
     },
   },
 });
@@ -441,17 +441,17 @@ export const emptyStateSubtitleStyles = (theme: Theme) => ({
 
 export const messageStyles = (theme: Theme) => ({
   borderRadius: 3,
-  border: `1px solid rgba(249,115,22,0.22)`,
-  backgroundColor: "rgba(249,115,22,0.07)",
-  color: "#C2410C",
+  border: "1px solid #FDBA74",
+  backgroundColor: "#FFF7ED",
+  color: light.orange,
   fontSize: 13,
   fontWeight: 800,
   px: 2,
   py: 1,
   ".dark &": {
-    borderColor: "rgba(249,115,22,0.28)",
-    backgroundColor: "rgba(249,115,22,0.1)",
-    color: "#FDBA74",
+    borderColor: "rgba(255,154,31,0.28)",
+    backgroundColor: "rgba(255,154,31,0.1)",
+    color: dark.orange,
   },
 });
 

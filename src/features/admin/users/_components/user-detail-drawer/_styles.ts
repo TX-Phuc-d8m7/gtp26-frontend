@@ -6,22 +6,22 @@ import type { Theme } from "@mui/material/styles";
 
 const light = {
   cardBg: "#FFFFFF",
-  cardBorder: "rgba(0,0,0,0.055)",
-  sectionBg: "rgba(249,115,22,0.03)",
-  sectionBorder: "rgba(0,0,0,0.05)",
-  text: "#1C1917",
-  textSub: "#57534E",
-  textMuted: "#78716C",
+  cardBorder: "#E5E7EB",
+  sectionBg: "#FFF7ED",
+  sectionBorder: "#E5E7EB",
+  text: "#1F2937",
+  textSub: "#4B5563",
+  textMuted: "#6B7280",
 } as const;
 
 const dark = {
-  cardBg: "#1E1B18",
-  cardBorder: "rgba(255,247,237,0.07)",
+  cardBg: "#1C1917",
+  cardBorder: "rgba(255,247,237,0.12)",
   sectionBg: "rgba(255,247,237,0.03)",
-  sectionBorder: "rgba(255,247,237,0.06)",
-  text: "#F5EFE8",
-  textSub: "rgba(245,239,232,0.55)",
-  textMuted: "rgba(245,239,232,0.4)",
+  sectionBorder: "rgba(255,247,237,0.1)",
+  text: "#FFF7ED",
+  textSub: "rgba(255,247,237,0.62)",
+  textMuted: "rgba(255,247,237,0.42)",
 } as const;
 
 export const drawerPaperStyles = (theme: Theme) => ({
@@ -109,11 +109,11 @@ export const avatarLargeStyles = (isAdmin: boolean) => (theme: Theme) => ({
   flexShrink: 0,
   mx: "auto",
   background: isAdmin
-    ? "linear-gradient(135deg, #7C3AED 0%, #5B21B6 100%)"
+    ? "linear-gradient(135deg, #475569 0%, #1F2937 100%)"
     : "linear-gradient(135deg, #F97316 0%, #EA580C 100%)",
   boxShadow: isAdmin
-    ? "0 6px 20px rgba(124,58,237,0.3)"
-    : "0 6px 20px rgba(234,88,12,0.28)",
+    ? "0 8px 18px rgba(15,23,42,0.14)"
+    : "0 8px 18px rgba(234,88,12,0.16)",
 });
 
 export const profileCardStyles = (theme: Theme) => ({
@@ -211,17 +211,17 @@ export const actionButtonStyles = (theme: Theme) => ({
   color: light.text,
   backgroundColor: "transparent",
   "&:hover": {
-    backgroundColor: "rgba(249,115,22,0.07)",
-    borderColor: "rgba(249,115,22,0.3)",
-    color: "#C2410C",
+    backgroundColor: "#FFF7ED",
+    borderColor: "#FDBA74",
+    color: "#EA580C",
   },
   ".dark &": {
     borderColor: dark.cardBorder,
     color: dark.text,
     "&:hover": {
-      backgroundColor: "rgba(249,115,22,0.1)",
-      borderColor: "rgba(249,115,22,0.3)",
-      color: "#FDBA74",
+      backgroundColor: "rgba(255,154,31,0.1)",
+      borderColor: "rgba(255,154,31,0.28)",
+      color: "#FF9A1F",
     },
   },
 });
@@ -249,12 +249,77 @@ export const dividerStyles = (theme: Theme) => ({
   ".dark &": { borderColor: dark.sectionBorder },
 });
 
+export const confirmDialogPaperStyles = (theme: Theme) => ({
+  borderRadius: 4,
+  backgroundColor: light.cardBg,
+  border: `1px solid ${light.cardBorder}`,
+  ".dark &": {
+    backgroundColor: dark.cardBg,
+    borderColor: dark.cardBorder,
+  },
+});
+
+export const confirmDialogTitleStyles = (theme: Theme) => ({
+  display: "flex",
+  alignItems: "center",
+  gap: 1,
+  fontSize: 16,
+  fontWeight: 950,
+  color: light.text,
+  pb: 1,
+  ".dark &": { color: dark.text },
+});
+
+export const confirmDialogBodyStyles = (theme: Theme) => ({
+  fontSize: 13,
+  color: light.textSub,
+  lineHeight: 1.6,
+  ".dark &": { color: dark.textSub },
+});
+
+export const confirmEmailStyles = {
+  fontWeight: 800,
+  color: "#EA580C",
+  ".dark &": { color: "#FF9A1F" },
+} as const;
+
+export const confirmDialogActionsStyles = (theme: Theme) => ({
+  px: 3,
+  pb: 2,
+  gap: 1,
+});
+
+export const confirmCancelButtonStyles = (theme: Theme) => ({
+  fontSize: 13,
+  fontWeight: 800,
+  borderRadius: 3,
+  px: 2,
+  border: `1px solid ${light.cardBorder}`,
+  color: light.textSub,
+  ".dark &": { borderColor: dark.cardBorder, color: dark.textSub },
+});
+
+export const confirmActionButtonStyles = (theme: Theme) => ({
+  fontSize: 13,
+  fontWeight: 800,
+  borderRadius: 3,
+  px: 2,
+  gap: 0.75,
+});
+
 export const styles = {
   actionButtonStyles,
   actionStackStyles,
   avatarLargeStyles,
   badgeRowStyles,
   closeButtonStyles,
+  confirmActionButtonStyles,
+  confirmCancelButtonStyles,
+  confirmDialogActionsStyles,
+  confirmDialogBodyStyles,
+  confirmDialogPaperStyles,
+  confirmDialogTitleStyles,
+  confirmEmailStyles,
   dangerButtonStyles,
   dividerStyles,
   drawerContentStyles,

@@ -6,6 +6,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 import { apiGetMe } from "@/features/auth/_api";
 
@@ -52,7 +53,6 @@ export function useAdminUsers() {
   });
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [actionMessage, setActionMessage] = useState<string | null>(null);
   const [actionUserId, setActionUserId] = useState<string | null>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -128,7 +128,6 @@ export function useAdminUsers() {
   // ─── Detail drawer ────────────────────────────────────────────────────────
 
   const openDetailDrawer = (user: AdminUserResult) => {
-    setActionMessage(null);
     setState((prev) => ({ ...prev, detailUser: user, isDetailOpen: true }));
   };
 
@@ -139,19 +138,16 @@ export function useAdminUsers() {
 
   const handleLockUser = async (user: AdminUserResult) => {
     setActionUserId(user.id);
-    setActionMessage(null);
     try {
       const result = await lockAdminUser(user.id);
-      setActionMessage(`Đã khóa tài khoản ${user.email}.`);
+      toast.success(`Đã khóa tài khoản ${user.email}.`);
       setState((prev) => ({
         ...prev,
         detailUser: prev.detailUser?.id === user.id ? result : prev.detailUser,
         users: prev.users.map((u) => (u.id === user.id ? result : u)),
       }));
     } catch (err) {
-      setActionMessage(
-        err instanceof Error ? err.message : "Không thể khóa tài khoản.",
-      );
+      toast.error(err instanceof Error ? err.message : "Không thể khóa tài khoản.");
     } finally {
       setActionUserId(null);
     }
@@ -159,19 +155,16 @@ export function useAdminUsers() {
 
   const handleUnlockUser = async (user: AdminUserResult) => {
     setActionUserId(user.id);
-    setActionMessage(null);
     try {
       const result = await unlockAdminUser(user.id);
-      setActionMessage(`Đã mở khóa tài khoản ${user.email}.`);
+      toast.success(`Đã mở khóa tài khoản ${user.email}.`);
       setState((prev) => ({
         ...prev,
         detailUser: prev.detailUser?.id === user.id ? result : prev.detailUser,
         users: prev.users.map((u) => (u.id === user.id ? result : u)),
       }));
     } catch (err) {
-      setActionMessage(
-        err instanceof Error ? err.message : "Không thể mở khóa tài khoản.",
-      );
+      toast.error(err instanceof Error ? err.message : "Không thể mở khóa tài khoản.");
     } finally {
       setActionUserId(null);
     }
@@ -182,10 +175,9 @@ export function useAdminUsers() {
     newRole: "user" | "admin",
   ) => {
     setActionUserId(user.id);
-    setActionMessage(null);
     try {
       const result = await updateAdminUser(user.id, { role: newRole });
-      setActionMessage(
+      toast.success(
         newRole === "admin"
           ? `Đã thăng quyền ${user.email} lên Admin.`
           : `Đã hạ quyền ${user.email} về User.`,
@@ -196,16 +188,13 @@ export function useAdminUsers() {
         users: prev.users.map((u) => (u.id === user.id ? result : u)),
       }));
     } catch (err) {
-      setActionMessage(
-        err instanceof Error ? err.message : "Không thể cập nhật quyền.",
-      );
+      toast.error(err instanceof Error ? err.message : "Không thể cập nhật quyền.");
     } finally {
       setActionUserId(null);
     }
   };
 
   return {
-    actionMessage,
     actionUserId,
     closeDetailDrawer,
     error,

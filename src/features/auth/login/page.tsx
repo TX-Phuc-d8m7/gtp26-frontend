@@ -108,7 +108,7 @@ export default function Login() {
                 Ghi nhớ đăng nhập
               </Label>
             </Box>
-            <Box component={Link} href="#" sx={styles.forgotLinkStyles}>
+            <Box component={Link} href="/forgot-password" sx={styles.forgotLinkStyles}>
               Quên mật khẩu?
             </Box>
           </Box>

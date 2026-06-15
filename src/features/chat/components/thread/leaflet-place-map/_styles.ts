@@ -13,10 +13,9 @@ export const leafletMapShellStyles: SxProps<Theme> = {
   minHeight: { xs: 220, sm: 290, lg: 320 },
   overflow: "hidden",
   borderRadius: "24px",
-  border: `1px solid ${alpha(colors.base.brand[600], 0.18)}`,
-  background:
-    "linear-gradient(135deg, rgba(255, 247, 237, 0.96), rgba(255, 255, 255, 0.92))",
-  boxShadow: `inset 0 1px 0 ${alpha("#fff", 0.86)}, 0 18px 46px ${alpha(colors.base.brand[800], 0.1)}`,
+  border: "1px solid #E5E7EB",
+  background: "#FFFFFF",
+  boxShadow: "0 8px 20px rgba(15, 23, 42, 0.06)",
   ".dark &": {
     borderColor: "rgba(255, 247, 237, 0.08)",
     background:
@@ -47,8 +46,7 @@ export const leafletMapShellStyles: SxProps<Theme> = {
   "& .leaflet-control-zoom a": {
     border: "0 !important",
     color: "var(--foreground)",
-    background: "rgba(255,255,255,0.9)",
-    backdropFilter: "blur(12px)",
+    background: "#FFFFFF",
   },
   ".dark & .leaflet-control-zoom a": {
     color: "#fff7ed",
@@ -57,9 +55,8 @@ export const leafletMapShellStyles: SxProps<Theme> = {
   "& .leaflet-control-attribution": {
     borderTopLeftRadius: "10px",
     color: "var(--muted-foreground)",
-    background: "rgba(255,255,255,0.72)",
+    background: "#FFFFFF",
     fontSize: "0.62rem",
-    backdropFilter: "blur(10px)",
   },
   ".dark & .leaflet-control-attribution": {
     color: "rgba(255,247,237,0.58)",
@@ -87,7 +84,7 @@ export const leafletMapShellStyles: SxProps<Theme> = {
     border: "3px solid #fff",
     borderRadius: "999px 999px 999px 8px",
     color: "#1c1917",
-    background: "rgba(255,255,255,0.95)",
+    background: "#FFFFFF",
     boxShadow: "0 12px 28px rgba(28, 25, 23, 0.18)",
     fontSize: "0.78rem",
     fontWeight: fontWeights.extrabold,
@@ -117,11 +114,10 @@ export const leafletMapShellStyles: SxProps<Theme> = {
   },
   "& .leaflet-popup-content-wrapper": {
     borderRadius: "16px",
-    border: "1px solid rgba(234, 88, 12, 0.16)",
+    border: "1px solid #E5E7EB",
     color: "var(--foreground)",
-    background: "rgba(255,253,249,0.94)",
-    boxShadow: `0 18px 44px ${alpha(colors.base.brand[900], 0.16)}`,
-    backdropFilter: "blur(16px)",
+    background: "#FFFFFF",
+    boxShadow: "0 14px 32px rgba(15, 23, 42, 0.1)",
   },
   ".dark & .leaflet-popup-content-wrapper": {
     borderColor: "rgba(255,247,237,0.08)",
@@ -129,7 +125,7 @@ export const leafletMapShellStyles: SxProps<Theme> = {
     background: "rgba(28,25,23,0.94)",
   },
   "& .leaflet-popup-tip": {
-    background: "rgba(255,253,249,0.94)",
+    background: "#FFFFFF",
   },
   ".dark & .leaflet-popup-tip": {
     background: "rgba(28,25,23,0.94)",
@@ -145,8 +141,7 @@ export const emptyMapStateStyles: SxProps<Theme> = {
   px: 2,
   textAlign: "center",
   color: "var(--muted-foreground)",
-  background:
-    "linear-gradient(135deg, rgba(255,247,237,0.82), rgba(255,255,255,0.76))",
+  background: "#FFFFFF",
   ".dark &": {
     borderColor: "rgba(255,247,237,0.12)",
     background:

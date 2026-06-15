@@ -93,7 +93,7 @@ export interface AdminFoodRecommendationFeedbackListResponse {
 }
 
 export interface AdminShellProps {
-  activePath: "/admin" | "/admin/foods" | "/admin/users";
+  activePath: "/admin" | "/admin/foods" | "/admin/users" | "/admin/query-logs";
   actions?: ReactNode;
   children: ReactNode;
   subtitle: string;

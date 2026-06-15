@@ -9,6 +9,7 @@ import { toast } from "sonner";
 
 import { useRequireAuth } from "@/shared/hooks/use-auth-redirect";
 import {
+  addFavorite,
   fetchFavorites,
   removeFavorite,
   updateFavorite,
@@ -41,6 +42,7 @@ export function useFavorites() {
   const [actionId, setActionId] = useState<string | null>(null);
   const [editRating, setEditRating] = useState<number | null>(null);
   const [editNotes, setEditNotes] = useState("");
+  const [detailItem, setDetailItem] = useState<FavoriteFoodItem | null>(null);
   const debounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // ---------------------------------------------------------------------------
@@ -132,12 +134,37 @@ export function useFavorites() {
   // Remove
   // ---------------------------------------------------------------------------
 
+  const handleUndoRemove = useCallback(
+    async (item: FavoriteFoodItem) => {
+      setActionId(item.food_id);
+      try {
+        await addFavorite({
+          food_id: item.food_id,
+          rating: item.rating,
+          notes: item.notes,
+        });
+        toast.success(`Đã khôi phục "${item.food.name}" vào yêu thích.`);
+        void loadFavorites();
+      } catch {
+        toast.error("Không thể hoàn tác. Vui lòng thêm lại món thủ công.");
+      } finally {
+        setActionId(null);
+      }
+    },
+    [loadFavorites],
+  );
+
   const handleRemove = useCallback(
     async (item: FavoriteFoodItem) => {
       setActionId(item.food_id);
       try {
         await removeFavorite(item.food_id);
-        toast.success(`Đã xoá "${item.food.name}" khỏi yêu thích.`);
+        toast.success(`Đã xoá "${item.food.name}" khỏi yêu thích.`, {
+          action: {
+            label: "Hoàn tác",
+            onClick: () => void handleUndoRemove(item),
+          },
+        });
         void loadFavorites();
       } catch {
         toast.error("Xoá thất bại. Vui lòng thử lại.");
@@ -145,8 +172,20 @@ export function useFavorites() {
         setActionId(null);
       }
     },
-    [loadFavorites],
+    [handleUndoRemove, loadFavorites],
   );
+
+  // ---------------------------------------------------------------------------
+  // Detail drawer
+  // ---------------------------------------------------------------------------
+
+  const openDetail = useCallback((item: FavoriteFoodItem) => {
+    setDetailItem(item);
+  }, []);
+
+  const closeDetail = useCallback(() => {
+    setDetailItem(null);
+  }, []);
 
   // ---------------------------------------------------------------------------
   // Edit (rating + notes)
@@ -170,7 +209,7 @@ export function useFavorites() {
         rating: editRating ?? undefined,
         notes: editNotes,
       });
-      toast.success("Đã lưu đánh giá.");
+      toast.success("Đã lưu ghi chú.");
       closeEdit();
       void loadFavorites();
     } catch {
@@ -182,13 +221,16 @@ export function useFavorites() {
 
   return {
     actionId,
+    closeDetail,
     closeEdit,
+    detailItem,
     editNotes,
     editRating,
     handleRemove,
     handleSaveEdit,
     isLoading,
     loadFavorites,
+    openDetail,
     openEdit,
     setEditNotes,
     setEditRating,

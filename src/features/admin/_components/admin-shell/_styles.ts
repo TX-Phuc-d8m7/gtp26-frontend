@@ -7,37 +7,34 @@ import type { Theme } from "@mui/material/styles";
 // ─── Design tokens ──────────────────────────────────────────────────────────
 
 const light = {
-  // Sidebar gets a very slightly warm tint so the white active card pops
-  sidebarBg: "#F9F7F5",
-  sidebarBorder: "rgba(0,0,0,0.055)",
-  sidebarShadow: "0 2px 12px rgba(0,0,0,0.07)",
+  sidebarBg: "#FFFFFF",
+  sidebarBorder: "#E5E7EB",
+  sidebarShadow: "0 12px 28px rgba(15, 23, 42, 0.06)",
 
-  // Active nav item is pure white on the warm sidebar bg
-  navActiveBg: "#FFFFFF",
-  navActiveBorder: "rgba(0,0,0,0.07)",
-  navActiveShadow: "0 1px 8px rgba(0,0,0,0.09)",
+  navActiveBg: "#FFF7ED",
+  navActiveBorder: "#FED7AA",
+  navActiveShadow: "0 8px 18px rgba(234, 88, 12, 0.1)",
 
-  text: "#1C1917",
-  textSub: "#78716C",
-  textMuted: "#A8A29E",
-  navText: "#78716C",
-  accent: "#F97316",
+  text: "#1F2937",
+  textSub: "#4B5563",
+  textMuted: "#6B7280",
+  navText: "#4B5563",
+  accent: "#EA580C",
 } as const;
 
 const dark = {
-  sidebarBg: "#1E1B18",
-  sidebarBorder: "rgba(255,247,237,0.07)",
-  sidebarShadow: "0 4px 24px rgba(0,0,0,0.4)",
+  sidebarBg: "#151110",
+  sidebarBorder: "rgba(255, 247, 237, 0.12)",
+  sidebarShadow: "0 18px 42px rgba(0, 0, 0, 0.48)",
 
-  // Active nav card is a step brighter than the sidebar
-  navActiveBg: "#2A2724",
-  navActiveBorder: "rgba(255,247,237,0.1)",
-  navActiveShadow: "0 1px 6px rgba(0,0,0,0.35)",
+  navActiveBg: "#1C1917",
+  navActiveBorder: "rgba(255, 154, 31, 0.28)",
+  navActiveShadow: "0 12px 30px rgba(0, 0, 0, 0.38)",
 
-  text: "#F5EFE8",
-  textSub: "rgba(245,239,232,0.55)",
-  textMuted: "rgba(245,239,232,0.35)",
-  navText: "rgba(245,239,232,0.55)",
+  text: "#FFF7ED",
+  textSub: "rgba(255, 247, 237, 0.62)",
+  textMuted: "rgba(255, 247, 237, 0.42)",
+  navText: "rgba(255, 247, 237, 0.62)",
 } as const;
 
 // ─── Shell layout ─────────────────────────────────────────────────────────────
@@ -107,8 +104,8 @@ export const brandMarkStyles = (theme: Theme) => ({
   placeItems: "center",
   borderRadius: 3,
   color: "#FFFFFF",
-  background: "linear-gradient(135deg, #FB923C 0%, #EA580C 100%)",
-  boxShadow: "0 6px 16px rgba(234, 88, 12, 0.26)",
+  background: "linear-gradient(135deg, #F97316 0%, #EA580C 100%)",
+  boxShadow: "0 8px 20px rgba(234, 88, 12, 0.2)",
 });
 
 export const brandTitleStyles = (theme: Theme) => ({
@@ -161,7 +158,7 @@ export const navItemStyles = (isActive: boolean) => (theme: Theme) => ({
   fontWeight: isActive ? 900 : 750,
   transition: "background-color 150ms ease, box-shadow 150ms ease, color 150ms ease",
   "&:hover": {
-    backgroundColor: isActive ? light.navActiveBg : "rgba(0,0,0,0.04)",
+    backgroundColor: isActive ? light.navActiveBg : "#F9FAFB",
     color: isActive ? light.text : "#44403C",
   },
   ".dark &": {
@@ -170,8 +167,8 @@ export const navItemStyles = (isActive: boolean) => (theme: Theme) => ({
     borderColor: isActive ? dark.navActiveBorder : "transparent",
     boxShadow: isActive ? dark.navActiveShadow : "none",
     "&:hover": {
-      backgroundColor: isActive ? dark.navActiveBg : "rgba(255,247,237,0.04)",
-      color: isActive ? dark.text : "rgba(245,239,232,0.8)",
+      backgroundColor: isActive ? dark.navActiveBg : "rgba(255, 247, 237, 0.05)",
+      color: isActive ? dark.text : "rgba(255, 247, 237, 0.82)",
     },
   },
 });
@@ -209,11 +206,11 @@ export const ctaButtonStyles = (theme: Theme) => ({
   fontSize: 14,
   fontWeight: 900,
   color: "#FFFFFF",
-  background: "linear-gradient(135deg, #FB923C 0%, #EA580C 100%)",
-  boxShadow: "0 4px 14px rgba(234, 88, 12, 0.25)",
+  background: "linear-gradient(135deg, #F97316 0%, #EA580C 100%)",
+  boxShadow: "0 10px 24px rgba(234, 88, 12, 0.18)",
   transition: "box-shadow 150ms ease, transform 150ms ease",
   "&:hover": {
-    boxShadow: "0 8px 22px rgba(234, 88, 12, 0.36)",
+    boxShadow: "0 14px 30px rgba(234, 88, 12, 0.26)",
     transform: "translateY(-1px)",
   },
   "&:active": {
@@ -268,28 +265,28 @@ export const userMenuButtonStyles = (isOpen: boolean) => (theme: Theme) => ({
   px: 1.25,
   borderRadius: 3,
   border: "1px solid",
-  borderColor: isOpen ? "rgba(249, 115, 22, 0.4)" : "rgba(0,0,0,0.09)",
-  backgroundColor: isOpen ? "rgba(249, 115, 22, 0.07)" : "#FFFFFF",
-  color: isOpen ? "#C2410C" : light.text,
+  borderColor: isOpen ? "#FDBA74" : light.sidebarBorder,
+  backgroundColor: isOpen ? "#FFF7ED" : "#FFFFFF",
+  color: isOpen ? "#EA580C" : light.text,
   cursor: "pointer",
   fontSize: 13,
   fontWeight: 800,
   boxShadow: "0 1px 6px rgba(0,0,0,0.08)",
   transition: "background-color 150ms ease, border-color 150ms ease",
   "&:hover": {
-    backgroundColor: "rgba(249, 115, 22, 0.07)",
-    borderColor: "rgba(249, 115, 22, 0.35)",
-    color: "#C2410C",
+    backgroundColor: "#FFF7ED",
+    borderColor: "#FDBA74",
+    color: "#EA580C",
   },
   ".dark &": {
-    borderColor: isOpen ? "rgba(249, 115, 22, 0.4)" : dark.sidebarBorder,
-    backgroundColor: isOpen ? "rgba(249, 115, 22, 0.12)" : dark.navActiveBg,
-    color: isOpen ? "#FDBA74" : dark.text,
+    borderColor: isOpen ? "rgba(255, 154, 31, 0.36)" : dark.sidebarBorder,
+    backgroundColor: isOpen ? "rgba(255, 154, 31, 0.12)" : dark.navActiveBg,
+    color: isOpen ? "#FF9A1F" : dark.text,
     boxShadow: "0 1px 6px rgba(0,0,0,0.3)",
     "&:hover": {
       backgroundColor: "rgba(249, 115, 22, 0.12)",
-      borderColor: "rgba(249, 115, 22, 0.4)",
-      color: "#FDBA74",
+      borderColor: "rgba(255, 154, 31, 0.36)",
+      color: "#FF9A1F",
     },
   },
 });
@@ -300,7 +297,7 @@ export const adminAvatarStyles = (theme: Theme) => ({
   width: 24,
   height: 24,
   borderRadius: "50%",
-  background: "linear-gradient(135deg, #FB923C 0%, #EA580C 100%)",
+  background: "linear-gradient(135deg, #F97316 0%, #EA580C 100%)",
   color: "#FFFFFF",
   fontSize: 11,
   fontWeight: 900,
@@ -315,13 +312,13 @@ export const userDropdownStyles = (theme: Theme) => ({
   zIndex: 50,
   minWidth: 200,
   borderRadius: 3,
-  border: "1px solid rgba(0,0,0,0.07)",
+  border: `1px solid ${light.sidebarBorder}`,
   backgroundColor: "#FFFFFF",
-  boxShadow: "0 8px 24px rgba(0,0,0,0.12)",
+  boxShadow: "0 18px 36px rgba(15, 23, 42, 0.1)",
   overflow: "hidden",
   ".dark &": {
     borderColor: dark.sidebarBorder,
-    backgroundColor: dark.sidebarBg,
+    backgroundColor: dark.navActiveBg,
     boxShadow: "0 12px 36px rgba(0,0,0,0.5)",
   },
 });
@@ -378,13 +375,13 @@ export const eyebrowStyles = (theme: Theme) => ({
   borderRadius: 999,
   px: 1,
   py: 0.35,
-  color: "#C2410C",
-  backgroundColor: "rgba(249, 115, 22, 0.1)",
+  color: "#EA580C",
+  backgroundColor: "#FFF7ED",
   fontSize: 12,
   fontWeight: 900,
   ".dark &": {
-    color: "#FDBA74",
-    backgroundColor: "rgba(249, 115, 22, 0.14)",
+    color: "#FF9A1F",
+    backgroundColor: "rgba(255, 154, 31, 0.12)",
   },
 });
 
@@ -419,21 +416,21 @@ export const subtitleStyles = (theme: Theme) => ({
 
 export const darkGlassPanelStyles = (theme: Theme) => ({
   borderRadius: 4,
-  background: "linear-gradient(145deg, #2D2420 0%, #1A1210 100%)",
-  color: "#F5EFE8",
-  boxShadow: "0 8px 28px rgba(0,0,0,0.22)",
+  background: "linear-gradient(145deg, #1C1917 0%, #0C0A09 100%)",
+  color: "#FFF7ED",
+  boxShadow: "0 16px 34px rgba(15, 23, 42, 0.18)",
   p: {
     xs: 1.5,
     md: 2,
   },
   ".dark &": {
-    background: "linear-gradient(145deg, #252220 0%, #141210 100%)",
+    background: "linear-gradient(145deg, #1C1917 0%, #0C0A09 100%)",
     boxShadow: "0 8px 32px rgba(0,0,0,0.42)",
   },
 });
 
 export const darkGlassTitleStyles = (theme: Theme) => ({
-  color: "#F5EFE8",
+  color: "#FFF7ED",
   fontSize: 18,
   fontWeight: 900,
   lineHeight: 1.2,
@@ -441,7 +438,7 @@ export const darkGlassTitleStyles = (theme: Theme) => ({
 
 export const darkGlassSubtitleStyles = (theme: Theme) => ({
   mt: 0.4,
-  color: "rgba(245,239,232,0.6)",
+  color: "rgba(255,247,237,0.62)",
   fontSize: 13,
   fontWeight: 700,
 });

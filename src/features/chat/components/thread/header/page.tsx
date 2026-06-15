@@ -47,6 +47,8 @@ export default function Header({
     setIsSearchOpen,
     setIsUserMenuOpen,
     searchOverlayRef,
+    userEmail,
+    userName,
   } = useHeader();
 
   const shouldShowMenuButton = !chatHistoryOpen || !isLargeScreen;
@@ -223,10 +225,28 @@ export default function Header({
                             px: 1.5,
                             py: 1.2,
                             mb: 0.5,
+                            ".dark &": {
+                              borderBottomColor: "rgba(255,247,237,0.1)",
+                            },
                           }}
                         >
-                          <Box sx={styles.assistantAvatarStyles}>
-                            <User size={16} />
+                          {/* Avatar — chữ cái đầu của tên hoặc icon fallback */}
+                          <Box
+                            sx={[
+                              styles.assistantAvatarStyles,
+                              {
+                                width: 34,
+                                height: 34,
+                                fontSize: "0.85rem",
+                                fontWeight: 800,
+                                display: "grid",
+                              },
+                            ]}
+                          >
+                            {userName
+                              ? userName[0].toUpperCase()
+                              : <User size={16} />
+                            }
                           </Box>
                           <Box
                             sx={{
@@ -237,18 +257,30 @@ export default function Header({
                           >
                             <Typography
                               as="span"
-                              sx={{ fontSize: "0.9rem", fontWeight: 700 }}
+                              sx={{
+                                fontSize: "0.9rem",
+                                fontWeight: 700,
+                                color: "var(--foreground)",
+                                overflow: "hidden",
+                                textOverflow: "ellipsis",
+                                whiteSpace: "nowrap",
+                                ".dark &": { color: "#FFF7ED" },
+                              }}
                             >
-                              Người dùng
+                              {userName ?? "Người dùng"}
                             </Typography>
                             <Typography
                               as="span"
                               sx={{
-                                color: "var(--muted-foreground)",
                                 fontSize: "0.76rem",
+                                overflow: "hidden",
+                                textOverflow: "ellipsis",
+                                whiteSpace: "nowrap",
+                                color: "var(--muted-foreground)",
+                                ".dark &": { color: "rgba(255,247,237,0.55)" },
                               }}
                             >
-                              user@example.com
+                              {userEmail ?? "—"}
                             </Typography>
                           </Box>
                         </Box>

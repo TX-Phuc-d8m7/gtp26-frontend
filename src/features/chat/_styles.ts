@@ -9,6 +9,11 @@ import { colors } from "@/theme/colors";
 import { dimensions } from "@/theme/dimensions";
 import { effects } from "@/theme/effects";
 import { fontWeights } from "@/theme/resources";
+import chatbotBackground from "../../app/gtp26-chatbot-background.png";
+import chatbotBackgroundDark from "../../app/gtp26-chatbot-background-dark.png";
+
+const chatbotBackgroundImage = `url('${chatbotBackground.src}')`;
+const chatbotBackgroundDarkImage = `url('${chatbotBackgroundDark.src}')`;
 
 const lightFoodMapPattern = `url("data:image/svg+xml,%3Csvg width='640' height='420' viewBox='0 0 640 420' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M-30 322C86 284 122 198 246 224C372 251 404 124 540 142C608 151 645 112 680 72' stroke='%23EA580C' stroke-opacity='.18' stroke-width='2'/%3E%3Cpath d='M-18 362C90 334 160 258 272 282C390 307 454 210 562 220C626 226 660 188 692 158' stroke='%23EA580C' stroke-opacity='.1' stroke-width='2'/%3E%3Cpath d='M72 78H212M72 110H182M72 142H228' stroke='%23EA580C' stroke-opacity='.12' stroke-width='2' stroke-linecap='round'/%3E%3Ccircle cx='506' cy='112' r='42' stroke='%23EA580C' stroke-opacity='.12' stroke-width='2'/%3E%3Ccircle cx='506' cy='112' r='16' stroke='%23EA580C' stroke-opacity='.14' stroke-width='2'/%3E%3Cpath d='M438 302C462 282 492 282 516 302C540 322 572 318 594 294' stroke='%23EA580C' stroke-opacity='.14' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E")`;
 
@@ -30,14 +35,21 @@ const darkFoodChat = {
   success: "#22C55E",
 } as const;
 
-// Landing-page warm palette applied to chat light mode
+// Crisp light palette for chat. Keep glass treatment in dark mode only.
 const lightWarm = {
-  background: "#fffbf5",
+  background: "#F9FAFB",
   backgroundGradient:
-    "linear-gradient(160deg, #fffbf5 0%, #fff7ed 40%, #fef3c7 100%)",
-  surface: "#fffbf5",
-  border: "rgba(231, 229, 228, 0.65)",
-  borderGlass: "rgba(255, 255, 255, 0.65)",
+    "linear-gradient(180deg, #F9FAFB 0%, #FFFFFF 48%, #F8FAFC 100%)",
+  surface: "#FFFFFF",
+  surfaceSoft: "#FAFAFA",
+  border: "#E5E7EB",
+  borderStrong: "#D1D5DB",
+  borderGlass: "#E5E7EB",
+  text: "#1F2937",
+  muted: "#4B5563",
+  shadowSm: "0 1px 2px rgba(15, 23, 42, 0.04)",
+  shadowMd: "0 8px 20px rgba(15, 23, 42, 0.06)",
+  shadowLg: "0 14px 32px rgba(15, 23, 42, 0.08)",
 } as const;
 
 export const fallbackStyles = (theme: Theme) => ({
@@ -57,11 +69,22 @@ export const appShellStyles = (theme: Theme) => ({
   flexDirection: "column",
   overflow: "hidden",
   color: "var(--foreground)",
-  background: lightWarm.backgroundGradient,
+  background: `radial-gradient(circle at 12% 6%, ${alpha(colors.base.brand[400], 0.16)} 0, transparent 28%),
+      radial-gradient(circle at 92% 12%, ${alpha(colors.base.brand[500], 0.12)} 0, transparent 24%),
+      radial-gradient(circle at 16% 92%, ${alpha(colors.base.brand[300], 0.1)} 0, transparent 24%),
+      linear-gradient(180deg, rgba(249, 250, 251, 0.34) 0%, rgba(255, 255, 255, 0.22) 48%, rgba(248, 250, 252, 0.34) 100%),
+      ${chatbotBackgroundImage}`,
+  backgroundPosition: "left top, left top, left top, left top, left top",
+  backgroundRepeat: "no-repeat",
+  backgroundSize: "100% 100%, 100% 100%, 100% 100%, 100% 100%, auto",
   ".dark &": {
     background: `radial-gradient(circle at 12% 6%, ${alpha(colors.base.brand[500], 0.22)} 0, transparent 30%),
         radial-gradient(circle at 92% 14%, ${alpha(colors.base.brand[600], 0.18)} 0, transparent 25%),
-        linear-gradient(180deg, ${darkFoodChat.background} 0%, ${darkFoodChat.backgroundSoft} 48%, ${darkFoodChat.background} 100%)`,
+        linear-gradient(180deg, ${alpha(darkFoodChat.background, 0.9)} 0%, ${alpha(darkFoodChat.backgroundSoft, 0.82)} 48%, ${alpha(darkFoodChat.background, 0.92)} 100%),
+        ${chatbotBackgroundDarkImage}`,
+    backgroundPosition: "left top, left top, left top, left top",
+    backgroundRepeat: "no-repeat",
+    backgroundSize: "100% 100%, 100% 100%, 100% 100%, auto",
   },
 });
 
@@ -75,13 +98,13 @@ export const headerBarStyles = (theme: Theme) => ({
   px: { xs: 1.5, sm: 2 },
   py: 1.25,
   borderBottom: `1px solid ${lightWarm.border}`,
-  background: alpha(lightWarm.surface, 0.82),
-  boxShadow: "0 12px 30px rgba(15, 23, 42, 0.04)",
-  backdropFilter: "blur(18px) saturate(1.14)",
-  WebkitBackdropFilter: "blur(18px) saturate(1.14)",
+  background: lightWarm.surface,
+  boxShadow: lightWarm.shadowSm,
   ".dark &": {
     borderBottomColor: darkFoodChat.borderSoft,
     background: alpha(darkFoodChat.background, 0.9),
+    backdropFilter: "blur(18px) saturate(1.14)",
+    WebkitBackdropFilter: "blur(18px) saturate(1.14)",
   },
 });
 
@@ -183,8 +206,8 @@ export const headerIconButtonStyles = (theme: Theme) => ({
   borderRadius: "14px",
   color: colors.base.gray[900],
   "&:hover": {
-    backgroundColor: alpha(colors.base.brand[500], 0.2),
-    color: colors.base.brand[600],
+    backgroundColor: "#FFF7ED",
+    color: colors.base.brand[700],
   },
   ".dark &": {
     color: darkFoodChat.text,
@@ -199,11 +222,11 @@ export const modelButtonStyles = (theme: Theme) => ({
   borderRadius: "999px",
   px: 1.5,
   minHeight: 34,
-  color: "var(--muted-foreground)",
-  backgroundColor: alpha(colors.base.brand[100], 0.9),
+  color: "#374151",
+  backgroundColor: "#FFF7ED",
   "&:hover": {
-    color: "var(--foreground)",
-    backgroundColor: alpha(colors.base.brand[200], 0.9),
+    color: "#1F2937",
+    backgroundColor: "#FFEDD5",
   },
   ".dark &": {
     color: darkFoodChat.muted,
@@ -221,15 +244,16 @@ export const dropdownPanelStyles = (theme: Theme) => ({
   mt: 1,
   overflow: "hidden",
   borderRadius: effects.borderRadius.lg,
-  border: `1px solid ${alpha(colors.base.brand[600], 0.2)}`,
-  backgroundColor: alpha(lightWarm.surface, 0.98),
-  color: "var(--foreground)",
-  boxShadow: effects.shadows.lg,
-  backdropFilter: "blur(18px)",
+  border: `1px solid ${lightWarm.border}`,
+  backgroundColor: lightWarm.surface,
+  color: lightWarm.text,
+  boxShadow: lightWarm.shadowLg,
   ".dark &": {
     borderColor: darkFoodChat.borderSoft,
     backgroundColor: alpha(darkFoodChat.surface, 0.98),
     boxShadow: `0 24px 70px ${alpha("#000", 0.56)}, 0 0 0 1px ${alpha(colors.base.brand[500], 0.08)}`,
+    backdropFilter: "blur(18px)",
+    WebkitBackdropFilter: "blur(18px)",
   },
 });
 
@@ -249,7 +273,7 @@ export const dropdownItemStyles = (theme: Theme) => ({
   fontSize: "0.875rem",
   cursor: "pointer",
   "&:hover": {
-    backgroundColor: alpha(colors.base.brand[100], 0.88),
+    backgroundColor: "#FFF7ED",
   },
   ".dark &": {
     color: darkFoodChat.text,
@@ -267,8 +291,7 @@ export const searchOverlayStyles = {
   alignItems: "center",
   justifyContent: "center",
   p: { xs: 1, sm: 3 },
-  backgroundColor: "rgba(9, 9, 11, 0.58)",
-  backdropFilter: "blur(10px)",
+  backgroundColor: "rgba(15, 23, 42, 0.42)",
   transform: "translateZ(0)",
   willChange: "opacity",
 };
@@ -287,9 +310,9 @@ export const searchOverlayPanelStyles = (theme: Theme) => ({
   transform: "translateZ(0)",
   willChange: "transform, opacity",
   borderRadius: { xs: "22px", sm: "30px" },
-  border: `1px solid ${alpha(colors.base.brand[500], 0.28)}`,
-  backgroundColor: alpha(lightWarm.surface, 0.98),
-  boxShadow: `0 30px 90px ${alpha(colors.base.brand[800], 0.18)}`,
+  border: `1px solid ${lightWarm.borderStrong}`,
+  backgroundColor: lightWarm.surface,
+  boxShadow: "0 24px 60px rgba(15, 23, 42, 0.12)",
   ".dark &": {
     borderColor: darkFoodChat.border,
     backgroundColor: darkFoodChat.background,
@@ -315,10 +338,8 @@ export const desktopSidebarMotionStyles = (theme: Theme) => ({
   height: "100%",
   overflow: "hidden",
   borderRight: `1px solid ${lightWarm.border}`,
-  backgroundColor: alpha(lightWarm.surface, 0.78),
-  boxShadow: "12px 0 32px rgba(15, 23, 42, 0.04)",
-  backdropFilter: "blur(20px) saturate(1.14)",
-  WebkitBackdropFilter: "blur(20px) saturate(1.14)",
+  backgroundColor: lightWarm.surface,
+  boxShadow: "8px 0 18px rgba(15, 23, 42, 0.04)",
   ".dark &": {
     borderRight: 0,
     backgroundColor: alpha(darkFoodChat.background, 0.78),
@@ -482,14 +503,14 @@ export const emptySignalChipStyles = {
   display: "inline-flex",
   alignItems: "center",
   borderRadius: "999px",
-  border: "1px solid rgba(255, 255, 255, 0.76)",
+  border: `1px solid ${lightWarm.border}`,
   px: { xs: 0.72, sm: 1.25 },
   py: { xs: 0.3, sm: 0.55 },
-  color: "var(--muted-foreground)",
-  backgroundColor: alpha(lightWarm.surface, 0.86),
+  color: lightWarm.muted,
+  backgroundColor: lightWarm.surface,
   fontSize: { xs: "0.62rem", sm: "0.76rem" },
   fontWeight: fontWeights.bold,
-  borderColor: "rgba(231, 229, 228, 0.8)",
+  borderColor: lightWarm.border,
   ".dark &": {
     borderColor: darkFoodChat.borderSoft,
     color: darkFoodChat.muted,
@@ -515,26 +536,23 @@ export const promptCardStyles = (theme: Theme) => ({
   minHeight: { xs: 76, sm: 76 },
   alignItems: "center",
   gap: { xs: 0.75, sm: 1.2 },
-  border: `1px solid rgba(231, 229, 228, 0.8)`,
+  border: `1px solid ${lightWarm.border}`,
   borderRadius: { xs: "15px", sm: "18px" },
   p: { xs: 1, sm: 1.25 },
-  backgroundColor: alpha(lightWarm.surface, 0.84),
-  color: "var(--foreground)",
+  backgroundColor: lightWarm.surface,
+  color: lightWarm.text,
   textAlign: "left",
   cursor: "pointer",
   outline: "2px solid transparent",
   outlineOffset: 3,
-  boxShadow:
-    "0 12px 30px rgba(15, 23, 42, 0.055), inset 0 1px 0 rgba(255, 255, 255, 0.78)",
-  backdropFilter: "blur(12px) saturate(1.06)",
-  WebkitBackdropFilter: "blur(12px) saturate(1.06)",
+  boxShadow: lightWarm.shadowMd,
   transition:
     "transform 160ms ease, border-color 160ms ease, background 160ms ease",
   "&:hover": {
     transform: "translateY(-2px)",
     borderColor: alpha(colors.base.brand[500], 0.42),
-    backgroundColor: alpha("#FFFFFF", 0.82),
-    boxShadow: "0 16px 36px rgba(15, 23, 42, 0.08)",
+    backgroundColor: "#FFFFFF",
+    boxShadow: "0 10px 24px rgba(15, 23, 42, 0.08)",
   },
   "&:focus-visible": {
     borderColor: alpha(colors.base.brand[500], 0.56),
@@ -581,6 +599,9 @@ export const promptTextStyles = {
   fontWeight: fontWeights.semibold,
   lineHeight: { xs: 1.18, sm: 1.35 },
   textWrap: "pretty",
+  ".dark &": {
+    color: alpha(darkFoodChat.text, 0.94),
+  },
 };
 
 export const promptTagStyles = {
@@ -653,13 +674,9 @@ export const localHumanBubbleStyles = {
   px: 2,
   py: 1.5,
   color: "#FFFFFF",
-  background:
-    "radial-gradient(circle at 10% 0%, rgba(255, 255, 255, 0.22) 0%, rgba(255, 255, 255, 0) 30%), linear-gradient(135deg, #F5726B 0%, #FA914C 50%, #F8B65A 100%)",
-  border: "1px solid rgba(255, 255, 255, 0.5)",
-  boxShadow:
-    "0 18px 42px rgba(245, 114, 107, 0.24), inset 0 1px 0 rgba(255, 255, 255, 0.54), inset 0 -1px 0 rgba(255, 255, 255, 0.16)",
-  backdropFilter: "blur(18px) saturate(1.18)",
-  WebkitBackdropFilter: "blur(18px) saturate(1.18)",
+  background: "linear-gradient(135deg, #F97316 0%, #EA580C 100%)",
+  border: "1px solid #FB923C",
+  boxShadow: "0 8px 18px rgba(234, 88, 12, 0.18)",
   fontSize: "0.92rem",
   lineHeight: 1.65,
   ".dark &": {
@@ -759,19 +776,17 @@ export const assistantAvatarStyles = {
   mt: 0.5,
   borderRadius: "14px",
   color: colors.base.brand[600],
-  border: "1px solid rgba(15, 23, 42, 0.18)",
-  background:
-    "radial-gradient(circle at 35% 18%, rgba(255, 255, 255, 0.58) 0%, rgba(255, 255, 255, 0) 38%), linear-gradient(135deg, rgba(255, 255, 255, 0.42) 0%, rgba(255, 247, 237, 0.22) 100%)",
-  boxShadow:
-    "0 10px 24px rgba(15, 23, 42, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.74)",
-  backdropFilter: "blur(18px) saturate(1.2)",
-  WebkitBackdropFilter: "blur(18px) saturate(1.2)",
+  border: `1px solid ${lightWarm.border}`,
+  background: lightWarm.surface,
+  boxShadow: "0 4px 12px rgba(15, 23, 42, 0.06)",
   ".dark &": {
     color: alpha("#FFF7ED", 0.92),
     borderColor: alpha("#FFF7ED", 0.26),
     background:
       "linear-gradient(135deg, rgba(255, 247, 237, 0.1) 0%, rgba(255, 247, 237, 0.04) 100%)",
     boxShadow: `0 10px 24px ${alpha("#000000", 0.22)}, inset 0 1px 0 ${alpha("#FFF7ED", 0.1)}`,
+    backdropFilter: "blur(18px) saturate(1.2)",
+    WebkitBackdropFilter: "blur(18px) saturate(1.2)",
   },
 };
 
@@ -806,23 +821,19 @@ export const assistantLoadingBubbleStyles = (theme: Theme) => ({
   overflow: "hidden",
   isolation: "isolate",
   transform: "translateZ(0)",
-  border: "1px solid rgba(15, 23, 42, 0.18)",
+  border: `1px solid ${lightWarm.border}`,
   borderRadius: "20px 20px 20px 6px",
   px: { xs: 1.55, sm: 1.8 },
   py: { xs: 1.2, sm: 1.35 },
-  color: "var(--foreground)",
-  background:
-    "radial-gradient(circle at 0% 0%, rgba(248, 182, 90, 0.16) 0%, rgba(248, 182, 90, 0) 34%), linear-gradient(135deg, rgba(255, 255, 255, 0.42) 0%, rgba(255, 255, 255, 0.18) 55%, rgba(255, 247, 237, 0.2) 100%)",
-  boxShadow:
-    "0 18px 42px rgba(15, 23, 42, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.78)",
-  backdropFilter: "blur(22px) saturate(1.18)",
-  WebkitBackdropFilter: "blur(22px) saturate(1.18)",
+  color: lightWarm.text,
+  background: lightWarm.surface,
+  boxShadow: lightWarm.shadowMd,
   "&::after": {
     content: '""',
     position: "absolute",
     inset: 0,
     background:
-      "linear-gradient(110deg, transparent 0%, rgba(255, 255, 255, 0.28) 42%, transparent 68%)",
+      "linear-gradient(110deg, transparent 0%, rgba(249, 115, 22, 0.08) 42%, transparent 68%)",
     transform: "translateX(-100%)",
     animation: "assistantThinkingSheen 1800ms ease-in-out infinite",
     pointerEvents: "none",
@@ -910,21 +921,18 @@ export const localAssistantBubbleStyles = (theme: Theme) => ({
   minWidth: 0,
   overflowWrap: "anywhere",
   wordBreak: "break-word",
-  border: "1px solid rgba(15, 23, 42, 0.2)",
+  border: `1px solid ${lightWarm.border}`,
   borderRadius: "22px 22px 22px 6px",
   px: 2,
   py: 1.6,
-  color: "var(--foreground)",
-  background:
-    "radial-gradient(circle at 100% 0%, rgba(248, 182, 90, 0.15) 0%, rgba(248, 182, 90, 0) 34%), linear-gradient(135deg, rgba(255, 255, 255, 0.32) 0%, rgba(255, 255, 255, 0.12) 52%, rgba(249, 115, 22, 0.08) 100%)",
-  boxShadow:
-    "0 20px 50px rgba(15, 23, 42, 0.12), 0 0 0 1px rgba(15, 23, 42, 0.055), inset 0 1px 0 rgba(255, 255, 255, 0.82)",
-  backdropFilter: "blur(24px) saturate(1.18)",
-  WebkitBackdropFilter: "blur(24px) saturate(1.18)",
+  color: lightWarm.text,
+  background: lightWarm.surface,
+  boxShadow: lightWarm.shadowMd,
   fontSize: "0.92rem",
   lineHeight: 1.7,
   ".dark &": {
     borderColor: alpha("#FFF7ED", 0.1),
+    color: alpha(darkFoodChat.text, 0.9),
     background: alpha(darkFoodChat.surfaceSoft, 0.44),
     boxShadow: `0 16px 38px ${alpha("#000000", 0.26)}, inset 0 1px 0 ${alpha("#FFF7ED", 0.08)}`,
     backdropFilter: "blur(20px) saturate(1.15)",
@@ -934,19 +942,15 @@ export const localAssistantBubbleStyles = (theme: Theme) => ({
 
 export const disclaimerNoticeStyles = (theme: Theme) => ({
   display: "flex",
-  alignItem: "center",
+  alignItems: "flex-start",
   gap: "10px",
-  border: "1px solid rgba(15, 23, 42, 0.2)",
+  border: "1px solid #CBD5E1",
   borderRadius: "22px 22px 22px 6px",
   px: 2,
   py: 1.6,
-  color: "var(--foreground)",
-  background:
-    "radial-gradient(circle at 100% 0%, rgba(248, 182, 90, 0.15) 0%, rgba(248, 182, 90, 0) 34%), linear-gradient(135deg, rgba(255, 255, 255, 0.32) 0%, rgba(255, 255, 255, 0.12) 52%, rgba(249, 115, 22, 0.08) 100%)",
-  boxShadow:
-    "0 20px 50px rgba(15, 23, 42, 0.12), 0 0 0 1px rgba(15, 23, 42, 0.055), inset 0 1px 0 rgba(255, 255, 255, 0.82)",
-  backdropFilter: "blur(24px) saturate(1.18)",
-  WebkitBackdropFilter: "blur(24px) saturate(1.18)",
+  color: "#334155",
+  background: "#F8FAFC",
+  boxShadow: "0 6px 16px rgba(15, 23, 42, 0.05)",
   fontSize: "0.92rem",
   lineHeight: 1.7,
   ".dark &": {
@@ -963,7 +967,7 @@ export const disclaimerIconStyles = (theme: Theme) => ({
   height: 24,
   mt: 0.1,
   flexShrink: 0,
-  color: "rgba(15, 23, 42, 0.78)",
+  color: "#475569",
   ".dark &": {
     color: alpha("#FFF7ED", 0.82),
   },
@@ -976,6 +980,47 @@ export const disclaimerTextStyles = {
   fontWeight: 500,
 };
 
+export const warningNoticeStyles = (theme: Theme) => ({
+  display: "flex",
+  alignItems: "flex-start",
+  gap: "10px",
+  border: "1px solid #FCA5A5",
+  borderRadius: "22px 22px 22px 6px",
+  px: 2,
+  py: 1.55,
+  color: "#991B1B",
+  fontWeight: 600,
+  background: "#FEF2F2",
+  boxShadow: "0 6px 16px rgba(239, 68, 68, 0.08)",
+  backdropFilter: "none",
+  WebkitBackdropFilter: "none",
+
+  ".dark &": {
+    borderColor: alpha("#EF4444", 0.4),
+    color: alpha("#FEF2F2", 0.9),
+    fontWeight: 500,
+    background: `linear-gradient(135deg, ${alpha("#EF4444", 0.15)} 0%, ${alpha("#7F1D1D", 0.4)} 100%)`,
+    boxShadow: `0 14px 34px ${alpha("#000", 0.3)}, inset 0 1px 0 ${alpha("#FEF2F2", 0.1)}`,
+    backdropFilter: "blur(22px) saturate(1.16)",
+    WebkitBackdropFilter: "blur(22px) saturate(1.16)",
+  },
+});
+
+export const warningIconStyles = (theme: Theme) => ({
+  width: 24,
+  height: 24,
+  mt: 0.1,
+  flexShrink: 0,
+  color: alpha("#EF4444", 0.8)
+});
+
+export const warningTextStyles = {
+  m: 0,
+  fontSize: { xs: "0.88rem", sm: "0.92rem" },
+  lineHeight: 1.58,
+  fontWeight: 650,
+};
+
 export const foodResultCardStyles = (theme: Theme) => ({
   position: "relative",
   isolation: "isolate",
@@ -983,25 +1028,18 @@ export const foodResultCardStyles = (theme: Theme) => ({
   gap: 1.25,
   mt: 1.5,
   overflow: "hidden",
-  border: "1px solid rgba(15, 23, 42, 0.22)",
+  border: `1px solid ${lightWarm.borderStrong}`,
   borderRadius: effects.borderRadius.lg,
   p: 1.5,
-  background:
-    "linear-gradient(135deg, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0.18) 48%, rgba(255, 247, 237, 0.28) 100%)",
+  background: lightWarm.surface,
   backgroundClip: "padding-box",
-  boxShadow:
-    "0 22px 54px rgba(15, 23, 42, 0.16), 0 0 0 1px rgba(15, 23, 42, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.94), inset 0 -1px 0 rgba(255, 255, 255, 0.28)",
-  backdropFilter: "blur(44px) saturate(1.48) contrast(1.05)",
-  WebkitBackdropFilter: "blur(44px) saturate(1.48) contrast(1.05)",
+  boxShadow: "0 10px 24px rgba(15, 23, 42, 0.07)",
   "&::before": {
     content: '""',
     position: "absolute",
     inset: "-28px",
     zIndex: -2,
-    background:
-      "radial-gradient(ellipse at 18% 20%, rgba(255, 255, 255, 0.78) 0%, rgba(255, 255, 255, 0) 34%), radial-gradient(ellipse at 76% 42%, rgba(148, 163, 184, 0.18) 0%, rgba(148, 163, 184, 0) 30%), radial-gradient(ellipse at 86% 86%, rgba(255, 247, 237, 0.5) 0%, rgba(255, 247, 237, 0) 36%)",
-    filter: "blur(18px)",
-    opacity: 0.74,
+    display: "none",
     pointerEvents: "none",
   },
   "&::after": {
@@ -1010,8 +1048,7 @@ export const foodResultCardStyles = (theme: Theme) => ({
     inset: 0,
     zIndex: -1,
     borderRadius: "inherit",
-    background:
-      "linear-gradient(180deg, rgba(255, 255, 255, 0.44) 0%, rgba(255, 255, 255, 0.08) 45%, rgba(255, 255, 255, 0.22) 100%)",
+    display: "none",
     pointerEvents: "none",
   },
   "& > *": {
@@ -1024,10 +1061,13 @@ export const foodResultCardStyles = (theme: Theme) => ({
       "linear-gradient(135deg, rgba(12, 10, 9, 0.58) 0%, rgba(41, 37, 36, 0.36) 54%, rgba(12, 10, 9, 0.54) 100%)",
     boxShadow:
       "0 20px 48px rgba(0, 0, 0, 0.38), inset 0 1px 0 rgba(255, 255, 255, 0.14)",
+    backdropFilter: "blur(44px) saturate(1.48) contrast(1.05)",
+    WebkitBackdropFilter: "blur(44px) saturate(1.48) contrast(1.05)",
     "&::before": {
       display: "none",
     },
     "&::after": {
+      display: "block",
       background:
         "linear-gradient(180deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.03) 46%, rgba(0, 0, 0, 0.12) 100%)",
     },
@@ -1065,7 +1105,7 @@ export const foodResultHeaderStyles = {
 export const foodResultMetaStyles = {
   display: "block",
   mb: 0.35,
-  color: "var(--muted-foreground)",
+  color: lightWarm.muted,
   fontSize: "0.72rem",
   fontWeight: fontWeights.bold,
   ".dark &": {
@@ -1088,14 +1128,12 @@ export const scorePillStyles = {
   borderRadius: "999px",
   px: 1,
   py: 0.45,
-  border: `1px solid ${alpha(colors.base.herb[500], 0.26)}`,
-  backgroundColor: alpha(colors.base.herb[500], 0.12),
+  border: "1px solid #BBF7D0",
+  backgroundColor: "#F0FDF4",
   color: colors.base.herb[700],
   fontSize: "0.72rem",
   fontWeight: fontWeights.bold,
   whiteSpace: "nowrap",
-  backdropFilter: "blur(14px)",
-  WebkitBackdropFilter: "blur(14px)",
   ".dark &": {
     borderColor: alpha(colors.base.herb[300], 0.3),
     backgroundColor: alpha(colors.base.herb[500], 0.16),
@@ -1105,7 +1143,7 @@ export const scorePillStyles = {
 
 export const foodResultDescriptionStyles = {
   mt: 1,
-  color: "var(--muted-foreground)",
+  color: lightWarm.muted,
   fontSize: "0.8rem",
   lineHeight: 1.6,
   overflowWrap: "anywhere",
@@ -1119,8 +1157,7 @@ export const foodResultScoreTrackStyles = {
   height: 6,
   overflow: "hidden",
   borderRadius: "999px",
-  backgroundColor:
-    "color-mix(in srgb, var(--muted-foreground) 14%, transparent)",
+  backgroundColor: "#E5E7EB",
 };
 
 export const foodResultScoreFillStyles = (score: number) => ({
@@ -1163,23 +1200,17 @@ export const foodLocationButtonStyles = (theme: Theme) => ({
   width: "fit-content",
   minHeight: 34,
   borderRadius: "999px",
-  border: `1px solid ${alpha(colors.base.brand[500], 0.42)}`,
+  border: "1px solid #FDBA74",
   px: 1.25,
-  color: colors.base.brand[700],
-  background:
-    "linear-gradient(135deg, rgba(255, 244, 232, 0.86) 0%, rgba(255, 201, 135, 0.34) 100%)",
-  boxShadow:
-    "0 10px 24px rgba(217, 72, 15, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.86)",
+  color: "#C2410C",
+  background: "#FFF7ED",
+  boxShadow: "0 4px 10px rgba(15, 23, 42, 0.06)",
   fontSize: "0.78rem",
   fontWeight: fontWeights.bold,
-  backdropFilter: "blur(16px)",
-  WebkitBackdropFilter: "blur(16px)",
   "&:hover": {
-    borderColor: alpha(colors.base.brand[500], 0.58),
-    background:
-      "linear-gradient(135deg, rgba(255, 228, 194, 0.94) 0%, rgba(255, 178, 92, 0.42) 100%)",
-    boxShadow:
-      "0 12px 28px rgba(217, 72, 15, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.88)",
+    borderColor: "#FB923C",
+    background: "#FFEDD5",
+    boxShadow: "0 6px 14px rgba(15, 23, 42, 0.08)",
   },
   ".dark &": {
     borderColor: alpha("#FFFFFF", 0.15),
@@ -1197,33 +1228,31 @@ export const foodLocationButtonStyles = (theme: Theme) => ({
 });
 
 export const mapPanelBackdropStyles = {
-  position: "fixed",
-  inset: 0,
-  zIndex: 70,
-  display: "flex",
-  justifyContent: { xs: "center", lg: "flex-end" },
-  alignItems: { xs: "flex-end", lg: "stretch" },
   backgroundColor: {
     xs: "rgba(9, 9, 11, 0.42)",
     lg: "rgba(9, 9, 11, 0.18)",
   },
-  backdropFilter: "blur(8px)",
 };
 
-export const mapPanelStyles = (theme: Theme) => ({
+export const mapPanelDrawerRootStyles = {
+  zIndex: 1500,
+};
+
+export const mapPanelStyles = (isMobile: boolean) => (theme: Theme) => ({
   display: "flex",
-  width: { xs: "100%", lg: 460 },
+  width: isMobile ? "100%" : 500,
   maxWidth: "100%",
-  maxHeight: { xs: "88dvh", lg: "100dvh" },
+  height: isMobile ? "min(88dvh, 760px)" : "100dvh",
+  maxHeight: "100dvh",
   flexDirection: "column",
   gap: 1.5,
   overflow: "hidden",
-  borderTopLeftRadius: { xs: "26px", lg: 0 },
-  borderTopRightRadius: { xs: "26px", lg: 0 },
-  borderLeft: { xs: 0, lg: `1px solid ${alpha(colors.base.brand[600], 0.22)}` },
-  borderTop: `1px solid ${alpha(colors.base.brand[600], 0.2)}`,
-  background: `linear-gradient(180deg, ${alpha("#FFFDF9", 0.98)} 0%, ${alpha(colors.base.brand[50], 0.96)} 100%)`,
-  boxShadow: `-24px 0 70px ${alpha(colors.base.brand[900], 0.14)}`,
+  borderRadius: isMobile ? "28px 28px 0 0" : "28px 0 0 28px",
+  border: `1px solid ${lightWarm.border}`,
+  borderBottom: isMobile ? 0 : `1px solid ${lightWarm.border}`,
+  background: lightWarm.surface,
+  color: lightWarm.text,
+  boxShadow: "-18px 0 42px rgba(15, 23, 42, 0.08)",
   p: { xs: 1.5, sm: 2, lg: 2.25 },
   ".dark &": {
     borderColor: darkFoodChat.borderSoft,
@@ -1246,7 +1275,7 @@ export const mapPanelEyebrowStyles = {
   px: 1.15,
   py: 0.45,
   color: colors.base.brand[700],
-  backgroundColor: alpha(colors.base.brand[100], 0.82),
+  backgroundColor: "#FFF7ED",
   fontSize: "0.72rem",
   fontWeight: fontWeights.bold,
   ".dark &": {
@@ -1377,14 +1406,13 @@ export const mapSelectedPlaceStyles = (theme: Theme) => ({
   flexDirection: "column",
   gap: 0.2,
   borderRadius: "18px",
-  border: `1px solid ${alpha(colors.base.brand[600], 0.18)}`,
-  backgroundColor: alpha("#FFFDF9", 0.9),
+  border: `1px solid ${lightWarm.border}`,
+  backgroundColor: lightWarm.surface,
   px: 1.4,
   py: 1.1,
   color: "var(--foreground)",
   fontSize: "0.78rem",
-  boxShadow: `0 16px 36px ${alpha(colors.base.brand[800], 0.12)}`,
-  backdropFilter: "blur(14px)",
+  boxShadow: lightWarm.shadowMd,
   ".dark &": {
     borderColor: darkFoodChat.borderSoft,
     backgroundColor: alpha(darkFoodChat.surface, 0.86),
@@ -1418,11 +1446,11 @@ export const mapLocationRowStyles = (isActive: boolean) => (theme: Theme) => ({
   width: "100%",
   alignItems: "flex-start",
   gap: 1,
-  border: `1px solid ${isActive ? alpha(colors.base.brand[500], 0.46) : alpha(colors.base.brand[600], 0.14)}`,
+  border: `1px solid ${isActive ? "#FB923C" : lightWarm.border}`,
   borderRadius: "18px",
   backgroundColor: isActive
-    ? alpha(colors.base.brand[100], 0.82)
-    : alpha("#FFFDF9", 0.72),
+    ? "#FFF7ED"
+    : lightWarm.surface,
   px: 1.15,
   py: 1.1,
   color: "var(--foreground)",
@@ -1430,8 +1458,8 @@ export const mapLocationRowStyles = (isActive: boolean) => (theme: Theme) => ({
   cursor: "pointer",
   transition: "border-color 160ms ease, background 160ms ease",
   "&:hover": {
-    borderColor: alpha(colors.base.brand[500], 0.42),
-    backgroundColor: alpha(colors.base.brand[100], 0.78),
+    borderColor: "#FDBA74",
+    backgroundColor: "#FFF7ED",
   },
   ".dark &": {
     borderColor: isActive ? darkFoodChat.borderStrong : darkFoodChat.borderSoft,
@@ -1510,9 +1538,9 @@ export const scrollToBottomWrapStyles = {
 
 export const scrollToBottomButtonStyles = (theme: Theme) => ({
   borderRadius: "999px",
-  borderColor: alpha(colors.base.brand[600], 0.22),
-  backgroundColor: alpha(lightWarm.surface, 0.96),
-  boxShadow: `0 14px 34px ${alpha(colors.base.brand[700], 0.12)}`,
+  borderColor: lightWarm.borderStrong,
+  backgroundColor: lightWarm.surface,
+  boxShadow: lightWarm.shadowMd,
   ".dark &": {
     borderColor: darkFoodChat.borderSoft,
     backgroundColor: alpha(darkFoodChat.surface, 0.94),
@@ -1530,7 +1558,7 @@ export const inputShellStyles = (theme: Theme) => ({
   // pt: 2,
   pb: { xs: 2, sm: 2.8 },
   background:
-    "linear-gradient(180deg, transparent 0%, rgba(255, 251, 245, 0.78) 36%, rgba(255, 251, 245, 0.97) 100%)",
+    "linear-gradient(180deg, transparent 0%, #F9FAFB 40%, #F9FAFB 100%)",
   ".dark &": {
     background:
       "linear-gradient(180deg, transparent 0%, rgba(9, 9, 11, 0.9) 36%, rgba(5, 5, 5, 0.98) 100%)",
@@ -1550,15 +1578,12 @@ export const composerStyles = (theme: Theme) => ({
   overflow: "visible",
   borderRadius: { xs: "22px", sm: "28px" },
   border: `1px solid ${lightWarm.border}`,
-  background: alpha(lightWarm.surface, 0.88),
-  boxShadow:
-    "0 22px 58px rgba(15, 23, 42, 0.09), inset 0 1px 0 rgba(255, 255, 255, 0.84)",
-  backdropFilter: "blur(22px) saturate(1.12)",
-  WebkitBackdropFilter: "blur(22px) saturate(1.12)",
+  background: lightWarm.surface,
+  boxShadow: "0 12px 28px rgba(15, 23, 42, 0.08)",
   transition: "border-color 160ms ease, box-shadow 160ms ease",
   "&:focus-within": {
     borderColor: alpha(colors.base.brand[500], 0.58),
-    boxShadow: `0 0 0 3px ${alpha(colors.base.brand[500], 0.16)}, 0 20px 54px rgba(15, 23, 42, 0.1)`,
+    boxShadow: `0 0 0 3px ${alpha(colors.base.brand[500], 0.12)}, 0 12px 28px rgba(15, 23, 42, 0.08)`,
   },
   ".dark &": {
     borderColor: darkFoodChat.border,
@@ -1591,8 +1616,8 @@ export const attachmentChipStyles = (theme: Theme) => ({
   alignItems: "center",
   gap: 0.75,
   borderRadius: "14px",
-  border: `1px solid ${alpha(colors.base.brand[600], 0.16)}`,
-  backgroundColor: alpha(lightWarm.surface, 0.88),
+  border: `1px solid ${lightWarm.border}`,
+  backgroundColor: lightWarm.surfaceSoft,
   px: 1.2,
   py: 0.9,
   color: "var(--foreground)",
@@ -1615,12 +1640,15 @@ export const textareaStyles = {
   px: { xs: 1.2, sm: 1.5 },
   pt: 1.4,
   pb: 0,
-  color: "var(--foreground)",
+  color: lightWarm.text,
   fontFamily: "inherit",
   fontSize: { xs: "0.94rem", sm: "0.98rem" },
   lineHeight: 1.55,
   "&::placeholder": {
-    color: "var(--muted-foreground)",
+    color: "#6B7280",
+  },
+  ".dark &": {
+    color: darkFoodChat.text,
   },
   ".dark &::placeholder": {
     color: darkFoodChat.muted,
@@ -1632,7 +1660,7 @@ export const composerFooterStyles = (theme: Theme) => ({
   alignItems: "center",
   justifyContent: "space-between",
   gap: 1.5,
-  borderTop: "1px solid rgba(0, 0, 0, 0.06)",
+  borderTop: `1px solid ${lightWarm.border}`,
   px: 0.75,
   pt: 1.2,
   ".dark &": {
@@ -1655,13 +1683,10 @@ export const toolsPanelStyles = (theme: Theme) => ({
   width: { xs: 280, sm: 400 },
   borderRadius: effects.borderRadius.xl,
   border: `1px solid ${lightWarm.border}`,
-  backgroundColor: alpha(lightWarm.surface, 0.94),
+  backgroundColor: lightWarm.surface,
   p: 1,
-  color: "var(--foreground)",
-  boxShadow:
-    "0 24px 64px rgba(15, 23, 42, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.82)",
-  backdropFilter: "blur(20px) saturate(1.12)",
-  WebkitBackdropFilter: "blur(20px) saturate(1.12)",
+  color: lightWarm.text,
+  boxShadow: "0 14px 32px rgba(15, 23, 42, 0.12)",
   ".dark &": {
     borderColor: darkFoodChat.borderSoft,
     backgroundColor: darkFoodChat.surface,
@@ -1684,7 +1709,7 @@ export const quickPromptButtonStyles = (theme: Theme) => ({
   fontSize: "0.86rem",
   cursor: "pointer",
   "&:hover": {
-    backgroundColor: alpha(colors.base.brand[100], 0.88),
+    backgroundColor: "#FFF7ED",
   },
   ".dark &": {
     color: darkFoodChat.text,
@@ -1726,11 +1751,8 @@ export const historyShellStyles = (theme: Theme) => ({
   flexDirection: "column",
   gap: 2,
   borderRight: `1px solid ${lightWarm.border}`,
-  background: alpha(lightWarm.surface, 0.82),
-  boxShadow:
-    "12px 0 32px rgba(15, 23, 42, 0.04), inset -1px 0 0 rgba(255, 255, 255, 0.72)",
-  backdropFilter: "blur(20px) saturate(1.12)",
-  WebkitBackdropFilter: "blur(20px) saturate(1.12)",
+  background: lightWarm.surface,
+  boxShadow: "8px 0 18px rgba(15, 23, 42, 0.04)",
   p: 2,
   ".dark &": {
     borderRight: 0,
@@ -1750,6 +1772,34 @@ export const historyTitleStyles = {
   display: "flex",
   flexDirection: "column",
   gap: 0.25,
+};
+
+export const historyNewChatButtonStyles = {
+  display: "flex",
+  width: "100%",
+  alignItems: "center",
+  justifyContent: "center",
+  gap: 1,
+  border: 0,
+  borderRadius: "12px",
+  px: 2,
+  py: 1.1,
+  fontSize: "0.875rem",
+  fontWeight: 700,
+  cursor: "pointer",
+  color: "#fff",
+  background: "linear-gradient(135deg, #FF8A1F 0%, #EA580C 100%)",
+  boxShadow: "0 4px 14px rgba(234, 88, 12, 0.32)",
+  transition: "opacity 120ms ease, transform 120ms ease, box-shadow 120ms ease",
+  "&:hover": {
+    opacity: 0.92,
+    transform: "translateY(-1px)",
+    boxShadow: "0 6px 18px rgba(234, 88, 12, 0.42)",
+  },
+  "&:active": {
+    transform: "translateY(0)",
+    opacity: 1,
+  },
 };
 
 export const historyListStyles = {
@@ -1793,14 +1843,14 @@ export const historyItemButtonStyles =
     py: 1.1,
     color: isActive ? colors.base.brand[600] : "var(--foreground)",
     backgroundColor: isActive
-      ? alpha(colors.base.brand[500], 0.18)
+      ? "#FFF7ED"
       : "transparent",
     cursor: "pointer",
     textAlign: "left",
     outline: "2px solid transparent",
     outlineOffset: 2,
     "&:hover": {
-      backgroundColor: alpha(colors.base.brand[100], 0.9),
+      backgroundColor: "#FFF7ED",
     },
     "&:hover [data-history-actions], &:focus-within [data-history-actions]": {
       opacity: 1,
@@ -1955,9 +2005,7 @@ export const historyActionButtonStyles =
       borderRadius: "11px",
       backgroundColor: palette.background,
       color: palette.text,
-      boxShadow: `inset 0 1px 0 rgba(255, 255, 255, 0.55)`,
-      backdropFilter: "blur(12px) saturate(1.08)",
-      WebkitBackdropFilter: "blur(12px) saturate(1.08)",
+      boxShadow: "0 1px 2px rgba(15, 23, 42, 0.04)",
       cursor: "pointer",
       transition:
         "transform 160ms ease, border-color 160ms ease, background-color 160ms ease, color 160ms ease, box-shadow 160ms ease",
@@ -2013,7 +2061,7 @@ export const historyRenameInputStyles = (theme: Theme) => ({
   width: "100%",
   border: `1px solid ${alpha(colors.base.brand[500], 0.36)}`,
   borderRadius: "12px",
-  backgroundColor: alpha(lightWarm.surface, 0.88),
+  backgroundColor: lightWarm.surface,
   px: 1,
   py: 0.65,
   color: "var(--foreground)",
@@ -2042,18 +2090,15 @@ export const langchainAssistantRowStyles = {
 
 export const langchainAssistantContentStyles = (theme: Theme) => ({
   width: "100%",
-  border: "1px solid rgba(15, 23, 42, 0.2)",
+  border: `1px solid ${lightWarm.border}`,
   borderRadius: "22px 22px 22px 6px",
   px: 2,
   py: 1.4,
-  background:
-    "radial-gradient(circle at 100% 0%, rgba(248, 182, 90, 0.15) 0%, rgba(248, 182, 90, 0) 34%), linear-gradient(135deg, rgba(255, 255, 255, 0.32) 0%, rgba(255, 255, 255, 0.12) 52%, rgba(249, 115, 22, 0.08) 100%)",
-  boxShadow:
-    "0 20px 50px rgba(15, 23, 42, 0.12), 0 0 0 1px rgba(15, 23, 42, 0.055), inset 0 1px 0 rgba(255, 255, 255, 0.82)",
-  backdropFilter: "blur(24px) saturate(1.18)",
-  WebkitBackdropFilter: "blur(24px) saturate(1.18)",
+  background: lightWarm.surface,
+  boxShadow: lightWarm.shadowMd,
   ".dark &": {
     borderColor: alpha("#FFF7ED", 0.1),
+    color: alpha(darkFoodChat.text, 0.9),
     background: alpha(darkFoodChat.surfaceSoft, 0.42),
     boxShadow: `0 14px 34px ${alpha("#000000", 0.24)}, inset 0 1px 0 ${alpha("#FFF7ED", 0.08)}`,
     backdropFilter: "blur(20px) saturate(1.15)",
@@ -2077,13 +2122,9 @@ export const langchainHumanBubbleStyles = {
   px: 2,
   py: 1.45,
   color: "#FFFFFF",
-  background:
-    "radial-gradient(circle at 10% 0%, rgba(255, 255, 255, 0.22) 0%, rgba(255, 255, 255, 0) 30%), linear-gradient(135deg, #F5726B 0%, #FA914C 50%, #F8B65A 100%)",
-  border: "1px solid rgba(255, 255, 255, 0.5)",
-  boxShadow:
-    "0 18px 42px rgba(245, 114, 107, 0.24), inset 0 1px 0 rgba(255, 255, 255, 0.54), inset 0 -1px 0 rgba(255, 255, 255, 0.16)",
-  backdropFilter: "blur(18px) saturate(1.18)",
-  WebkitBackdropFilter: "blur(18px) saturate(1.18)",
+  background: "linear-gradient(135deg, #F97316 0%, #EA580C 100%)",
+  border: "1px solid #FB923C",
+  boxShadow: "0 8px 18px rgba(234, 88, 12, 0.18)",
   whiteSpace: "pre-wrap",
   fontSize: "0.92rem",
   lineHeight: 1.65,
@@ -2170,6 +2211,9 @@ export const styles = {
   disclaimerNoticeStyles,
   disclaimerIconStyles,
   disclaimerTextStyles,
+  warningNoticeStyles,
+  warningIconStyles,
+  warningTextStyles,
   foodResultCardStyles,
   foodResultIconStyles,
   foodResultContentStyles,
@@ -2182,6 +2226,7 @@ export const styles = {
   foodResultScoreFillStyles,
   foodLocationButtonStyles,
   mapPanelBackdropStyles,
+  mapPanelDrawerRootStyles,
   mapPanelStyles,
   mapPanelHeaderStyles,
   mapPanelEyebrowStyles,
@@ -2217,6 +2262,7 @@ export const styles = {
   historyShellStyles,
   historyHeaderStyles,
   historyTitleStyles,
+  historyNewChatButtonStyles,
   historyListStyles,
   historyItemButtonStyles,
   historyItemContentStyles,

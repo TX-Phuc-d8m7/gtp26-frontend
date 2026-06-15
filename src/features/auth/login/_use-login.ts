@@ -29,7 +29,7 @@ export function useLogin() {
     setServerError(null);
     try {
       const result = await apiLogin(data.email, data.password);
-      saveTokens(result.access_token, result.refresh_token, result.role);
+      saveTokens(result.access_token, result.refresh_token, result.role, data.rememberMe ?? false);
 
       toast.success("Đăng nhập thành công!");
       router.push(result.role === "admin" ? "/admin" : "/chat");

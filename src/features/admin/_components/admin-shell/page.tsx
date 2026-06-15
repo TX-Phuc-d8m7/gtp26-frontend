@@ -9,6 +9,7 @@ import { useMemo } from "react";
 import {
   CalendarDays,
   ChevronDown,
+  ClipboardList,
   Database,
   Home,
   LogOut,
@@ -39,6 +40,11 @@ const navItems = [
     href: "/admin/users",
     label: "Người dùng",
     Icon: Users,
+  },
+  {
+    href: "/admin/query-logs",
+    label: "Lịch sử truy vấn",
+    Icon: ClipboardList,
   },
 ] as const;
 

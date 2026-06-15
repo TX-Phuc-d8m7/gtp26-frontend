@@ -18,6 +18,6 @@ export type ThreadListProps = {
   startRename: (thread: ChatThread) => void;
   cancelRename: () => void;
   handleRename: (event: FormEvent, threadId: string) => Promise<void>;
-  handleDelete: (threadId: string) => Promise<void>;
+  handleDelete: (threadId: string) => void;
   onThreadSelect: (threadId: string) => void;
 };

@@ -236,8 +236,8 @@ export function LandingPage() {
                 className="text-lg leading-relaxed max-w-lg"
                 style={{ color: "#78716c" }}
               >
-                Hệ thống gợi ý món ăn thông minh — cá nhân hóa theo khẩu vị,
-                thời tiết và nguyên liệu bạn có sẵn. Đi kèm công thức nấu chi
+                Hệ thống gợi ý món ăn thông minh — cá nhân hóa theo bệnh lý,
+                dị ứng và sở thích ăn uống của bạn. Đi kèm công thức nấu chi
                 tiết từng bước.
               </motion.p>
 
@@ -582,7 +582,7 @@ export function LandingPage() {
                   {
                     icon: <Leaf className="w-5 h-5" />,
                     title: "Chế độ ăn đặc biệt",
-                    desc: "Hỗ trợ chay, keto, ít muối, tiểu đường và nhiều hơn",
+                    desc: "Hỗ trợ món chay, ít muối và kiểm soát khẩu phần",
                     color: "#f0fdf4",
                     ic: "#16a34a",
                   },

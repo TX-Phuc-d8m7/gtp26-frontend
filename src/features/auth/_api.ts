@@ -6,13 +6,92 @@
 /**
  * Auth & User API client
  * ─────────────────────
- * - Token CRUD (sessionStorage)
+ * - Token CRUD (localStorage khi rememberMe=true, sessionStorage khi false)
  * - apiFetch với auto-refresh khi nhận 401
  * - Tất cả các hàm gọi API cho auth, account, health-profile
  */
 
 const BASE_URL =
   process.env.NEXT_PUBLIC_FOOD_AI_API_URL ?? "/api/backend";
+
+export const AUTH_SESSION_EXPIRED_EVENT =
+  "food-recommendation:auth-session-expired";
+
+export type AuthSessionExpiredReason = "unauthorized" | "disabled";
+
+export class AuthSessionError extends Error {
+  reason: AuthSessionExpiredReason;
+
+  constructor(message: string, reason: AuthSessionExpiredReason) {
+    super(message);
+    this.name = "AuthSessionError";
+    this.reason = reason;
+  }
+}
+
+export function isAuthSessionError(error: unknown): error is AuthSessionError {
+  return error instanceof AuthSessionError;
+}
+
+function detectAuthSessionReason(
+  message?: string | null,
+): AuthSessionExpiredReason | null {
+  const normalized = message?.toLowerCase() ?? "";
+
+  if (
+    normalized.includes("vô hiệu") ||
+    normalized.includes("vo hieu") ||
+    normalized.includes("disabled") ||
+    normalized.includes("inactive") ||
+    normalized.includes("deactivated")
+  ) {
+    return "disabled";
+  }
+
+  if (
+    normalized.includes("unauthorized") ||
+    normalized.includes("not authenticated") ||
+    normalized.includes("token")
+  ) {
+    return "unauthorized";
+  }
+
+  return null;
+}
+
+function emitAuthSessionExpired(
+  reason: AuthSessionExpiredReason,
+  message: string,
+) {
+  clearTokens();
+
+  if (typeof window === "undefined") return;
+
+  window.dispatchEvent(
+    new CustomEvent(AUTH_SESSION_EXPIRED_EVENT, {
+      detail: { message, reason },
+    }),
+  );
+}
+
+function createAuthSessionError(
+  message: string,
+  fallbackReason: AuthSessionExpiredReason,
+): AuthSessionError {
+  const reason = detectAuthSessionReason(message) ?? fallbackReason;
+  emitAuthSessionExpired(reason, message);
+  return new AuthSessionError(message, reason);
+}
+
+export function createAuthSessionErrorFromMessage(
+  message: string,
+): AuthSessionError | null {
+  const reason = detectAuthSessionReason(message);
+  if (!reason) return null;
+
+  emitAuthSessionExpired(reason, message);
+  return new AuthSessionError(message, reason);
+}
 
 // ---------------------------------------------------------------------------
 // Token storage keys
@@ -21,50 +100,86 @@ const BASE_URL =
 const KEYS = {
   ACCESS_TOKEN: "food-recommendation:access_token",
   REFRESH_TOKEN: "food-recommendation:refresh_token",
-  IS_LOGGED_IN: "food-recommendation:isLoggedIn", // giữ để header dùng được
+  IS_LOGGED_IN: "food-recommendation:isLoggedIn",
   ROLE: "food-recommendation:role",
+  /** Flag persist trong localStorage để auto-refresh biết lưu đâu */
+  REMEMBER_ME: "food-recommendation:rememberMe",
 } as const;
 
-function getTokenStorage(): Storage | null {
+/**
+ * Đọc giá trị từ localStorage trước, fallback sang sessionStorage.
+ * Cho phép đọc token dù user chọn chế độ nào.
+ */
+function getFromStorage(key: string): string | null {
   if (typeof window === "undefined") return null;
-  return window.sessionStorage;
+  return window.localStorage.getItem(key) ?? window.sessionStorage.getItem(key);
 }
 
-function clearLegacyLocalTokens(): void {
-  if (typeof window === "undefined") return;
-  Object.values(KEYS).forEach((key) => window.localStorage.removeItem(key));
+/**
+ * Trả về storage để GHI dựa trên flag rememberMe đã lưu.
+ * Dùng cho cả lần login thật và auto-refresh (luôn ghi đúng chỗ).
+ */
+function getWriteStorage(): Storage {
+  const remembered =
+    typeof window !== "undefined" &&
+    window.localStorage.getItem(KEYS.REMEMBER_ME) === "true";
+  return remembered ? window.localStorage : window.sessionStorage;
 }
 
 export function getAccessToken(): string | null {
-  return getTokenStorage()?.getItem(KEYS.ACCESS_TOKEN) ?? null;
+  return getFromStorage(KEYS.ACCESS_TOKEN);
 }
 
 export function getRefreshToken(): string | null {
-  return getTokenStorage()?.getItem(KEYS.REFRESH_TOKEN) ?? null;
+  return getFromStorage(KEYS.REFRESH_TOKEN);
 }
 
+export function getSavedRole(): string | null {
+  return getFromStorage(KEYS.ROLE);
+}
+
+/**
+ * Lưu tokens vào đúng storage.
+ * @param remember  undefined = giữ nguyên lựa chọn cũ (dùng khi auto-refresh)
+ *                  true      = localStorage (tồn tại qua session)
+ *                  false     = sessionStorage (mất khi đóng tab)
+ */
 export function saveTokens(
   accessToken: string,
   refreshToken: string,
   role?: string,
+  remember?: boolean,
 ): void {
-  const storage = getTokenStorage();
-  if (!storage) return;
-  clearLegacyLocalTokens();
+  if (typeof window === "undefined") return;
+
+  // Cập nhật flag preference nếu được truyền (login thật), bỏ qua nếu undefined (auto-refresh)
+  if (remember === true) {
+    window.localStorage.setItem(KEYS.REMEMBER_ME, "true");
+  } else if (remember === false) {
+    window.localStorage.removeItem(KEYS.REMEMBER_ME);
+  }
+
+  // Xóa token cũ ở cả 2 storage để tránh duplicate
+  [window.localStorage, window.sessionStorage].forEach((s) => {
+    s.removeItem(KEYS.ACCESS_TOKEN);
+    s.removeItem(KEYS.REFRESH_TOKEN);
+    s.removeItem(KEYS.IS_LOGGED_IN);
+    s.removeItem(KEYS.ROLE);
+  });
+
+  const storage = getWriteStorage();
   storage.setItem(KEYS.ACCESS_TOKEN, accessToken);
   storage.setItem(KEYS.REFRESH_TOKEN, refreshToken);
   storage.setItem(KEYS.IS_LOGGED_IN, "true");
   if (role) storage.setItem(KEYS.ROLE, role);
 }
 
-export function getSavedRole(): string | null {
-  return getTokenStorage()?.getItem(KEYS.ROLE) ?? null;
-}
-
 export function clearTokens(): void {
-  const storage = getTokenStorage();
-  Object.values(KEYS).forEach((key) => storage?.removeItem(key));
-  clearLegacyLocalTokens();
+  if (typeof window === "undefined") return;
+  const allKeys = Object.values(KEYS);
+  [window.localStorage, window.sessionStorage].forEach((s) => {
+    allKeys.forEach((key) => s.removeItem(key));
+  });
 }
 
 export function isLoggedIn(): boolean {
@@ -80,8 +195,10 @@ let _refreshPromise: Promise<void> | null = null;
 async function _doRefresh(): Promise<void> {
   const rt = getRefreshToken();
   if (!rt) {
-    clearTokens();
-    throw new Error("UNAUTHORIZED");
+    throw createAuthSessionError(
+      "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.",
+      "unauthorized",
+    );
   }
   const res = await fetch(`${BASE_URL}/auth/refresh`, {
     method: "POST",
@@ -89,11 +206,25 @@ async function _doRefresh(): Promise<void> {
     body: JSON.stringify({ refresh_token: rt }),
   });
   if (!res.ok) {
-    clearTokens();
-    throw new Error("UNAUTHORIZED");
+    throw createAuthSessionError(
+      "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.",
+      "unauthorized",
+    );
   }
   const data: AuthTokenResponse = await res.json();
   saveTokens(data.access_token, data.refresh_token, data.role);
+}
+
+async function parseAuthErrorResponse(
+  res: Response,
+): Promise<AuthSessionError | null> {
+  if (res.status !== 401 && res.status !== 403) return null;
+
+  const message = await parseError(res.clone(), "");
+  const reason = detectAuthSessionReason(message);
+  if (!reason) return null;
+
+  return createAuthSessionError(message, reason);
 }
 
 export async function apiFetch(
@@ -119,11 +250,18 @@ export async function apiFetch(
     }
     try {
       await _refreshPromise;
-    } catch {
-      throw new Error("UNAUTHORIZED");
+    } catch (error) {
+      if (isAuthSessionError(error)) throw error;
+      throw createAuthSessionError(
+        "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.",
+        "unauthorized",
+      );
     }
     return apiFetch(path, options, true);
   }
+
+  const authError = await parseAuthErrorResponse(res);
+  if (authError) throw authError;
 
   return res;
 }
@@ -288,6 +426,44 @@ export async function apiGetHealthProfile(): Promise<UserHealthProfile | null> {
     throw new Error(await parseError(res, "Không thể tải hồ sơ sức khỏe."));
   return res.json();
 }
+
+// ---------------------------------------------------------------------------
+// Forgot / Reset password (không cần token)
+// ---------------------------------------------------------------------------
+
+export interface ForgotPasswordResponse {
+  message: string;
+  /** DEMO ONLY — production sẽ gửi qua email, không trả về trực tiếp */
+  reset_token?: string | null;
+}
+
+export async function apiForgotPassword(
+  email: string,
+): Promise<ForgotPasswordResponse> {
+  const res = await fetch(`${BASE_URL}/auth/forgot-password`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email }),
+  });
+  if (!res.ok)
+    throw new Error(await parseError(res, "Yêu cầu đặt lại mật khẩu thất bại."));
+  return res.json();
+}
+
+export async function apiResetPassword(
+  token: string,
+  newPassword: string,
+): Promise<void> {
+  const res = await fetch(`${BASE_URL}/auth/reset-password`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ token, new_password: newPassword }),
+  });
+  if (!res.ok)
+    throw new Error(await parseError(res, "Đặt lại mật khẩu thất bại."));
+}
+
+// ---------------------------------------------------------------------------
 
 /** PUT — tạo mới hoặc thay thế hoàn toàn health profile */
 export async function apiUpsertHealthProfile(

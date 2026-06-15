@@ -102,7 +102,6 @@ function UserTableSkeleton() {
 
 export default function AdminUsers() {
   const {
-    actionMessage,
     actionUserId,
     closeDetailDrawer,
     error,
@@ -215,12 +214,6 @@ export default function AdminUsers() {
             </Box>
           </Box>
 
-          {/* ── Messages ───────────────────────────────────── */}
-          {actionMessage && (
-            <Typography as="p" sx={styles.messageStyles}>
-              {actionMessage}
-            </Typography>
-          )}
           {error && (
             <Typography as="p" sx={styles.messageStyles}>
               {error}

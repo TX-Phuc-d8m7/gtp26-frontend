@@ -15,8 +15,6 @@ import {
   Chip,
   CircularProgress,
   Collapse,
-  Dialog,
-  DialogContent,
   Divider,
   IconButton,
   InputAdornment,
@@ -25,9 +23,7 @@ import {
   Stack,
   TextField,
   Typography,
-  useMediaQuery,
 } from "@mui/material";
-import { useTheme } from "@mui/material/styles";
 import {
   AlertCircle,
   ArrowLeft,
@@ -62,6 +58,7 @@ import type {
 } from "./_interface";
 import { styles } from "./_styles";
 import { useFoodSearch } from "./_use-food-search";
+import { FoodDetailDrawer } from "./_food-detail-dialog";
 
 const FALLBACK_IMAGE =
   "https://images.unsplash.com/photo-1555126634-323283e090fa?auto=format&fit=crop&q=80&w=900";
@@ -165,8 +162,6 @@ function FilterPanel({
 }
 
 export default function FoodSearchUI(props: FoodSearchUIProps = {}) {
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const shouldReduceMotion = useReducedMotion();
   const isEmbedded = Boolean(props.onClose);
   const shouldSkipMountMotion = Boolean(shouldReduceMotion || isEmbedded);
@@ -226,6 +221,7 @@ export default function FoodSearchUI(props: FoodSearchUIProps = {}) {
     return (
       <Box sx={styles.rootStyles(isEmbedded)}>
         <AppLoading
+          mediaSrc="/loading/foodie-loader.gif"
           title="Đang khám phá thực đơn"
           description="Đang tải danh sách món ăn Đà Nẵng, lọc theo khẩu vị và chuẩn bị gợi ý phù hợp cho bạn."
           sx={{
@@ -263,16 +259,14 @@ export default function FoodSearchUI(props: FoodSearchUIProps = {}) {
             <Box sx={styles.searchPanelCopyStyles}>
               <Typography sx={styles.searchPanelEyebrowStyles}>
                 <Clock3 size={15} />
-                Food discovery nhanh
+                Khám phá thư viện món ăn 
               </Typography>
               <Box sx={styles.titleBlockStyles}>
                 <Typography component="h1" sx={styles.titleStyles}>
-                  Hôm nay bạn muốn ăn gì?
+                  Hôm nay bạn ăn gì?
                 </Typography>
                 <Typography sx={styles.subtitleStyles}>
-                  Tìm theo tên món, nguyên liệu, khẩu vị hoặc nhu cầu ăn uống.
-                  Kết quả được xếp hạng theo mức độ phù hợp với truy vấn của
-                  bạn.
+                  Tìm theo tên món, nguyên liệu, khẩu vị cá nhân của bạn.
                 </Typography>
               </Box>
             </Box>
@@ -486,9 +480,8 @@ export default function FoodSearchUI(props: FoodSearchUIProps = {}) {
         )}
       </Box>
 
-      <FoodDetailDialog
+      <FoodDetailDrawer
         food={selectedFood}
-        fullScreen={isMobile}
         isFavoriteLoading={favoritingId === selectedFood?.id}
         isLoading={isDetailLoading}
         onClose={() => setSelectedFood(null)}
@@ -622,7 +615,7 @@ function SuggestionItem({
         {getSuggestionIcon(suggestion.type)}
         <Typography sx={{ fontWeight: 700 }}>{suggestion.label}</Typography>
       </Box>
-      <Typography sx={{ color: "text.secondary", fontSize: 13 }}>
+      <Typography sx={styles.suggestionSecondaryTextStyles}>
         {suggestionTypeLabels[suggestion.type]}
       </Typography>
     </Box>
@@ -706,8 +699,7 @@ function FoodResultCard({
   onToggleFavorite: () => void;
   onOpenLocations?: () => void;
 }) {
-  const { food, score } = result;
-  const scoreLabel = score > 0 ? `${Math.min(99, score)}% hợp` : "Nên thử";
+  const { food } = result;
   const imageUrl = food.img_url ?? FALLBACK_IMAGE;
   const isThisToggling = isFavoritingId === food.id;
 
@@ -724,9 +716,6 @@ function FoodResultCard({
               title={food.name}
               sx={styles.cardMediaStyles}
             />
-            <Box sx={styles.cardMediaOverlayStyles}>
-              <Box sx={styles.scoreBadgeStyles}>{scoreLabel}</Box>
-            </Box>
           </Box>
           <CardContent sx={styles.cardContentStyles}>
             <Box sx={styles.cardHeaderStyles}>
@@ -831,248 +820,6 @@ function FoodResultCard({
         )}
       </IconButton>
     </Box>
-  );
-}
-
-function FoodDetailDialog({
-  food,
-  fullScreen,
-  isFavoriteLoading,
-  isLoading,
-  onClose,
-  onToggleFavorite,
-  onOpenLocations,
-}: {
-  food: ApiFoodDetail | null;
-  fullScreen: boolean;
-  isFavoriteLoading: boolean;
-  isLoading: boolean;
-  onClose: () => void;
-  onToggleFavorite: () => void;
-  onOpenLocations?: () => void;
-}) {
-  const isOpen = Boolean(food) || isLoading;
-  if (!isOpen) return null;
-
-  return (
-    <Dialog
-      fullScreen={fullScreen}
-      fullWidth
-      maxWidth="sm"
-      open={isOpen}
-      onClose={onClose}
-      slotProps={{ paper: { sx: styles.dialogPaperStyles } }}
-    >
-      <DialogContent sx={{ padding: 0 }}>
-        {isLoading || !food ? (
-          <Box
-            sx={{
-              alignItems: "center",
-              display: "flex",
-              height: 320,
-              justifyContent: "center",
-            }}
-          >
-            <CircularProgress />
-          </Box>
-        ) : (
-          <>
-            <Box sx={styles.detailHeroStyles}>
-              <Box
-                component="img"
-                src={food.img_url ?? FALLBACK_IMAGE}
-                alt={food.name}
-                width={960}
-                height={540}
-                sx={styles.detailImageStyles}
-              />
-              <Box sx={styles.detailOverlayStyles} />
-              <IconButton
-                aria-label="Đóng"
-                onClick={onClose}
-                sx={styles.closeButtonStyles}
-              >
-                <X size={20} />
-              </IconButton>
-              {onOpenLocations && (
-                <IconButton
-                  aria-label="Tìm quán gần bạn"
-                  onClick={onOpenLocations}
-                  sx={{
-                    position: "absolute",
-                    top: 12,
-                    right: food.is_favorite !== undefined ? 100 : 52,
-                    backgroundColor: "rgba(0,0,0,0.45)",
-                    backdropFilter: "blur(4px)",
-                    color: "#fff",
-                    "&:hover": { backgroundColor: "rgba(0,0,0,0.6)" },
-                  }}
-                >
-                  <MapPin size={18} />
-                </IconButton>
-              )}
-              {food.is_favorite !== undefined && (
-                <IconButton
-                  aria-label={food.is_favorite ? "Xoá khỏi yêu thích" : "Thêm vào yêu thích"}
-                  disabled={isFavoriteLoading}
-                  onClick={onToggleFavorite}
-                  sx={{
-                    position: "absolute",
-                    top: 12,
-                    right: 52,
-                    backgroundColor: "rgba(0,0,0,0.45)",
-                    backdropFilter: "blur(4px)",
-                    color: food.is_favorite ? "#F97316" : "#fff",
-                    "&:hover": { backgroundColor: "rgba(0,0,0,0.6)" },
-                  }}
-                >
-                  {isFavoriteLoading ? (
-                    <Loader2 size={18} style={{ animation: "spin 0.8s linear infinite" }} />
-                  ) : (
-                    <Heart
-                      size={18}
-                      fill={food.is_favorite ? "#F97316" : "none"}
-                    />
-                  )}
-                </IconButton>
-              )}
-              <Box sx={styles.detailTitleWrapStyles}>
-                <Typography component="h2" sx={styles.titleStyles}>
-                  {food.name}
-                </Typography>
-                {food.meal_context.length > 0 ? (
-                  <Typography sx={styles.subtitleStyles}>
-                    {food.meal_context.join(" · ")}
-                  </Typography>
-                ) : null}
-              </Box>
-            </Box>
-
-            <Box sx={styles.detailContentStyles}>
-              <Typography sx={styles.descriptionStyles}>
-                {food.description}
-              </Typography>
-
-              {/* Taste & occasion tags */}
-              {food.taste_profile.length > 0 ||
-              food.occasion_context.length > 0 ? (
-                <Box sx={styles.detailSectionStyles}>
-                  <Typography sx={{ fontWeight: 800, marginBottom: 1 }}>
-                    Khẩu vị & dịp ăn
-                  </Typography>
-                  <Box sx={styles.chipWrapStyles}>
-                    {[...food.taste_profile, ...food.occasion_context].map(
-                      (tag) => (
-                        <Chip
-                          key={tag}
-                          label={tag}
-                          size="small"
-                          sx={styles.softTagStyles}
-                        />
-                      ),
-                    )}
-                  </Box>
-                </Box>
-              ) : null}
-
-              {/* Core ingredients */}
-              {food.core_ingredients.length > 0 ? (
-                <Box sx={styles.detailSectionStyles}>
-                  <Typography sx={{ fontWeight: 800, marginBottom: 1 }}>
-                    Nguyên liệu chính
-                  </Typography>
-                  <Box sx={styles.chipWrapStyles}>
-                    {food.core_ingredients.map((ingredient) => (
-                      <Chip
-                        key={ingredient}
-                        label={ingredient}
-                        size="small"
-                        sx={styles.softTagStyles}
-                      />
-                    ))}
-                  </Box>
-                </Box>
-              ) : null}
-
-              {/* Raw ingredients (full list with quantities) */}
-              {food.raw_ingredients.length > 0 ? (
-                <Box sx={styles.detailSectionStyles}>
-                  <Typography sx={{ fontWeight: 800, marginBottom: 1 }}>
-                    Định lượng nguyên liệu
-                  </Typography>
-                  <Stack spacing={0.5}>
-                    {food.raw_ingredients.map((line, i) => (
-                      <Typography
-                        key={i}
-                        sx={{ color: "text.secondary", fontSize: 14 }}
-                      >
-                        • {line}
-                      </Typography>
-                    ))}
-                  </Stack>
-                </Box>
-              ) : null}
-
-              {/* Soft tags */}
-              {food.soft_tags.length > 0 ? (
-                <Box sx={styles.detailSectionStyles}>
-                  <Typography sx={{ fontWeight: 800, marginBottom: 1 }}>
-                    Soft tags
-                  </Typography>
-                  <Box sx={styles.chipWrapStyles}>
-                    {food.soft_tags.map((tag) => (
-                      <Chip
-                        key={tag}
-                        label={tag}
-                        size="small"
-                        sx={styles.softTagStyles}
-                      />
-                    ))}
-                  </Box>
-                </Box>
-              ) : null}
-
-              {/* Cooking instructions */}
-              {food.raw_instructions ? (
-                <Box sx={styles.detailSectionStyles}>
-                  <Typography sx={{ fontWeight: 800, marginBottom: 1 }}>
-                    Hướng dẫn nấu
-                  </Typography>
-                  <Typography
-                    sx={{
-                      color: "text.secondary",
-                      fontSize: 14,
-                      lineHeight: 1.7,
-                      whiteSpace: "pre-wrap",
-                    }}
-                  >
-                    {food.raw_instructions}
-                  </Typography>
-                </Box>
-              ) : null}
-
-              {/* Favorite status badge */}
-              {food.is_favorite === true && (
-                <Box sx={styles.detailSectionStyles}>
-                  <Chip
-                    size="small"
-                    icon={<Heart size={12} fill="#F97316" color="#F97316" />}
-                    label="Đã thêm vào yêu thích"
-                    sx={{
-                      fontSize: 12,
-                      fontWeight: 700,
-                      backgroundColor: "rgba(249,115,22,0.1)",
-                      color: "#EA580C",
-                      border: "1px solid rgba(249,115,22,0.25)",
-                    }}
-                  />
-                </Box>
-              )}
-            </Box>
-          </>
-        )}
-      </DialogContent>
-    </Dialog>
   );
 }
 
@@ -1188,10 +935,11 @@ function EmptyState({
       {/* Description */}
       <Typography
         sx={{
-          color: "text.secondary",
+          color: "var(--muted-foreground)",
           maxWidth: 400,
           mb: 3,
           mx: "auto",
+          ".dark &": { color: "rgba(255,247,237,0.6)" },
         }}
       >
         {description}

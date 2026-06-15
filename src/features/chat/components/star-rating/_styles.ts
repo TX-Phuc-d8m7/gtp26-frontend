@@ -14,7 +14,7 @@ export const rootSx: SxProps<Theme> = {
 };
 
 export const labelSx: SxProps<Theme> = {
-  color: "rgba(15, 23, 42, 0.62)",
+  color: "#4B5563",
   fontSize: pxToRem(11.84),
   fontWeight: fontWeights.extrabold,
   letterSpacing: "0.02em",
@@ -41,15 +41,13 @@ export const getStarButtonSx = (
     width: 34,
     height: 34,
     placeItems: "center",
-    border: "1px solid rgba(15, 23, 42, 0.1)",
+    border: "1px solid #E5E7EB",
     borderRadius: "12px",
-    background: isActive
-      ? "rgba(255, 251, 235, 0.82)"
-      : "rgba(255,255,255,0.42)",
-    color: isActive ? "#F59E0B" : "rgba(15, 23, 42, 0.28)",
+    background: isActive ? "#FFFBEB" : "#FFFFFF",
+    color: isActive ? "#D97706" : "#9CA3AF",
     boxShadow: isActive
-      ? "0 12px 26px rgba(245, 158, 11, 0.14), inset 0 1px 0 rgba(255,255,255,0.84)"
-      : "inset 0 1px 0 rgba(255,255,255,0.64)",
+      ? "0 6px 14px rgba(245, 158, 11, 0.12)"
+      : "0 1px 2px rgba(15, 23, 42, 0.04)",
     cursor: readonly ? "default" : "pointer",
     transition:
       "transform 180ms ease, color 180ms ease, border-color 180ms ease, background 180ms ease",
@@ -84,7 +82,7 @@ export const getStarButtonSx = (
 
 export const countSx: SxProps<Theme> = {
   ml: 1,
-  color: "rgba(15, 23, 42, 0.52)",
+  color: "#4B5563",
   fontSize: pxToRem(12),
   fontWeight: fontWeights.bold,
   ".dark &": {
