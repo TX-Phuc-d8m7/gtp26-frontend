@@ -26,6 +26,11 @@ import type {
   AdminUserUpdate,
   AdminUsersQuery,
 } from "./users";
+import type {
+  AdminQueryLogListResponse,
+  AdminQueryLogResult,
+  AdminQueryLogsQuery,
+} from "./query-logs";
 
 async function parseAdminError(response: Response, fallback: string) {
   try {
@@ -232,4 +237,40 @@ export async function unlockAdminUser(userId: string) {
     `/admin/users/${userId}/unlock`,
     "Không thể mở khóa tài khoản.",
   );
+}
+
+// ─── Query Logs ───────────────────────────────────────────────────────────────
+
+export async function fetchAdminQueryLogs(params: AdminQueryLogsQuery = {}) {
+  const searchParams = new URLSearchParams();
+  if (params.q?.trim()) searchParams.set("q", params.q.trim());
+  if (params.user_id) searchParams.set("user_id", params.user_id);
+  if (params.thread_id) searchParams.set("thread_id", params.thread_id);
+  if (params.from_date) searchParams.set("from_date", params.from_date);
+  if (params.to_date) searchParams.set("to_date", params.to_date);
+  searchParams.set("limit", String(params.limit ?? 20));
+  searchParams.set("offset", String(params.offset ?? 0));
+
+  return requestJson<AdminQueryLogListResponse>(
+    `/admin/query-logs?${searchParams.toString()}`,
+    "Không thể tải lịch sử truy vấn.",
+  );
+}
+
+export async function fetchAdminQueryLog(logId: string) {
+  return requestJson<AdminQueryLogResult>(
+    `/admin/query-logs/${logId}`,
+    "Không thể tải chi tiết truy vấn.",
+  );
+}
+
+export async function deleteAdminQueryLog(logId: string) {
+  const response = await apiFetch(`/admin/query-logs/${logId}`, {
+    method: "DELETE",
+  });
+  if (!response.ok) {
+    throw new Error(
+      await parseAdminError(response, "Không thể xóa log truy vấn."),
+    );
+  }
 }

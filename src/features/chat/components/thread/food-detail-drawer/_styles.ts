@@ -20,20 +20,18 @@ export const drawerPaperStyles = (isMobile: boolean): SxProps<Theme> => ({
   height: isMobile ? "min(86dvh, 760px)" : "100dvh",
   borderRadius: isMobile ? "26px 26px 0 0" : "28px 0 0 28px",
   overflow: "hidden",
-  border: "1px solid rgba(234, 88, 12, 0.18)",
+  border: "1px solid #E5E7EB",
   borderBottom: isMobile ? 0 : undefined,
-  background:
-    "linear-gradient(145deg, rgba(255,255,255,0.96), rgba(255,247,237,0.9))",
-  color: "#1C1917",
-  boxShadow:
-    "0 -22px 70px rgba(15,23,42,0.16), inset 0 1px 0 rgba(255,255,255,0.82)",
-  backdropFilter: "blur(24px) saturate(1.16)",
-  WebkitBackdropFilter: "blur(24px) saturate(1.16)",
+  background: "#FFFFFF",
+  color: "#1F2937",
+  boxShadow: "0 -16px 42px rgba(15,23,42,0.12)",
   ".dark &": {
     borderColor: darkBorder,
     background: `linear-gradient(145deg, ${alpha(darkSurface, 0.98)}, ${alpha(darkSurfaceSoft, 0.96)})`,
     color: darkText,
     boxShadow: "0 26px 90px rgba(0,0,0,0.58)",
+    backdropFilter: "blur(24px) saturate(1.16)",
+    WebkitBackdropFilter: "blur(24px) saturate(1.16)",
   },
 });
 
@@ -74,7 +72,7 @@ export const headerStyles: SxProps<Theme> = {
   justifyContent: "space-between",
   gap: 1,
   p: { xs: 1.5, sm: 2 },
-  borderBottom: "1px solid rgba(231, 229, 228, 0.72)",
+  borderBottom: "1px solid #E5E7EB",
   ".dark &": {
     borderBottomColor: darkBorder,
   },
@@ -89,7 +87,7 @@ export const eyebrowStyles: SxProps<Theme> = {
   px: 1,
   py: 0.45,
   color: "#C2410C",
-  backgroundColor: "rgba(249,115,22,0.1)",
+  backgroundColor: "#FFF7ED",
   fontSize: "0.74rem",
   fontWeight: fontWeights.extrabold,
   ".dark &": {
@@ -114,10 +112,9 @@ export const heroStyles: SxProps<Theme> = {
   minHeight: { xs: 220, sm: 250 },
   overflow: "hidden",
   borderRadius: "24px",
-  border: "1px solid rgba(234,88,12,0.16)",
-  background:
-    "linear-gradient(145deg, rgba(255,237,213,0.82), rgba(255,255,255,0.84))",
-  boxShadow: "0 18px 46px rgba(15,23,42,0.08)",
+  border: "1px solid #E5E7EB",
+  background: "#FAFAFA",
+  boxShadow: "0 8px 20px rgba(15,23,42,0.06)",
   ".dark &": {
     borderColor: darkBorder,
     background:
@@ -181,13 +178,10 @@ export const scorePillStyles: SxProps<Theme> = {
 export const sectionCardStyles: SxProps<Theme> = {
   mt: 1.25,
   borderRadius: "22px",
-  border: "1px solid rgba(231, 229, 228, 0.76)",
-  background:
-    "linear-gradient(135deg, rgba(255,255,255,0.72), rgba(255,247,237,0.52))",
+  border: "1px solid #E5E7EB",
+  background: "#FFFFFF",
   p: { xs: 1.35, sm: 1.6 },
-  boxShadow: "inset 0 1px 0 rgba(255,255,255,0.72)",
-  backdropFilter: "blur(14px) saturate(1.12)",
-  WebkitBackdropFilter: "blur(14px) saturate(1.12)",
+  boxShadow: "0 4px 12px rgba(15,23,42,0.05)",
   ".dark &": {
     borderColor: darkBorder,
     background:
@@ -196,7 +190,7 @@ export const sectionCardStyles: SxProps<Theme> = {
 };
 
 export const descriptionStyles: SxProps<Theme> = {
-  color: "#3F3F46",
+  color: "#374151",
   fontSize: "0.95rem",
   lineHeight: 1.7,
   ".dark &": {
@@ -226,8 +220,8 @@ export const metaItemStyles: SxProps<Theme> = {
   alignItems: "center",
   gap: 0.75,
   borderRadius: "18px",
-  border: "1px solid rgba(231, 229, 228, 0.78)",
-  backgroundColor: "rgba(255,255,255,0.62)",
+  border: "1px solid #E5E7EB",
+  backgroundColor: "#FAFAFA",
   px: 1.1,
   py: 0.9,
   color: "#292524",
@@ -251,7 +245,7 @@ export const chipWrapStyles: SxProps<Theme> = {
 
 export const chipStyles: SxProps<Theme> = {
   borderRadius: 999,
-  backgroundColor: "rgba(249,115,22,0.1)",
+  backgroundColor: "#FFF7ED",
   color: "#9A3412",
   fontWeight: fontWeights.extrabold,
   ".dark &": {
@@ -265,10 +259,8 @@ export const actionBarStyles: SxProps<Theme> = {
   gridTemplateColumns: { xs: "1fr", sm: "repeat(3, minmax(0, 1fr))" },
   gap: 1,
   p: { xs: 1.5, sm: 2 },
-  borderTop: "1px solid rgba(231, 229, 228, 0.72)",
-  background: "rgba(255,255,255,0.72)",
-  backdropFilter: "blur(18px)",
-  WebkitBackdropFilter: "blur(18px)",
+  borderTop: "1px solid #E5E7EB",
+  background: "#FFFFFF",
   ".dark &": {
     borderTopColor: darkBorder,
     background: "rgba(12,10,9,0.72)",
@@ -293,7 +285,7 @@ export const actionButtonStyles = (tone: "favorite" | "feedback" | "location") =
     color: config.color,
     textTransform: "none",
     fontWeight: fontWeights.extrabold,
-    backgroundColor: "rgba(255,255,255,0.58)",
+    backgroundColor: "#FFFFFF",
     ".dark &": {
       borderColor: "rgba(250,250,250,0.2)",
       color: "#F5EFE8",

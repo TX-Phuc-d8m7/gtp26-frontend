@@ -10,7 +10,9 @@ import {
   useMemo,
   useState,
 } from "react";
+import { toast } from "sonner";
 
+import { isAuthSessionError } from "@/features/auth/_api";
 import type {
   ChatEditAndResendPayload,
   ChatFeedback,
@@ -36,6 +38,50 @@ function mergeMessagesById(
   }
 
   return merged;
+}
+
+function createThreadPreview(content: string): string | null {
+  const preview = content.replace(/\s+/g, " ").trim();
+  if (!preview) return null;
+  return preview.length > 84 ? `${preview.slice(0, 81)}...` : preview;
+}
+
+function getLatestMessagePreview(messages: ChatMessage[]): {
+  preview: string | null;
+  createdAt: string | null;
+} {
+  const latestMessage = [...messages]
+    .reverse()
+    .find((message) => Boolean(message.content.trim()));
+
+  return {
+    preview: latestMessage ? createThreadPreview(latestMessage.content) : null,
+    createdAt: latestMessage?.createdAt ?? null,
+  };
+}
+
+function isGenericThreadPreview(preview: string): boolean {
+  return (
+    preview === "Chưa có tin nhắn" ||
+    /^\d+\s+tin nhắn trong cuộc trò chuyện$/.test(preview)
+  );
+}
+
+function mergeThreadPreview(
+  incomingThread: ChatThread,
+  currentThread?: ChatThread,
+): ChatThread {
+  if (!currentThread) return incomingThread;
+  if (
+    isGenericThreadPreview(incomingThread.lastMessagePreview) &&
+    !isGenericThreadPreview(currentThread.lastMessagePreview)
+  ) {
+    return {
+      ...incomingThread,
+      lastMessagePreview: currentThread.lastMessagePreview,
+    };
+  }
+  return incomingThread;
 }
 
 interface ThreadContextType {
@@ -82,12 +128,24 @@ export function ThreadProvider({ children }: { children: ReactNode }) {
     setError(null);
     try {
       const nextThreads = await chatApiAdapter.listThreads();
-      setThreads(nextThreads);
+      setThreads((prev) =>
+        nextThreads.map((thread) =>
+          mergeThreadPreview(
+            thread,
+            prev.find((item) => item.id === thread.id),
+          ),
+        ),
+      );
       return nextThreads;
     } catch (err) {
       const message =
         err instanceof Error ? err.message : "Không tải được lịch sử chat.";
       setError(message);
+      if (isAuthSessionError(err)) {
+        setThreads([]);
+        setMessagesByThreadId({});
+        return [];
+      }
       throw err;
     } finally {
       setThreadsLoading(false);
@@ -99,15 +157,32 @@ export function ThreadProvider({ children }: { children: ReactNode }) {
     setError(null);
     try {
       const messages = await chatApiAdapter.getMessages(threadId);
+      const latestMessage = getLatestMessagePreview(messages);
       setMessagesByThreadId((prev) => ({
         ...prev,
         [threadId]: messages,
       }));
+      setThreads((prev) =>
+        prev.map((thread) =>
+          thread.id === threadId
+            ? {
+                ...thread,
+                updatedAt: latestMessage.createdAt ?? thread.updatedAt,
+                lastMessagePreview:
+                  latestMessage.preview ?? thread.lastMessagePreview,
+              }
+            : thread,
+        ),
+      );
       return messages;
     } catch (err) {
       const message =
         err instanceof Error ? err.message : "Không tải được tin nhắn.";
       setError(message);
+      if (isAuthSessionError(err)) {
+        setMessagesByThreadId({});
+        return [];
+      }
       throw err;
     } finally {
       setMessagesLoading(false);
@@ -152,10 +227,25 @@ export function ThreadProvider({ children }: { children: ReactNode }) {
 
     try {
       const response = await chatApiAdapter.sendMessage(payload);
-      setThreads((prev) => [
-        response.thread,
-        ...prev.filter((item) => item.id !== response.thread.id),
-      ]);
+      setThreads((prev) => {
+        const currentThread = prev.find(
+          (item) => item.id === response.thread.id,
+        );
+        const nextThread: ChatThread = {
+          ...response.thread,
+          // Giữ title hiện tại nếu response trả về placeholder, tránh overwrite
+          // title đã set (do user rename hoặc từ lượt gửi tin trước).
+          title:
+            response.thread.title !== "Cuộc trò chuyện mới"
+              ? response.thread.title
+              : (currentThread?.title ?? response.thread.title),
+          createdAt: currentThread?.createdAt ?? response.thread.createdAt,
+        };
+        return [
+          nextThread,
+          ...prev.filter((item) => item.id !== response.thread.id),
+        ];
+      });
       setMessagesByThreadId((prev) => {
         const currentMessages = prev[payload.threadId] ?? [];
 
@@ -191,8 +281,16 @@ export function ThreadProvider({ children }: { children: ReactNode }) {
       });
       return response;
     } catch (err) {
+      // Rollback — xóa optimistic message để UI không bị treo
+      setMessagesByThreadId((prev) => ({
+        ...prev,
+        [payload.threadId]: (prev[payload.threadId] ?? []).filter(
+          (m) => !m.id.startsWith("optimistic-"),
+        ),
+      }));
       const message =
         err instanceof Error ? err.message : "Không gửi được tin nhắn.";
+      toast.error(message);
       setError(message);
       throw err;
     } finally {
@@ -285,7 +383,14 @@ export function ThreadProvider({ children }: { children: ReactNode }) {
     setError(null);
     const thread = await chatApiAdapter.renameThread(threadId, title);
     setThreads((prev) =>
-      prev.map((item) => (item.id === threadId ? thread : item)),
+      prev.map((item) =>
+        item.id === threadId
+          ? {
+              ...thread,
+              lastMessagePreview: item.lastMessagePreview,
+            }
+          : item,
+      ),
     );
   }, []);
 

@@ -11,26 +11,26 @@ import type { DetailSection } from ".";
 
 const light = {
   cardBg: "#FFFFFF",
-  cardBorder: "rgba(0,0,0,0.055)",
-  cardShadow: "0 2px 12px rgba(0,0,0,0.07)",
-  sectionBg: "rgba(249,115,22,0.03)",
-  sectionBorder: "rgba(0,0,0,0.05)",
-  text: "#1C1917",
-  textSub: "#57534E",
-  textMuted: "#78716C",
+  cardBorder: "#E5E7EB",
+  cardShadow: "0 12px 28px rgba(15, 23, 42, 0.06)",
+  sectionBg: "#FFF7ED",
+  sectionBorder: "#E5E7EB",
+  text: "#1F2937",
+  textSub: "#4B5563",
+  textMuted: "#6B7280",
 } as const;
 
 const dark = {
-  cardBg: "#1E1B18",
-  cardBorder: "rgba(255,247,237,0.07)",
+  cardBg: "#1C1917",
+  cardBorder: "rgba(255,247,237,0.12)",
   sectionBg: "rgba(255,247,237,0.03)",
-  sectionBorder: "rgba(255,247,237,0.06)",
-  text: "#F5EFE8",
-  textSub: "rgba(245,239,232,0.55)",
-  textMuted: "rgba(245,239,232,0.4)",
-  orange: "#F97316",
-  green: "#84CC16",
-  blue: "#38BDF8",
+  sectionBorder: "rgba(255,247,237,0.1)",
+  text: "#FFF7ED",
+  textSub: "rgba(255,247,237,0.62)",
+  textMuted: "rgba(255,247,237,0.42)",
+  orange: "#FF9A1F",
+  green: "#86EFAC",
+  blue: "#CBD5E1",
 } as const;
 
 // ─── Chip tone map ────────────────────────────────────────────────────────────
@@ -114,7 +114,7 @@ export const eyebrowStyles = (theme: Theme) => ({
   letterSpacing: "0.08em",
   textTransform: "uppercase",
   ".dark &": {
-    color: "#FDBA74",
+    color: dark.orange,
   },
 });
 
@@ -272,6 +272,7 @@ export const chipStyles =
       ".dark &": {
         backgroundColor: config.darkBg,
         color: config.darkColor,
+        borderColor: dark.sectionBorder,
       },
     };
   };
@@ -317,20 +318,20 @@ export const footerButtonStyles = (theme: Theme) => ({
   borderRadius: 999,
   border: `1px solid ${light.cardBorder}`,
   backgroundColor: "transparent",
-  color: "#44403C",
+  color: light.textSub,
   fontWeight: 900,
-  "&:hover": {
-    borderColor: "rgba(249, 115, 22, 0.4)",
-    backgroundColor: "rgba(249, 115, 22, 0.07)",
-    color: "#C2410C",
-  },
+    "&:hover": {
+      borderColor: "#FDBA74",
+      backgroundColor: "#FFF7ED",
+      color: "#EA580C",
+    },
   ".dark &": {
     borderColor: dark.cardBorder,
     color: dark.text,
     "&:hover": {
-      borderColor: "rgba(249, 115, 22, 0.3)",
-      backgroundColor: "rgba(249, 115, 22, 0.1)",
-      color: "#FDBA74",
+      borderColor: "rgba(255,154,31,0.28)",
+      backgroundColor: "rgba(255,154,31,0.1)",
+      color: dark.orange,
     },
   },
 });
@@ -361,7 +362,7 @@ export const loadingStyles = (theme: Theme) => ({
   placeItems: "center",
   color: "#EA580C",
   ".dark &": {
-    color: "#FDBA74",
+    color: dark.orange,
   },
 });
 

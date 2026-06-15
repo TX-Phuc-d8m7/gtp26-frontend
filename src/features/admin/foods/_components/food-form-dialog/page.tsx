@@ -19,7 +19,7 @@ import {
   Tabs,
   TextField,
 } from "@mui/material";
-import { Eye, Layers3, ListChecks, Save, Soup, Tags, X } from "lucide-react";
+import { Eye, Layers3, ListChecks, Plus, Save, Soup, Tags, X, Zap } from "lucide-react";
 
 import { Box } from "@/shared/components/ui/box/index";
 import { Button } from "@/shared/components/ui/button/index";
@@ -35,7 +35,20 @@ import {
   ADMIN_FOOD_SOFT_TAG_OPTIONS,
   ADMIN_FOOD_TASTE_OPTIONS,
   AdminFoodChipFormField,
+  RAW_INGREDIENT_UNITS,
+  type AdminFoodFormField,
+  type RawIngredientRow,
 } from "../../_interface";
+
+/** Mỗi field validation nằm ở tab nào (index). */
+const FIELD_TAB: Partial<Record<AdminFoodFormField, number>> = {
+  name: 0,
+  description: 0,
+  img_url: 0,
+  raw_instructions: 0,
+  core_ingredients: 1,
+  raw_ingredients: 1,
+};
 import {
   FoodFormDialogProps,
   FoodFormTextFieldConfig,
@@ -83,37 +96,142 @@ const basicFields: FoodFormTextFieldConfig[] = [
   },
 ];
 
-const ingredientFields: FoodFormTextFieldConfig[] = [
-  {
-    field: "core_ingredients",
-    label: "Nguyên liệu chính",
-    helperText: "Mỗi dòng hoặc dấu phẩy là một nguyên liệu chính.",
-    multiline: true,
-    rows: 9,
-  },
-  {
-    field: "raw_ingredients",
-    label: "Nguyên liệu đầy đủ",
-    helperText: "Nguyên liệu đầy đủ, có thể kèm định lượng.",
-    multiline: true,
-    rows: 9,
-  },
-];
+// ─── Ingredient list component ────────────────────────────────────────────────
+
+function IngredientListInput({
+  value,
+  error,
+  onChange,
+}: {
+  value: RawIngredientRow[];
+  error?: string;
+  onChange: (rows: RawIngredientRow[]) => void;
+}) {
+  const addRow = () => {
+    onChange([...value, { name: "", quantity: "", unit: "" }]);
+  };
+
+  const removeRow = (index: number) => {
+    onChange(value.filter((_, i) => i !== index));
+  };
+
+  const updateRow = (
+    index: number,
+    field: keyof RawIngredientRow,
+    val: string,
+  ) => {
+    onChange(value.map((row, i) => (i === index ? { ...row, [field]: val } : row)));
+  };
+
+  return (
+    <Box>
+      {/* Header */}
+      <Box sx={styles.ingredientListHeaderStyles}>
+        <Typography as="p" sx={styles.ingredientListTitleStyles}>
+          Nguyên liệu đầy đủ
+        </Typography>
+        <Button
+          type="button"
+          variant="ghost"
+          sx={styles.addIngredientButtonStyles}
+          onClick={addRow}
+        >
+          <Plus size={13} />
+          Thêm nguyên liệu
+        </Button>
+      </Box>
+
+      {/* Column labels */}
+      {value.length > 0 && (
+        <Box sx={styles.ingredientColHeaderStyles}>
+          <Typography as="span" sx={{ ...styles.ingredientColLabelStyles, flex: 1 }}>
+            Tên nguyên liệu *
+          </Typography>
+          <Typography as="span" sx={{ ...styles.ingredientColLabelStyles, width: 80 }}>
+            Số lượng
+          </Typography>
+          <Typography as="span" sx={{ ...styles.ingredientColLabelStyles, width: 130 }}>
+            Đơn vị
+          </Typography>
+          {/* spacer for delete button */}
+          <Box sx={{ width: 30, flexShrink: 0 }} />
+        </Box>
+      )}
+
+      {/* Rows or empty state */}
+      {value.length === 0 ? (
+        <Box sx={styles.ingredientEmptyStateStyles}>
+          <Typography as="p" sx={styles.ingredientEmptyTextStyles}>
+            Chưa có nguyên liệu — bấm "Thêm nguyên liệu" để bắt đầu
+          </Typography>
+        </Box>
+      ) : (
+        <Box sx={styles.ingredientRowsContainerStyles}>
+          {value.map((row, index) => (
+            <Box key={index} sx={styles.ingredientRowStyles}>
+              <TextField
+                size="small"
+                placeholder="vd: thịt bò, hành lá..."
+                value={row.name}
+                onChange={(e) => updateRow(index, "name", e.target.value)}
+                sx={{ ...styles.fieldStyles, flex: 1 }}
+              />
+              <TextField
+                size="small"
+                placeholder="200"
+                value={row.quantity}
+                onChange={(e) => updateRow(index, "quantity", e.target.value)}
+                sx={{ ...styles.fieldStyles, width: 80 }}
+              />
+              <Select
+                size="small"
+                value={row.unit}
+                displayEmpty
+                onChange={(e) => updateRow(index, "unit", e.target.value)}
+                sx={{ ...styles.selectInputStyles, width: 130, fontSize: 13 }}
+                MenuProps={{
+                  slotProps: { paper: { sx: styles.selectMenuPaperStyles } },
+                }}
+              >
+                {RAW_INGREDIENT_UNITS.map((unit) => (
+                  <MenuItem key={unit} value={unit}>
+                    {unit || "—"}
+                  </MenuItem>
+                ))}
+              </Select>
+              <Button
+                type="button"
+                variant="ghost"
+                sx={styles.ingredientDeleteButtonStyles}
+                onClick={() => removeRow(index)}
+              >
+                <X size={13} />
+              </Button>
+            </Box>
+          ))}
+        </Box>
+      )}
+
+      {error && (
+        <Typography as="p" sx={styles.ingredientErrorStyles}>
+          {error}
+        </Typography>
+      )}
+    </Box>
+  );
+}
+
+// ─── Helpers ──────────────────────────────────────────────────────────────────
 
 function getMergedOptions(options: readonly string[], value: string[]) {
   return [...options, ...value.filter((item) => !options.includes(item))];
 }
 
-function textToPreviewList(value: string) {
-  return value
-    .split(/\n|,/)
-    .map((item) => item.trim())
-    .filter(Boolean);
-}
-
 function renderIcon(Icon: (typeof tabs)[number]["icon"]) {
   return <Box component={Icon} sx={{ width: 16, height: 16, mr: 0.85 }} />;
 }
+
+// ─── Main component ───────────────────────────────────────────────────────────
 
 export default function FoodFormDialog({
   errors,
@@ -121,6 +239,7 @@ export default function FoodFormDialog({
   isSubmitting,
   mode,
   open,
+  submitAttemptCount,
   onChange,
   onClose,
   onSubmit,
@@ -132,14 +251,26 @@ export default function FoodFormDialog({
     if (open) setActiveTab(0);
   }, [open]);
 
-  const coreIngredients = useMemo(
-    () => textToPreviewList(formData.core_ingredients),
-    [formData.core_ingredients],
-  );
-  const rawIngredients = useMemo(
-    () => textToPreviewList(formData.raw_ingredients),
-    [formData.raw_ingredients],
-  );
+  // Auto-switch sang tab đầu tiên có lỗi MỖI KHI submit fail validation.
+  // Chỉ phụ thuộc submitAttemptCount — không fire khi user gõ thay đổi field.
+  useEffect(() => {
+    if (submitAttemptCount === 0) return;
+
+    const errorFields = (Object.keys(errors) as AdminFoodFormField[]).filter(
+      (field) => Boolean(errors[field]),
+    );
+    if (errorFields.length === 0) return;
+
+    const tabIndices = errorFields
+      .map((field) => FIELD_TAB[field])
+      .filter((idx): idx is number => idx !== undefined);
+
+    if (tabIndices.length > 0) {
+      setActiveTab(Math.min(...tabIndices));
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [submitAttemptCount]);
+
   const knownSoftTagSet = useMemo(
     () => new Set<string>(ADMIN_FOOD_SOFT_TAG_OPTIONS),
     [],
@@ -191,12 +322,6 @@ export default function FoodFormDialog({
     key?: string;
     label: string;
     options: readonly string[];
-    /**
-     * true  → chỉ hiện đúng options của group, không append selected values
-     *         từ group khác (dùng cho ADMIN_FOOD_SOFT_TAG_GROUPS).
-     * false → append custom/legacy values đang chọn vào cuối list
-     *         (dùng cho taste_profile, meal_context, occasion_context).
-     */
     strictOptions?: boolean;
   }) => {
     const value = formData[field];
@@ -267,6 +392,7 @@ export default function FoodFormDialog({
             </Tabs>
 
             <Box sx={styles.tabContentStyles}>
+              {/* ── Tab 0: Thông tin món ─────────────────────── */}
               {activeTab === 0 && (
                 <Box sx={styles.previewGridStyles}>
                   <Box sx={styles.formSectionStyles}>
@@ -335,21 +461,48 @@ export default function FoodFormDialog({
                 </Box>
               )}
 
+              {/* ── Tab 1: Nguyên liệu ───────────────────────── */}
               {activeTab === 1 && (
                 <Box sx={styles.formSectionStyles}>
                   <Typography as="p" sx={styles.formSectionHeaderStyles}>
                     Nguyên liệu
                   </Typography>
                   <Typography as="p" sx={styles.sectionIntroStyles}>
-                    Nguyên liệu chính giúp sinh ingredient keys, còn nguyên liệu
-                    đầy đủ giúp AI hiểu món sâu hơn khi giải thích gợi ý.
+                    Thêm từng nguyên liệu với số lượng và đơn vị. Tên nguyên
+                    liệu sẽ tự động trở thành danh sách nguyên liệu chính dùng
+                    cho ingredient keys và AI scoring.
                   </Typography>
-                  <Box sx={styles.fieldGridStyles}>
-                    {ingredientFields.map(renderTextField)}
-                  </Box>
+
+                  <IngredientListInput
+                    value={formData.raw_ingredients}
+                    error={errors.core_ingredients}
+                    onChange={(rows) => onChange("raw_ingredients", rows)}
+                  />
+
+                  {/* Auto-derived core ingredients preview */}
+                  {formData.core_ingredients.length > 0 && (
+                    <Box sx={styles.derivedSectionStyles}>
+                      <Typography as="p" sx={styles.derivedLabelStyles}>
+                        <Zap size={11} />
+                        Nguyên liệu chính (tự động từ tên)
+                      </Typography>
+                      <Box sx={styles.previewChipWrapStyles}>
+                        {formData.core_ingredients.map((name) => (
+                          <Box
+                            key={name}
+                            component="span"
+                            sx={styles.coreIngredientChipStyles}
+                          >
+                            {name}
+                          </Box>
+                        ))}
+                      </Box>
+                    </Box>
+                  )}
                 </Box>
               )}
 
+              {/* ── Tab 2: Phân loại AI ──────────────────────── */}
               {activeTab === 2 && (
                 <>
                   {renderChipGroup({
@@ -391,6 +544,7 @@ export default function FoodFormDialog({
                 </>
               )}
 
+              {/* ── Tab 3: Preview & Indexing ────────────────── */}
               {activeTab === 3 && (
                 <Box sx={styles.previewGridStyles}>
                   <Box sx={styles.formSectionStyles}>
@@ -403,7 +557,7 @@ export default function FoodFormDialog({
                           Nguyên liệu chính
                         </Typography>
                         <Typography as="p" sx={styles.metricValueStyles}>
-                          {coreIngredients.length}
+                          {formData.core_ingredients.length}
                         </Typography>
                       </Box>
                       <Box sx={styles.metricCardStyles}>
@@ -411,7 +565,7 @@ export default function FoodFormDialog({
                           Nguyên liệu đầy đủ
                         </Typography>
                         <Typography as="p" sx={styles.metricValueStyles}>
-                          {rawIngredients.length}
+                          {formData.raw_ingredients.filter((r) => r.name.trim()).length}
                         </Typography>
                       </Box>
                       <Box sx={styles.metricCardStyles}>

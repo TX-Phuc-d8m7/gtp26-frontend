@@ -4,13 +4,20 @@
  */
 "use client";
 
-import { Box } from "@mui/material";
+import {
+  Box,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+} from "@mui/material";
 import {
   Check,
   MessageSquareText,
   PanelRightClose,
   PanelRightOpen,
   Pencil,
+  Plus,
   Trash2,
   X,
 } from "lucide-react";
@@ -190,14 +197,18 @@ export default function ThreadHistory() {
     isLargeScreen,
     editingId,
     draftTitle,
+    deleteConfirmId,
     setDraftTitle,
     isRenameControlEvent,
     startRename,
     cancelRename,
     handleRename,
     handleDelete,
+    handleDeleteConfirm,
+    handleDeleteCancel,
     handleThreadClick,
     handleMobileThreadClick,
+    handleNewThread,
     handleToggleHistory,
     handleSheetOpenChange,
   } = useHistory();
@@ -252,6 +263,19 @@ export default function ThreadHistory() {
               )}
             </Button>
           </Box>
+
+          {/* New Chat button */}
+          <Box
+            component="button"
+            type="button"
+            onClick={handleNewThread}
+            sx={styles.historyNewChatButtonStyles}
+            aria-label="Tạo cuộc trò chuyện mới"
+          >
+            <Plus size={16} />
+            Đoạn chat mới
+          </Box>
+
           {threadsLoading ? (
             <ThreadHistoryLoading />
           ) : (
@@ -272,6 +296,19 @@ export default function ThreadHistory() {
             <SheetHeader>
               <SheetTitle>Bếp trò chuyện</SheetTitle>
             </SheetHeader>
+
+            {/* New Chat button */}
+            <Box
+              component="button"
+              type="button"
+              onClick={handleNewThread}
+              sx={styles.historyNewChatButtonStyles}
+              aria-label="Tạo cuộc trò chuyện mới"
+            >
+              <Plus size={16} />
+              Đoạn chat mới
+            </Box>
+
             {threadsLoading ? (
               <ThreadHistoryLoading />
             ) : (
@@ -283,6 +320,82 @@ export default function ThreadHistory() {
           </SheetContent>
         </Sheet>
       </Box>
+
+      {/* ── Confirmation dialog ── */}
+      <Dialog
+        open={deleteConfirmId !== null}
+        onClose={handleDeleteCancel}
+        slotProps={{
+          paper: {
+            sx: {
+              borderRadius: 3,
+              px: 1,
+              py: 0.5,
+              minWidth: 300,
+              background: "var(--card)",
+              color: "var(--card-foreground)",
+              border: "1px solid var(--border)",
+              boxShadow: "0 8px 32px rgba(0,0,0,0.18)",
+            },
+          },
+        }}
+      >
+        <DialogTitle sx={{ fontWeight: 700, fontSize: "1rem", pb: 1 }}>
+          Xóa cuộc trò chuyện?
+        </DialogTitle>
+        <DialogContent sx={{ pb: 1 }}>
+          <Typography
+            as="p"
+            sx={{ fontSize: "0.875rem", color: "var(--muted-foreground)" }}
+          >
+            Hành động này không thể hoàn tác. Cuộc trò chuyện sẽ bị xóa vĩnh viễn.
+          </Typography>
+        </DialogContent>
+        <DialogActions sx={{ px: 2, pb: 2, gap: 1 }}>
+          <Box
+            component="button"
+            type="button"
+            onClick={handleDeleteCancel}
+            sx={{
+              px: 3,
+              py: 0.75,
+              borderRadius: 2,
+              fontSize: "0.875rem",
+              fontWeight: 500,
+              border: "1px solid var(--border)",
+              background: "transparent",
+              color: "var(--foreground)",
+              cursor: "pointer",
+              "&:hover": { background: "var(--accent)" },
+            }}
+          >
+            Huỷ
+          </Box>
+          <Box
+            component="button"
+            type="button"
+            onClick={() => void handleDeleteConfirm()}
+            sx={{
+              px: 3,
+              py: 0.75,
+              borderRadius: 2,
+              fontSize: "0.875rem",
+              fontWeight: 600,
+              border: "none",
+              background: "var(--destructive)",
+              color: "var(--destructive-foreground)",
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              gap: 0.75,
+              "&:hover": { filter: "brightness(0.9)" },
+            }}
+          >
+            <Trash2 size={14} />
+            Xóa
+          </Box>
+        </DialogActions>
+      </Dialog>
     </>
   );
 }

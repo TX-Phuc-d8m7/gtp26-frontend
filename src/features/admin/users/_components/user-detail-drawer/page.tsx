@@ -4,8 +4,18 @@
  */
 "use client";
 
-import { CircularProgress, Divider, Drawer } from "@mui/material";
+import { useState } from "react";
 import {
+  CircularProgress,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Divider,
+  Drawer,
+} from "@mui/material";
+import {
+  AlertTriangle,
   CalendarDays,
   KeyRound,
   LockKeyhole,
@@ -54,6 +64,13 @@ export default function UserDetailDrawer({
   onChangeRole,
 }: UserDetailDrawerProps) {
   const isActioning = user ? actionUserId === user.id : false;
+  const [pendingRoleChange, setPendingRoleChange] = useState<"admin" | "user" | null>(null);
+
+  const handleConfirmRoleChange = () => {
+    if (!user || !pendingRoleChange) return;
+    onChangeRole(user, pendingRoleChange);
+    setPendingRoleChange(null);
+  };
 
   return (
     <Drawer
@@ -157,7 +174,7 @@ export default function UserDetailDrawer({
                   variant="ghost"
                   sx={styles.actionButtonStyles}
                   disabled={isActioning}
-                  onClick={() => onChangeRole(user, "admin")}
+                  onClick={() => setPendingRoleChange("admin")}
                 >
                   {isActioning ? (
                     <CircularProgress size={14} sx={{ color: "inherit" }} />
@@ -172,7 +189,7 @@ export default function UserDetailDrawer({
                   variant="ghost"
                   sx={styles.actionButtonStyles}
                   disabled={isActioning}
-                  onClick={() => onChangeRole(user, "user")}
+                  onClick={() => setPendingRoleChange("user")}
                 >
                   {isActioning ? (
                     <CircularProgress size={14} sx={{ color: "inherit" }} />
@@ -219,6 +236,59 @@ export default function UserDetailDrawer({
           </Box>
         </Box>
       ) : null}
+
+      {/* ── Confirm role change dialog ─────────────────────── */}
+      <Dialog
+        open={Boolean(pendingRoleChange)}
+        onClose={() => setPendingRoleChange(null)}
+        maxWidth="xs"
+        fullWidth
+        slotProps={{ paper: { sx: styles.confirmDialogPaperStyles } }}
+      >
+        <DialogTitle sx={styles.confirmDialogTitleStyles}>
+          <Box component={AlertTriangle} sx={{ width: 18, height: 18, color: "var(--warning, #f59e0b)", flexShrink: 0 }} />
+          {pendingRoleChange === "admin" ? "Thăng quyền Admin?" : "Hạ quyền về User?"}
+        </DialogTitle>
+        <DialogContent>
+          <Typography as="p" sx={styles.confirmDialogBodyStyles}>
+            {pendingRoleChange === "admin" ? (
+              <>
+                Tài khoản{" "}
+                <Box component="span" sx={styles.confirmEmailStyles}>{user?.email}</Box>{" "}
+                sẽ có toàn quyền truy cập Admin Console.
+              </>
+            ) : (
+              <>
+                Tài khoản{" "}
+                <Box component="span" sx={styles.confirmEmailStyles}>{user?.email}</Box>{" "}
+                sẽ mất quyền Admin và chỉ còn quyền User thông thường.
+              </>
+            )}
+          </Typography>
+        </DialogContent>
+        <DialogActions sx={styles.confirmDialogActionsStyles}>
+          <Button
+            type="button"
+            variant="ghost"
+            sx={styles.confirmCancelButtonStyles}
+            onClick={() => setPendingRoleChange(null)}
+          >
+            Hủy
+          </Button>
+          <Button
+            type="button"
+            variant={pendingRoleChange === "admin" ? "brand" : "destructive"}
+            sx={styles.confirmActionButtonStyles}
+            onClick={handleConfirmRoleChange}
+          >
+            {pendingRoleChange === "admin" ? (
+              <><ShieldCheck size={14} /> Xác nhận thăng quyền</>
+            ) : (
+              <><ShieldMinus size={14} /> Xác nhận hạ quyền</>
+            )}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Drawer>
   );
 }

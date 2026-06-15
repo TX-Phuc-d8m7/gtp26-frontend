@@ -8,6 +8,12 @@ import { MultiSelectPillsProps, styles } from ".";
 import { Box } from "@/shared/components/ui/box/index";
 import { Button } from "@/shared/components/ui/button/index";
 
+function normalizeOption(option: MultiSelectPillsProps["options"][number]) {
+  return typeof option === "string"
+    ? { label: option, value: option }
+    : option;
+}
+
 function MultiSelectPills({
   options,
   value,
@@ -27,20 +33,21 @@ function MultiSelectPills({
   return (
     <Box sx={[styles.rootStyles, ...(Array.isArray(sx) ? sx : sx ? [sx] : [])]}>
       {options.map((option) => {
-        const isSelected = value.includes(option);
+        const normalizedOption = normalizeOption(option);
+        const isSelected = value.includes(normalizedOption.value);
 
         return (
           <Button
             type="button"
             variant="ghost"
-            key={option}
-            onClick={() => toggleOption(option)}
+            key={normalizedOption.value}
+            onClick={() => toggleOption(normalizedOption.value)}
             sx={styles.optionButtonStyles(variant, isSelected)}
           >
             {isSelected && (
               <Box component={Check} sx={styles.optionIconStyles} />
             )}
-            {option}
+            {normalizedOption.label}
           </Button>
         );
       })}

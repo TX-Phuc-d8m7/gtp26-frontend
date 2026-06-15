@@ -9,9 +9,9 @@ import { ArrowRight, Loader2 } from "lucide-react";
 
 import { styles, useOnboarding } from ".";
 import {
+  DEMO_HEALTH_RISK_OPTIONS,
   DISH_TYPE_OPTIONS,
   FAVORITE_INGREDIENT_OPTIONS,
-  HEALTH_RISK_OPTIONS,
   TASTE_PREFERENCE_OPTIONS,
 } from "@/features/profile/_interface";
 import { Box } from "@/shared/components/ui/box/index";
@@ -48,15 +48,14 @@ export default function Onboarding() {
               </Typography>
             </Label>
             <Typography sx={styles.fieldDescriptionStyles}>
-              Chọn bệnh lý nền, triệu chứng hoặc dị ứng để AI lọc món an toàn
-              hơn.
+              Chọn một trong 6 nhãn demo để AI ưu tiên lọc món an toàn hơn.
             </Typography>
             <Controller
               name="healthRisks"
               control={control}
               render={({ field }) => (
                 <MultiSelectPills
-                  options={HEALTH_RISK_OPTIONS}
+                  options={DEMO_HEALTH_RISK_OPTIONS}
                   value={field.value}
                   onChange={field.onChange}
                   variant="danger"

@@ -41,6 +41,7 @@ export function useHistory() {
 
   const [editingId, setEditingId] = useState<string | null>(null);
   const [draftTitle, setDraftTitle] = useState("");
+  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -59,18 +60,34 @@ export function useHistory() {
 
   const handleRename = async (event: FormEvent, targetThreadId: string) => {
     event.preventDefault();
-    await renameThread(targetThreadId, draftTitle);
+    if (!draftTitle.trim()) {
+      cancelRename();
+      return;
+    }
+    await renameThread(targetThreadId, draftTitle.trim());
     setEditingId(null);
     setDraftTitle("");
   };
 
-  const handleDelete = async (targetThreadId: string) => {
-    const confirmed = window.confirm("Xóa cuộc trò chuyện này?");
-    if (!confirmed) return;
-    await deleteThread(targetThreadId);
-    if (targetThreadId === threadId) {
+  /** Mở dialog xác nhận trước khi xóa. */
+  const handleDeleteRequest = (targetThreadId: string) => {
+    setDeleteConfirmId(targetThreadId);
+  };
+
+  /** Người dùng xác nhận → thực hiện xóa. */
+  const handleDeleteConfirm = async () => {
+    if (!deleteConfirmId) return;
+    const id = deleteConfirmId;
+    setDeleteConfirmId(null);
+    await deleteThread(id);
+    if (id === threadId) {
       void setThreadId(null);
     }
+  };
+
+  /** Người dùng huỷ → đóng dialog. */
+  const handleDeleteCancel = () => {
+    setDeleteConfirmId(null);
   };
 
   /** Desktop: switch thread without closing sidebar. */
@@ -91,6 +108,12 @@ export function useHistory() {
     void setChatHistoryOpen(open);
   };
 
+  /** Bắt đầu cuộc trò chuyện mới — xoá threadId và đóng sheet trên mobile. */
+  const handleNewThread = () => {
+    void setThreadId(null);
+    if (!isLargeScreen) void setChatHistoryOpen(false);
+  };
+
   const isRenameControlEvent = (target: EventTarget | null): boolean =>
     target instanceof HTMLElement &&
     !!target.closest("form, input, textarea, button");
@@ -103,14 +126,18 @@ export function useHistory() {
     isLargeScreen,
     editingId,
     draftTitle,
+    deleteConfirmId,
     setDraftTitle,
     isRenameControlEvent,
     startRename,
     cancelRename,
     handleRename,
-    handleDelete,
+    handleDelete: handleDeleteRequest,
+    handleDeleteConfirm,
+    handleDeleteCancel,
     handleThreadClick,
     handleMobileThreadClick,
+    handleNewThread,
     handleToggleHistory,
     handleSheetOpenChange,
   };

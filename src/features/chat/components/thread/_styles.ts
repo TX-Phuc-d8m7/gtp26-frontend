@@ -27,9 +27,19 @@ export const highlightedFoodNameStyles: SxProps<Theme> = {
   },
 };
 
+export const assistantMessageTextStyles: SxProps<Theme> = {
+  m: 0,
+  whiteSpace: "pre-wrap",
+  color: "#1F2937",
+  ".dark &": {
+    color: "rgba(255, 247, 237, 0.9)",
+  },
+};
+
 export const styles = {
   ...chatStyles,
   stickToBottomStyles,
   stickyContentInnerStyles,
   highlightedFoodNameStyles,
+  assistantMessageTextStyles,
 } as const;

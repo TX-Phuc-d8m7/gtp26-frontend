@@ -612,29 +612,67 @@ export const skeletonCardStyles = (theme: Theme) => ({
 
 export const dialogPaperStyles = (theme: Theme) => ({
   borderRadius: { xs: "20px", sm: "24px" },
-  border: "1px solid rgba(15, 23, 42, 0.14)",
-  background:
-    "linear-gradient(135deg, rgba(255, 255, 255, 0.96) 0%, rgba(255, 247, 237, 0.24) 54%, rgba(255, 255, 255, 0.88) 100%)",
+  border: "1px solid #E5E7EB",
+  backgroundColor: "#FFFFFF",
   boxShadow:
-    "0 28px 80px rgba(15, 23, 42, 0.18), 0 0 0 1px rgba(15, 23, 42, 0.035), inset 0 1px 0 rgba(255, 255, 255, 0.92)",
-  backdropFilter: "blur(28px) saturate(1.22)",
-  WebkitBackdropFilter: "blur(28px) saturate(1.22)",
+    "0 24px 54px rgba(15, 23, 42, 0.14), 0 0 0 1px rgba(15, 23, 42, 0.04)",
   color: "var(--foreground)",
   ".dark &": {
     borderColor: darkTheme.border,
-    background:
-      "linear-gradient(135deg, rgba(28, 25, 23, 0.98) 0%, rgba(41, 37, 36, 0.9) 54%, rgba(12, 10, 9, 0.98) 100%)",
+    backgroundColor: darkTheme.surface,
     color: darkTheme.text,
     boxShadow:
-      "0 28px 80px rgba(0, 0, 0, 0.62), inset 0 1px 0 rgba(255, 247, 237, 0.08)",
+      "0 24px 54px rgba(0, 0, 0, 0.56), 0 0 0 1px rgba(255, 247, 237, 0.04)",
   },
 });
 
 export const dialogTitleStyles = (theme: Theme) => ({
-  fontSize: "1rem",
+  px: 3,
+  pt: 2.5,
+  pb: 2,
+  display: "flex",
+  alignItems: "center",
+  gap: "0.75rem",
+  borderBottom: "1px solid rgba(15, 23, 42, 0.08)",
+  ".dark &": { borderBottomColor: darkTheme.borderSoft },
+});
+
+export const dialogIconStyles = (theme: Theme) => ({
+  display: "grid",
+  placeItems: "center",
+  flexShrink: 0,
+  width: 38,
+  height: 38,
+  borderRadius: "12px",
+  background: "linear-gradient(135deg, rgba(255, 138, 31, 0.15) 0%, rgba(217, 72, 15, 0.12) 100%)",
+  border: "1px solid rgba(217, 72, 15, 0.18)",
+  color: "#D9480F",
+  ".dark &": {
+    background: "linear-gradient(135deg, rgba(249, 115, 22, 0.18) 0%, rgba(217, 72, 15, 0.14) 100%)",
+    borderColor: "rgba(249, 115, 22, 0.22)",
+    color: darkTheme.orange,
+  },
+});
+
+export const dialogTitleTextStyles = (theme: Theme) => ({
+  fontSize: "0.95rem",
   fontWeight: 900,
+  lineHeight: 1.25,
   color: "var(--foreground)",
   ".dark &": { color: darkTheme.text },
+});
+
+export const dialogFoodNameStyles = (theme: Theme) => ({
+  fontSize: "0.75rem",
+  fontWeight: 700,
+  lineHeight: 1.3,
+  mt: "0.1rem",
+  color: "var(--muted-foreground)",
+  overflow: "hidden",
+  textOverflow: "ellipsis",
+  whiteSpace: "nowrap",
+  maxWidth: 220,
+  ".dark &": { color: darkTheme.muted },
 });
 
 export const dialogBodyStyles = (theme: Theme) => ({
@@ -642,15 +680,18 @@ export const dialogBodyStyles = (theme: Theme) => ({
   flexDirection: "column",
   gap: "1.25rem",
   px: 3,
-  pb: 2,
+  pt: 2.25,
+  pb: 1.5,
 });
 
 export const dialogLabelStyles = (theme: Theme) => ({
-  fontSize: "0.8rem",
+  fontSize: "0.75rem",
   fontWeight: 800,
-  mb: "0.5rem",
-  color: "var(--muted-foreground)",
-  ".dark &": { color: darkTheme.muted },
+  letterSpacing: "0.03em",
+  textTransform: "uppercase" as const,
+  mb: "0.6rem",
+  color: "#92400E",
+  ".dark &": { color: "#FDBA74" },
 });
 
 export const dialogActionsStyles = (theme: Theme) => ({
@@ -663,20 +704,22 @@ export const dialogActionsStyles = (theme: Theme) => ({
 export const dialogTextFieldStyles = (theme: Theme) => ({
   "& .MuiOutlinedInput-root": {
     borderRadius: "14px",
-    backgroundColor: "rgba(255, 255, 255, 0.68)",
+    backgroundColor: "#FAFAFA",
     color: "var(--foreground)",
     fontWeight: 650,
-    boxShadow: "inset 0 1px 0 rgba(255, 255, 255, 0.78)",
-    "& fieldset": { borderColor: "rgba(15, 23, 42, 0.16)", borderRadius: "14px" },
-    "&:hover fieldset": { borderColor: "rgba(217, 72, 15, 0.3)" },
+    boxShadow: "none",
+    "& fieldset": { borderColor: "#D1D5DB", borderRadius: "14px" },
+    "&:hover": { backgroundColor: "#FFFFFF" },
+    "&:hover fieldset": { borderColor: "rgba(217, 72, 15, 0.42)" },
     "&.Mui-focused fieldset": { borderColor: "#D9480F", borderWidth: 1 },
   },
   "& .MuiInputLabel-root": { color: "var(--muted-foreground)", fontWeight: 700 },
   ".dark & .MuiOutlinedInput-root": {
-    backgroundColor: "rgba(28, 25, 23, 0.72)",
+    backgroundColor: darkTheme.surfaceSoft,
     color: darkTheme.text,
-    boxShadow: "inset 0 1px 0 rgba(255, 247, 237, 0.06)",
+    boxShadow: "none",
     "& fieldset": { borderColor: darkTheme.border, borderRadius: "14px" },
+    "&:hover": { backgroundColor: "#302B29" },
     "&:hover fieldset": { borderColor: darkTheme.orange },
     "&.Mui-focused fieldset": { borderColor: darkTheme.orange },
   },
@@ -708,6 +751,217 @@ export const cancelBtnStyles = (theme: Theme) => ({
   ".dark &": {
     color: darkTheme.muted,
     "&:hover": { backgroundColor: "rgba(255, 247, 237, 0.06)" },
+  },
+});
+
+// ─── Detail drawer ────────────────────────────────────────────────────────────
+
+export const drawerPaperStyles = (isMobile: boolean) => (theme: Theme) => ({
+  width: isMobile ? "100%" : 460,
+  height: isMobile ? "88dvh" : "100dvh",
+  maxHeight: "100dvh",
+  borderRadius: isMobile ? "24px 24px 0 0" : 0,
+  display: "flex",
+  flexDirection: "column",
+  overflow: "hidden",
+  background: "linear-gradient(180deg, #FAFAFA 0%, #FFFFFF 100%)",
+  ".dark &": {
+    background: `linear-gradient(180deg, ${darkTheme.background} 0%, ${darkTheme.backgroundSoft} 100%)`,
+  },
+});
+
+export const drawerHeroStyles = (theme: Theme) => ({
+  position: "relative",
+  flexShrink: 0,
+  height: 210,
+  overflow: "hidden",
+});
+
+export const drawerHeroImageStyles = (theme: Theme) => ({
+  width: "100%",
+  height: "100%",
+  objectFit: "cover" as const,
+  display: "block",
+});
+
+export const drawerHeroOverlayStyles = (theme: Theme) => ({
+  position: "absolute",
+  inset: 0,
+  background:
+    "linear-gradient(to top, rgba(0,0,0,0.78) 0%, rgba(0,0,0,0.22) 55%, rgba(0,0,0,0.08) 100%)",
+});
+
+export const drawerCloseButtonStyles = (theme: Theme) => ({
+  position: "absolute",
+  top: 10,
+  right: 10,
+  width: 32,
+  height: 32,
+  backgroundColor: "rgba(0,0,0,0.42)",
+  backdropFilter: "blur(4px)",
+  WebkitBackdropFilter: "blur(4px)",
+  color: "#fff",
+  "&:hover": { backgroundColor: "rgba(0,0,0,0.62)" },
+});
+
+export const drawerTitleWrapStyles = (theme: Theme) => ({
+  position: "absolute",
+  bottom: 0,
+  left: 0,
+  right: 0,
+  px: 2.5,
+  pb: 2,
+});
+
+export const drawerNameStyles = (theme: Theme) => ({
+  fontSize: "1.25rem",
+  fontWeight: 900,
+  lineHeight: 1.2,
+  color: "#fff",
+  textShadow: "0 1px 10px rgba(0,0,0,0.55)",
+});
+
+export const drawerSubtitleStyles = (theme: Theme) => ({
+  fontSize: "0.78rem",
+  fontWeight: 700,
+  color: "rgba(255,255,255,0.72)",
+  mt: "0.2rem",
+  textShadow: "0 1px 4px rgba(0,0,0,0.4)",
+});
+
+export const drawerContentStyles = (theme: Theme) => ({
+  flex: 1,
+  overflowY: "auto" as const,
+  px: 2.5,
+  py: 2.25,
+  display: "flex",
+  flexDirection: "column",
+  gap: "1.5rem",
+  "&::-webkit-scrollbar": { width: 4 },
+  "&::-webkit-scrollbar-track": { background: "transparent" },
+  "&::-webkit-scrollbar-thumb": {
+    borderRadius: 2,
+    backgroundColor: "rgba(15,23,42,0.12)",
+  },
+  ".dark &::-webkit-scrollbar-thumb": {
+    backgroundColor: "rgba(255,247,237,0.14)",
+  },
+});
+
+export const drawerSectionStyles = (theme: Theme) => ({
+  display: "flex",
+  flexDirection: "column",
+  gap: "0.55rem",
+});
+
+export const drawerSectionLabelStyles = (theme: Theme) => ({
+  fontSize: "0.7rem",
+  fontWeight: 800,
+  letterSpacing: "0.055em",
+  textTransform: "uppercase" as const,
+  color: "#92400E",
+  ".dark &": { color: "#FDBA74" },
+});
+
+export const drawerBodyTextStyles = (theme: Theme) => ({
+  fontSize: "0.875rem",
+  fontWeight: 500,
+  lineHeight: 1.7,
+  color: "var(--foreground)",
+  ".dark &": { color: darkTheme.text },
+});
+
+export const drawerTagsWrapStyles = (theme: Theme) => ({
+  display: "flex",
+  flexWrap: "wrap",
+  gap: "0.4rem",
+});
+
+export const drawerRatingRowStyles = (theme: Theme) => ({
+  display: "flex",
+  alignItems: "center",
+  gap: "0.35rem",
+});
+
+export const drawerRatingLabelStyles = (theme: Theme) => ({
+  fontSize: "0.8rem",
+  fontWeight: 700,
+  color: "var(--muted-foreground)",
+  ml: "0.25rem",
+  ".dark &": { color: darkTheme.muted },
+});
+
+export const drawerActionsStyles = (theme: Theme) => ({
+  flexShrink: 0,
+  display: "flex",
+  gap: "0.75rem",
+  px: 2.5,
+  py: 2,
+  borderTop: "1px solid rgba(15,23,42,0.08)",
+  ".dark &": { borderTopColor: darkTheme.borderSoft },
+});
+
+export const drawerEditButtonStyles = (theme: Theme) => ({
+  flex: 1,
+  display: "flex",
+  flexDirection: "row",
+  alignItems: "center",
+  justifyContent: "center",
+  gap: "0.45rem",
+  height: 44,
+  paddingInline: "1rem",
+  borderRadius: "999px",
+  border: "1.5px solid rgba(249,115,22,0.45)",
+  backgroundColor: "rgba(249,115,22,0.06)",
+  color: "#D9480F",
+  fontSize: "0.875rem",
+  fontWeight: 700,
+  cursor: "pointer",
+  transition: "background-color 150ms ease, border-color 150ms ease",
+  "&:hover": {
+    backgroundColor: "rgba(249,115,22,0.1)",
+    borderColor: "rgba(249,115,22,0.7)",
+  },
+  ".dark &": {
+    borderColor: "rgba(251,146,60,0.45)",
+    backgroundColor: "rgba(249,115,22,0.1)",
+    color: darkTheme.orange,
+    "&:hover": {
+      backgroundColor: "rgba(249,115,22,0.18)",
+      borderColor: "rgba(251,146,60,0.7)",
+    },
+  },
+});
+
+export const drawerRemoveButtonStyles = (theme: Theme) => ({
+  flex: 1,
+  display: "flex",
+  flexDirection: "row",
+  alignItems: "center",
+  justifyContent: "center",
+  gap: "0.45rem",
+  height: 44,
+  paddingInline: "1rem",
+  borderRadius: "999px",
+  border: "1.5px solid rgba(239,68,68,0.35)",
+  backgroundColor: "rgba(239,68,68,0.06)",
+  color: "#DC2626",
+  fontSize: "0.875rem",
+  fontWeight: 700,
+  cursor: "pointer",
+  transition: "background-color 150ms ease, border-color 150ms ease",
+  "&:hover": {
+    backgroundColor: "rgba(239,68,68,0.1)",
+    borderColor: "rgba(239,68,68,0.6)",
+  },
+  ".dark &": {
+    borderColor: "rgba(239,68,68,0.35)",
+    backgroundColor: "rgba(239,68,68,0.08)",
+    color: darkTheme.danger,
+    "&:hover": {
+      backgroundColor: "rgba(239,68,68,0.15)",
+      borderColor: "rgba(239,68,68,0.6)",
+    },
   },
 });
 
@@ -766,6 +1020,24 @@ export const styles = {
   backButtonStyles,
   cancelBtnStyles,
   cardActionButtonStyles,
+  drawerActionsStyles,
+  drawerBodyTextStyles,
+  drawerCloseButtonStyles,
+  drawerContentStyles,
+  drawerEditButtonStyles,
+  drawerHeroImageStyles,
+  drawerHeroOverlayStyles,
+  drawerHeroStyles,
+  drawerNameStyles,
+  drawerPaperStyles,
+  drawerRatingLabelStyles,
+  drawerRatingRowStyles,
+  drawerRemoveButtonStyles,
+  drawerSectionLabelStyles,
+  drawerSectionStyles,
+  drawerSubtitleStyles,
+  drawerTagsWrapStyles,
+  drawerTitleWrapStyles,
   cardBodyStyles,
   cardFooterStyles,
   cardImageStyles,
@@ -781,10 +1053,13 @@ export const styles = {
   countBadgeStyles,
   dialogActionsStyles,
   dialogBodyStyles,
+  dialogFoodNameStyles,
+  dialogIconStyles,
   dialogLabelStyles,
   dialogPaperStyles,
   dialogTextFieldStyles,
   dialogTitleStyles,
+  dialogTitleTextStyles,
   emptyIconStyles,
   emptyLinkStyles,
   emptyStateStyles,

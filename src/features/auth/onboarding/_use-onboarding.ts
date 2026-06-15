@@ -13,6 +13,7 @@ import toast from "react-hot-toast";
 import { apiUpsertHealthProfile, isLoggedIn } from "@/features/auth/_api";
 import { useRequireAuth } from "@/shared/hooks/use-auth-redirect";
 import {
+  INGREDIENT_DISPLAY_TO_VALUE,
   MEDICAL_CONDITION_OPTIONS,
   PROFILE_ALLERGY_OPTIONS,
 } from "@/features/profile/_interface";
@@ -61,7 +62,9 @@ export function useOnboarding() {
         await apiUpsertHealthProfile({
           health_conditions: medicalConditions,
           allergies,
-          preferred_ingredients: data.favorites,
+          preferred_ingredients: data.favorites.map(
+            (v) => INGREDIENT_DISPLAY_TO_VALUE[v] ?? v,
+          ),
           taste_profile: data.tastePreferences,
           dish_preferences: data.dishTypes,
           notes: "",

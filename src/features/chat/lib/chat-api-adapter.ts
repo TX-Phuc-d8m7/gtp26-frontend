@@ -4,7 +4,12 @@
  */
 import { v4 as uuidv4 } from "uuid";
 
-import { apiFetch, isLoggedIn } from "@/features/auth/_api";
+import {
+  apiFetch,
+  createAuthSessionErrorFromMessage,
+  isAuthSessionError,
+  isLoggedIn,
+} from "@/features/auth/_api";
 import { getFoodImageFromRecord } from "./food-image";
 import type {
   ChatEditAndResendPayload,
@@ -23,11 +28,17 @@ import type {
 const FOOD_AI_API_URL =
   process.env.NEXT_PUBLIC_FOOD_AI_API_URL ?? "/api/backend";
 const STORAGE_KEY = "foodie-suggest:chat-store:v1";
+const MESSAGE_METADATA_STORAGE_KEY = "foodie-suggest:message-metadata:v1";
 const SEARCH_API_TIMEOUT_MS = 30000;
 
 interface ChatStorageState {
   threads: ChatThread[];
   messagesByThreadId: Record<string, ChatMessage[]>;
+}
+
+interface CachedMessageMetadata {
+  aiInsight?: BackendSearchResponse["ai_insight"];
+  disclaimer?: string | null;
 }
 
 const emptyStore: ChatStorageState = {
@@ -64,6 +75,56 @@ function readStore(): ChatStorageState {
 function writeStore(store: ChatStorageState) {
   if (!isBrowser()) return;
   window.localStorage.setItem(STORAGE_KEY, JSON.stringify(store));
+}
+
+function readMessageMetadataStore(): Record<string, CachedMessageMetadata> {
+  if (!isBrowser()) return {};
+
+  try {
+    const raw = window.localStorage.getItem(MESSAGE_METADATA_STORAGE_KEY);
+    if (!raw) return {};
+    const parsed = JSON.parse(raw);
+    return parsed && typeof parsed === "object" && !Array.isArray(parsed)
+      ? (parsed as Record<string, CachedMessageMetadata>)
+      : {};
+  } catch {
+    return {};
+  }
+}
+
+function writeMessageMetadataStore(
+  store: Record<string, CachedMessageMetadata>,
+) {
+  if (!isBrowser()) return;
+  window.localStorage.setItem(
+    MESSAGE_METADATA_STORAGE_KEY,
+    JSON.stringify(store),
+  );
+}
+
+function cacheMessageMetadata(message: ChatMessage) {
+  if (message.role !== "assistant") return;
+  if (!message.aiInsight && !message.disclaimer) return;
+
+  const store = readMessageMetadataStore();
+  store[message.id] = {
+    aiInsight: message.aiInsight,
+    disclaimer: message.disclaimer,
+  };
+  writeMessageMetadataStore(store);
+}
+
+function hydrateMessageMetadata(message: ChatMessage): ChatMessage {
+  if (message.role !== "assistant") return message;
+
+  const cached = readMessageMetadataStore()[message.id];
+  if (!cached) return message;
+
+  return {
+    ...message,
+    aiInsight: message.aiInsight ?? cached.aiInsight,
+    disclaimer: message.disclaimer ?? cached.disclaimer,
+  };
 }
 
 function sortThreads(threads: ChatThread[]) {
@@ -115,12 +176,11 @@ function buildAssistantContent(data: BackendSearchResponse) {
     .map((item) => item.name);
   const adviceText =
     data.ai_response?.trim() || "Mình đã tìm được một số món phù hợp cho bạn.";
-  const warningText = data.ai_insight?.warning_message?.trim();
   const suggestionText = suggestionNames.length
     ? `\n\nGợi ý nhanh: ${suggestionNames.join(", ")}.`
     : "\n\nHiện chưa có món phù hợp trong dữ liệu.";
 
-  return `${warningText ? `${warningText}\n\n` : ""}${adviceText}${suggestionText}`;
+  return `${adviceText}${suggestionText}`;
 }
 
 async function requestFoodSearch(payload: ChatSendPayload) {
@@ -522,6 +582,9 @@ interface BEThread {
   updated_at: string;
   message_count: number;
   last_message_at: string | null;
+  last_message_preview?: string | null;
+  last_message_content?: string | null;
+  last_message?: string | { content?: string | null } | null;
 }
 
 interface BEMessage {
@@ -530,6 +593,11 @@ interface BEMessage {
   role: string; // "user" | "assistant"
   content: string;
   food_results: Record<string, unknown>[] | null;
+  structured_result?: {
+    data?: Record<string, unknown> | null;
+    kind?: string | null;
+  } | null;
+  ai_insight?: BackendSearchResponse["ai_insight"] | null;
   feedback: string | null;
   food_recommendation_feedbacks?: BEFoodRecommendationFeedback[] | null;
   disclaimer?: string | null;
@@ -561,15 +629,32 @@ interface BESendResponse {
     disclaimer?: string | null;
     ai_response?: string | null;
   } | null;
+  // Tiêu đề thread sau khi gửi (auto-gen từ tin đầu tiên nếu chưa có).
+  thread_title?: string | null;
 }
 
 function beThreadToFE(t: BEThread): ChatThread {
+  const lastMessage = isRecord(t.last_message) ? t.last_message : undefined;
+  const lastMessagePreview =
+    stringFromUnknown(t.last_message_preview) ??
+    stringFromUnknown(t.last_message_content) ??
+    stringFromUnknown(t.last_message) ??
+    stringFromUnknown(lastMessage?.content);
+  const messageCount =
+    typeof t.message_count === "number" && t.message_count > 0
+      ? t.message_count
+      : 0;
+
   return {
     id: String(t.id),
     title: t.title ?? "Cuộc trò chuyện mới",
     createdAt: t.created_at,
-    updatedAt: t.updated_at,
-    lastMessagePreview: "Chưa có tin nhắn",
+    updatedAt: t.last_message_at ?? t.updated_at,
+    lastMessagePreview: lastMessagePreview
+      ? createPreview(lastMessagePreview)
+      : messageCount > 0
+        ? `${messageCount} tin nhắn trong cuộc trò chuyện`
+        : "Chưa có tin nhắn",
     status: "idle",
   };
 }
@@ -578,6 +663,73 @@ function stringArrayFromUnknown(value: unknown): string[] {
   return Array.isArray(value)
     ? value.filter((item): item is string => typeof item === "string")
     : [];
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return Boolean(value) && typeof value === "object" && !Array.isArray(value);
+}
+
+function stringFromUnknown(value: unknown): string | null {
+  return typeof value === "string" && value.trim() ? value : null;
+}
+
+function aiInsightFromUnknown(
+  value: unknown,
+): BackendSearchResponse["ai_insight"] | undefined {
+  if (!isRecord(value)) return undefined;
+
+  const warningMessage = stringFromUnknown(value.warning_message);
+  const exclude = stringArrayFromUnknown(value.exclude);
+  const include = stringArrayFromUnknown(value.include);
+  const prefer = stringArrayFromUnknown(value.prefer);
+
+  if (!warningMessage && !exclude.length && !include.length && !prefer.length) {
+    return undefined;
+  }
+
+  return {
+    warning_message: warningMessage,
+    exclude,
+    include,
+    prefer,
+  };
+}
+
+function structuredResultDataFromMessage(
+  message: BEMessage,
+): Record<string, unknown> | undefined {
+  const structuredResult = message.structured_result;
+  if (!structuredResult || !isRecord(structuredResult.data)) return undefined;
+  return structuredResult.data;
+}
+
+function aiInsightFromMessage(
+  message: BEMessage,
+): BackendSearchResponse["ai_insight"] | undefined {
+  const structuredData = structuredResultDataFromMessage(message);
+  const nestedSearchResult = isRecord(structuredData?.search_result)
+    ? structuredData.search_result
+    : undefined;
+
+  return (
+    aiInsightFromUnknown(message.ai_insight) ??
+    aiInsightFromUnknown(structuredData?.ai_insight) ??
+    aiInsightFromUnknown(nestedSearchResult?.ai_insight)
+  );
+}
+
+function disclaimerFromMessage(message: BEMessage): string | undefined {
+  const structuredData = structuredResultDataFromMessage(message);
+  const nestedSearchResult = isRecord(structuredData?.search_result)
+    ? structuredData.search_result
+    : undefined;
+
+  return (
+    stringFromUnknown(message.disclaimer) ??
+    stringFromUnknown(structuredData?.disclaimer) ??
+    stringFromUnknown(nestedSearchResult?.disclaimer) ??
+    undefined
+  );
 }
 
 function beFoodResultToFE(f: Record<string, unknown>): BackendFoodResult {
@@ -627,6 +779,9 @@ function beFoodRecommendationFeedbackToFE(
 
 function beMessageToFE(m: BEMessage): ChatMessage {
   const role: ChatRole = m.role === "user" ? "human" : (m.role as ChatRole);
+  const aiInsight = aiInsightFromMessage(m);
+  const disclaimer = disclaimerFromMessage(m);
+
   return {
     id: String(m.id),
     threadId: String(m.thread_id),
@@ -638,7 +793,8 @@ function beMessageToFE(m: BEMessage): ChatMessage {
     foodRecommendationFeedbacks: (m.food_recommendation_feedbacks ?? []).map(
       beFoodRecommendationFeedbackToFE,
     ),
-    disclaimer: m.disclaimer ?? undefined,
+    aiInsight,
+    disclaimer,
     status: "complete",
   };
 }
@@ -646,11 +802,19 @@ function beMessageToFE(m: BEMessage): ChatMessage {
 async function parseApiError(res: Response, fallback: string): Promise<string> {
   try {
     const body = await res.json();
-    if (typeof body.detail === "string") return body.detail;
-    if (Array.isArray(body.detail))
-      return body.detail.map((e: { msg: string }) => e.msg).join("; ");
-  } catch {
-    /* ignore */
+    if (typeof body.detail === "string") {
+      const authError = createAuthSessionErrorFromMessage(body.detail);
+      if (authError) throw authError;
+      return body.detail;
+    }
+    if (Array.isArray(body.detail)) {
+      const message = body.detail.map((e: { msg: string }) => e.msg).join("; ");
+      const authError = createAuthSessionErrorFromMessage(message);
+      if (authError) throw authError;
+      return message;
+    }
+  } catch (error) {
+    if (isAuthSessionError(error)) throw error;
   }
   return fallback;
 }
@@ -684,7 +848,9 @@ export const remoteChatApiAdapter: ChatApiAdapter = {
     if (!res.ok)
       throw new Error(await parseApiError(res, "Không tải được tin nhắn."));
     const data = await res.json();
-    return (data.items as BEMessage[]).map(beMessageToFE);
+    return (data.items as BEMessage[])
+      .map(beMessageToFE)
+      .map(hydrateMessageMetadata);
   },
 
   async sendMessage(payload) {
@@ -727,6 +893,7 @@ export const remoteChatApiAdapter: ChatApiAdapter = {
       disclaimer: searchResult?.disclaimer ?? baseAssistantMessage.disclaimer,
       sourceQuery: payload.content,
     };
+    cacheMessageMetadata(assistantMessage);
 
     const userMessage = beMessageToFE(data.user_message);
     const allMessages = payload.replaceMessageId
@@ -735,7 +902,9 @@ export const remoteChatApiAdapter: ChatApiAdapter = {
 
     const thread: ChatThread = {
       id: payload.threadId,
-      title: "Cuộc trò chuyện mới",
+      title:
+        data.thread_title ??
+        createThreadTitle(payload.content),
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
       lastMessagePreview:
@@ -780,10 +949,11 @@ export const remoteChatApiAdapter: ChatApiAdapter = {
       disclaimer: searchResult?.disclaimer ?? baseAssistantMessage.disclaimer,
       sourceQuery: payload.content,
     };
+    cacheMessageMetadata(assistantMessage);
 
     const thread: ChatThread = {
       id: payload.threadId,
-      title: "Cuộc trò chuyện mới",
+      title: data.thread_title ?? "Cuộc trò chuyện mới",
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
       lastMessagePreview:
@@ -834,7 +1004,7 @@ export const remoteChatApiAdapter: ChatApiAdapter = {
       throw new Error(
         await parseApiError(res, "Không cập nhật được phản hồi."),
       );
-    return beMessageToFE(await res.json());
+    return hydrateMessageMetadata(beMessageToFE(await res.json()));
   },
 
   async submitFoodRecommendationFeedback(payload) {
