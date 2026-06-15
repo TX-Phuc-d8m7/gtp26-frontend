@@ -72,7 +72,8 @@ export async function updateFavorite(
 // ---------------------------------------------------------------------------
 
 export async function removeFavorite(foodId: string): Promise<void> {
-  await apiFetch(`/users/me/favorites/${foodId}`, { method: "DELETE" });
+  const res = await apiFetch(`/users/me/favorites/${foodId}`, { method: "DELETE" });
+  if (!res.ok) throw new Error(`removeFavorite: HTTP ${res.status}`);
 }
 
 // ---------------------------------------------------------------------------

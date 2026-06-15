@@ -9,6 +9,7 @@ import type {
   AdminFoodFormField,
   AdminFoodFormMode,
   AdminFoodFormState,
+  RawIngredientRow,
 } from "../../_interface";
 
 export interface FoodFormDialogProps {
@@ -17,9 +18,11 @@ export interface FoodFormDialogProps {
   isSubmitting: boolean;
   mode: AdminFoodFormMode;
   open: boolean;
+  /** Tăng mỗi lần submit fail validation — dùng để trigger auto-switch tab */
+  submitAttemptCount: number;
   onChange: (
     field: AdminFoodFormField | "autoEmbed",
-    value: string | boolean | string[],
+    value: string | boolean | string[] | RawIngredientRow[],
   ) => void;
   onClose: () => void;
   onSubmit: () => void;

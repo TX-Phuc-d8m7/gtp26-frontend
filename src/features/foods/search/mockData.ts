@@ -126,7 +126,7 @@ export const SEARCH_FOODS: SearchFood[] = [
       "https://images.unsplash.com/photo-1626804475297-4160ebbaea4b?auto=format&fit=crop&q=80&w=900",
     priceRange: "40.000đ - 90.000đ",
     signature: "Ăn ngon nhất khi cuốn nóng với rau cải và nước chấm đậm.",
-    healthNote: "Không hợp nếu đang cần hạn chế dầu mỡ hoặc dị ứng hải sản.",
+    healthNote: "Không hợp nếu đang cần hạn chế dầu mỡ hoặc dị ứng giáp xác.",
   },
   {
     id: "banh-trang-cuon-thit-heo",
@@ -266,6 +266,6 @@ export const SEARCH_FOODS: SearchFood[] = [
       "https://images.unsplash.com/photo-1563805042-7684c019e1cb?auto=format&fit=crop&q=80&w=900",
     priceRange: "25.000đ - 45.000đ",
     signature: "Gợi ý tốt khi người dùng hỏi món ngọt hoặc ăn khuya nhẹ.",
-    healthNote: "Khá ngọt và béo; người tiểu đường nên hạn chế.",
+    healthNote: "Khá ngọt và béo; người béo phì nên kiểm soát khẩu phần.",
   },
 ];

@@ -14,22 +14,22 @@ const verdictColors: Record<
   { bg: string; border: string; color: string; darkBg: string; darkColor: string }
 > = {
   like: {
-    bg: "rgba(240,253,244,0.82)",
-    border: "rgba(22, 163, 74, 0.28)",
+    bg: "#F0FDF4",
+    border: "#86EFAC",
     color: "#15803D",
     darkBg: "rgba(63, 98, 18, 0.34)",
     darkColor: "#D9F99D",
   },
   neutral: {
-    bg: "rgba(248,250,252,0.82)",
-    border: "rgba(100, 116, 139, 0.24)",
+    bg: "#F8FAFC",
+    border: "#CBD5E1",
     color: "#475569",
     darkBg: "rgba(63, 63, 70, 0.46)",
     darkColor: "#E7E5E4",
   },
   dislike: {
-    bg: "rgba(255,241,242,0.82)",
-    border: "rgba(225, 29, 72, 0.24)",
+    bg: "#FFF1F2",
+    border: "#FDA4AF",
     color: "#BE123C",
     darkBg: "rgba(127, 29, 29, 0.3)",
     darkColor: "#FDA4AF",
@@ -38,15 +38,11 @@ const verdictColors: Record<
 
 export const paperSx: SxProps<Theme> = {
   overflow: "hidden",
-  border: "1px solid rgba(15, 23, 42, 0.14)",
+  border: "1px solid #E5E7EB",
   borderRadius: pxToRem(28),
-  background:
-    "linear-gradient(135deg, rgba(255,255,255,0.84), rgba(255,247,237,0.7))",
+  background: "#FFFFFF",
   color: "#111827",
-  boxShadow:
-    "0 34px 90px rgba(15, 23, 42, 0.16), inset 0 1px 0 rgba(255,255,255,0.9)",
-  backdropFilter: "blur(24px) saturate(1.18)",
-  WebkitBackdropFilter: "blur(24px) saturate(1.18)",
+  boxShadow: "0 24px 60px rgba(15, 23, 42, 0.12)",
   ".dark &": {
     borderColor: "rgba(250, 250, 250, 0.12)",
     background:
@@ -54,15 +50,17 @@ export const paperSx: SxProps<Theme> = {
     color: "#fafafa",
     boxShadow:
       "0 34px 90px rgba(0,0,0,0.62), inset 0 1px 0 rgba(250,250,250,0.06)",
+    backdropFilter: "blur(24px) saturate(1.18)",
+    WebkitBackdropFilter: "blur(24px) saturate(1.18)",
   },
 };
 
 export const backdropSx: SxProps<Theme> = {
-  backgroundColor: "rgba(15, 23, 42, 0.28)",
-  backdropFilter: "blur(12px)",
-  WebkitBackdropFilter: "blur(12px)",
+  backgroundColor: "rgba(15, 23, 42, 0.42)",
   ".dark &": {
     backgroundColor: "rgba(9, 9, 11, 0.68)",
+    backdropFilter: "blur(12px)",
+    WebkitBackdropFilter: "blur(12px)",
   },
 };
 
@@ -80,7 +78,7 @@ export const titleSx: SxProps<Theme> = {
 
 export const subtitleSx: SxProps<Theme> = {
   px: 3,
-  color: "rgba(15, 23, 42, 0.62)",
+  color: "#4B5563",
   fontSize: pxToRem(13),
   lineHeight: 1.55,
   ".dark &": {
@@ -101,7 +99,7 @@ export const stackSx: SxProps<Theme> = {
 
 export const fieldLabelSx: SxProps<Theme> = {
   mb: 1,
-  color: "rgba(15, 23, 42, 0.62)",
+  color: "#4B5563",
   fontSize: pxToRem(12),
   fontWeight: fontWeights.extrabold,
   ".dark &": {
@@ -123,15 +121,15 @@ export const getVerdictButtonSx = (
   return {
     alignItems: "flex-start",
     borderRadius: pxToRem(18),
-    border: `1px solid ${selected ? config.border : "rgba(15, 23, 42, 0.12)"}`,
-    background: selected ? config.bg : "rgba(255,255,255,0.54)",
+    border: `1px solid ${selected ? config.border : "#E5E7EB"}`,
+    background: selected ? config.bg : "#FFFFFF",
     color: selected ? config.color : "#334155",
     p: 1.5,
     textAlign: "left",
     textTransform: "none",
     boxShadow: selected
-      ? "0 14px 30px rgba(15, 23, 42, 0.08)"
-      : "inset 0 1px 0 rgba(255,255,255,0.72)",
+      ? "0 8px 18px rgba(15, 23, 42, 0.06)"
+      : "0 1px 2px rgba(15, 23, 42, 0.04)",
     "&:hover": {
       borderColor: config.border,
       background: config.bg,
@@ -173,8 +171,8 @@ export const reasonWrapSx: SxProps<Theme> = {
 
 export const getReasonChipSx = (selected: boolean): SxProps<Theme> => ({
   borderRadius: "999px",
-  border: `1px solid ${selected ? "rgba(234, 88, 12, 0.32)" : "rgba(15, 23, 42, 0.12)"}`,
-  backgroundColor: selected ? "rgba(255, 237, 213, 0.72)" : "rgba(255,255,255,0.52)",
+  border: `1px solid ${selected ? "#FDBA74" : "#E5E7EB"}`,
+  backgroundColor: selected ? "#FFF7ED" : "#FFFFFF",
   color: selected ? "#C2410C" : "#475569",
   fontWeight: fontWeights.bold,
   ".dark &": {
@@ -187,12 +185,10 @@ export const getReasonChipSx = (selected: boolean): SxProps<Theme> => ({
 export const textFieldSx: SxProps<Theme> = {
   "& .MuiOutlinedInput-root": {
     borderRadius: pxToRem(18),
-    backgroundColor: "rgba(255,255,255,0.52)",
+    backgroundColor: "#FFFFFF",
     color: "#111827",
-    backdropFilter: "blur(12px)",
-    WebkitBackdropFilter: "blur(12px)",
     "& fieldset": {
-      borderColor: "rgba(15, 23, 42, 0.14)",
+      borderColor: "#E5E7EB",
     },
     "&:hover fieldset": {
       borderColor: "rgba(234, 88, 12, 0.38)",
@@ -203,7 +199,7 @@ export const textFieldSx: SxProps<Theme> = {
     },
   },
   "& .MuiInputBase-input::placeholder": {
-    color: "rgba(15, 23, 42, 0.42)",
+    color: "#6B7280",
     opacity: 1,
   },
   ".dark & .MuiOutlinedInput-root": {
@@ -231,8 +227,8 @@ export const triedRowSx: SxProps<Theme> = {
   justifyContent: "space-between",
   gap: 1.5,
   borderRadius: pxToRem(18),
-  border: "1px solid rgba(15, 23, 42, 0.1)",
-  backgroundColor: "rgba(255,255,255,0.46)",
+  border: "1px solid #E5E7EB",
+  backgroundColor: "#FAFAFA",
   px: 1.4,
   py: 1,
   ".dark &": {
@@ -244,7 +240,7 @@ export const triedRowSx: SxProps<Theme> = {
 export const actionsSx: SxProps<Theme> = {
   px: 3,
   py: 2.5,
-  borderTop: "1px solid rgba(15, 23, 42, 0.08)",
+  borderTop: "1px solid #E5E7EB",
   ".dark &": {
     borderTopColor: "rgba(250,250,250,0.1)",
   },
@@ -256,7 +252,7 @@ export const cancelButtonSx: SxProps<Theme> = {
   textTransform: "none",
   fontWeight: fontWeights.bold,
   "&:hover": {
-    backgroundColor: "rgba(15, 23, 42, 0.06)",
+    backgroundColor: "#F3F4F6",
   },
   ".dark &": {
     color: "#a1a1aa",

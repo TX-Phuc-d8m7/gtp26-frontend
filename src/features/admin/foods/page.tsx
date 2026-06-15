@@ -92,7 +92,6 @@ function FoodTableSkeleton() {
 export default function AdminFoods() {
   const {
     actionFoodId,
-    actionMessage,
     closeDeleteDialog,
     closeDetailDrawer,
     closeFormDialog,
@@ -116,6 +115,7 @@ export default function AdminFoods() {
     setRowsPerPage,
     setSearchTerm,
     state,
+    submitAttemptCount,
     submitFoodForm,
   } = useAdminFoods();
 
@@ -211,12 +211,6 @@ export default function AdminFoods() {
             </Box>
           </Box>
 
-          {/* ── Messages ───────────────────────────────────── */}
-          {actionMessage && (
-            <Typography as="p" sx={styles.messageStyles}>
-              {actionMessage}
-            </Typography>
-          )}
           {error && (
             <Typography as="p" sx={styles.messageStyles}>
               {error}
@@ -233,7 +227,10 @@ export default function AdminFoods() {
                     <TableCell>Phân loại</TableCell>
                     <TableCell sx={{ width: 130 }}>Gợi ý quán</TableCell>
                     <TableCell>Embedding</TableCell>
-                    <TableCell align="right" sx={{ width: 80 }}>
+                    <TableCell
+                      align="right"
+                      sx={{ minWidth: 112, whiteSpace: "nowrap", width: 112 }}
+                    >
                       Thao tác
                     </TableCell>
                   </TableRow>
@@ -363,8 +360,13 @@ export default function AdminFoods() {
                           <TableCell
                             align="right"
                             onClick={(e) => e.stopPropagation()}
+                            sx={{
+                              minWidth: 112,
+                              whiteSpace: "nowrap",
+                              width: 112,
+                            }}
                           >
-                            <Box sx={[styles.actionStackStyles, { justifyContent: "flex-end" }]}>
+                            <Box sx={styles.actionStackStyles}>
                               <Button
                                 type="button"
                                 variant="ghost"
@@ -500,6 +502,7 @@ export default function AdminFoods() {
         isSubmitting={isSubmitting}
         mode={state.formMode}
         open={state.isFormOpen}
+        submitAttemptCount={submitAttemptCount}
         onChange={setFormField}
         onClose={closeFormDialog}
         onSubmit={() => void submitFoodForm()}

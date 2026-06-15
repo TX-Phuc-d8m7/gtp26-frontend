@@ -3,8 +3,8 @@
  * All rights reserved.
  */
 import { useEffect, useState } from "react";
-import { Box } from "@mui/material";
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { Box, Drawer } from "@mui/material";
+import { useReducedMotion } from "framer-motion";
 import dynamic from "next/dynamic";
 import {
   Clock3,
@@ -226,105 +226,110 @@ export default function MapInsightPanel({
         : null;
 
   return (
-    <AnimatePresence>
-      {food && (
+    <Drawer
+      anchor={isDesktop ? "right" : "bottom"}
+      open={Boolean(food)}
+      onClose={onClose}
+      sx={styles.mapPanelDrawerRootStyles}
+      transitionDuration={shouldReduceMotion ? 0 : undefined}
+      ModalProps={{
+        keepMounted: true,
+      }}
+      slotProps={{
+        backdrop: {
+          sx: styles.mapPanelBackdropStyles,
+        },
+        paper: {
+          role: "dialog",
+          "aria-modal": true,
+          "aria-label": food
+            ? `Địa điểm bán ${food.name}`
+            : "Địa điểm bán món ăn",
+          sx: styles.mapPanelStyles(!isDesktop),
+        },
+      }}
+    >
+      {food ? (
         <Box
-          component={motion.div}
-          sx={styles.mapPanelBackdropStyles}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: shouldReduceMotion ? 0 : 0.18 }}
-          onClick={onClose}
+          data-food-map-drawer="open"
+          sx={{
+            display: "flex",
+            minHeight: 0,
+            flex: 1,
+            flexDirection: "column",
+            gap: 1.5,
+          }}
         >
-          <Box
-            component={motion.aside}
-            role="dialog"
-            aria-modal="true"
-            aria-label={`Địa điểm bán ${food.name}`}
-            sx={styles.mapPanelStyles}
-            initial={isDesktop ? { x: 48, opacity: 0 } : { y: 48, opacity: 0 }}
-            animate={isDesktop ? { x: 0, opacity: 1 } : { y: 0, opacity: 1 }}
-            exit={isDesktop ? { x: 48, opacity: 0 } : { y: 48, opacity: 0 }}
-            transition={{
-              duration: shouldReduceMotion ? 0 : 0.22,
-              ease: "easeOut",
-            }}
-            onClick={(event) => event.stopPropagation()}
-          >
-            <Box sx={styles.mapPanelHeaderStyles}>
-              <Box sx={{ minWidth: 0 }}>
-                <Typography as="span" sx={styles.mapPanelEyebrowStyles}>
-                  Quán gần bạn
+          <Box sx={styles.mapPanelHeaderStyles}>
+            <Box sx={{ minWidth: 0 }}>
+              <Typography as="span" sx={styles.mapPanelEyebrowStyles}>
+                Quán gần bạn
+              </Typography>
+              <Typography as="h2" sx={styles.mapPanelTitleStyles}>
+                {food.name}
+              </Typography>
+              <Typography as="p" sx={styles.mapPanelSubtitleStyles}>
+                {isLoadingPlaces
+                  ? "Đang tìm quán gần bạn..."
+                  : usedGps
+                    ? `${locations.length} địa điểm gần vị trí hiện tại${providerLabel ? ` • ${providerLabel}` : ""}.`
+                    : `${locations.length} địa điểm theo khu vực Đà Nẵng${providerLabel ? ` • ${providerLabel}` : ""}.`}
+              </Typography>
+              {placeResultLabel && !isLoadingPlaces && (
+                <Typography
+                  as="span"
+                  sx={styles.mapResultLabelBadgeStyles(usedFallbackResults)}
+                >
+                  {placeResultLabel}
                 </Typography>
-                <Typography as="h2" sx={styles.mapPanelTitleStyles}>
-                  {food.name}
-                </Typography>
-                <Typography as="p" sx={styles.mapPanelSubtitleStyles}>
-                  {isLoadingPlaces
-                    ? "Đang tìm quán gần bạn..."
-                    : usedGps
-                      ? `${locations.length} địa điểm gần vị trí hiện tại${providerLabel ? ` • ${providerLabel}` : ""}.`
-                      : `${locations.length} địa điểm theo khu vực Đà Nẵng${providerLabel ? ` • ${providerLabel}` : ""}.`}
-                </Typography>
-                {placeResultLabel && !isLoadingPlaces && (
-                  <Typography
-                    as="span"
-                    sx={styles.mapResultLabelBadgeStyles(
-                      usedFallbackResults,
-                    )}
-                  >
-                    {placeResultLabel}
-                  </Typography>
-                )}
-              </Box>
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                sx={styles.headerIconButtonStyles}
-                onClick={onClose}
-                aria-label="Đóng bản đồ địa điểm"
-              >
-                <X size={20} />
-              </Button>
+              )}
             </Box>
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              sx={styles.headerIconButtonStyles}
+              onClick={onClose}
+              aria-label="Đóng bản đồ địa điểm"
+            >
+              <X size={20} />
+            </Button>
+          </Box>
 
-            <LeafletPlaceMap
-              locations={locations}
-              selectedLocationId={selectedLocation?.id ?? null}
-              userLocation={userLocation}
-              onSelectLocation={setSelectedLocationId}
-            />
+          <LeafletPlaceMap
+            locations={locations}
+            selectedLocationId={selectedLocation?.id ?? null}
+            userLocation={userLocation}
+            onSelectLocation={setSelectedLocationId}
+          />
 
-            <Box sx={styles.mapLocationListStyles}>
-              {isLoadingPlaces && locations.length === 0 && (
-                <Typography as="p" sx={styles.mapLocationAddressStyles}>
-                  Đang tải danh sách quán gần bạn...
-                </Typography>
-              )}
-              {placesError && (
-                <Typography as="p" sx={styles.mapLocationAddressStyles}>
-                  {placesError}
-                </Typography>
-              )}
-              {!placesError && !isLoadingPlaces && locations.length === 0 && (
-                <Typography as="p" sx={styles.mapLocationAddressStyles}>
-                  Chưa tìm thấy quán phù hợp cho món này.
-                </Typography>
-              )}
-              {locations.map((location) => (
-                <LocationRow
-                  key={location.id}
-                  location={location}
-                  isActive={location.id === selectedLocation?.id}
-                  onSelect={() => setSelectedLocationId(location.id)}
-                />
-              ))}
-            </Box>
+          <Box sx={styles.mapLocationListStyles}>
+            {isLoadingPlaces && locations.length === 0 && (
+              <Typography as="p" sx={styles.mapLocationAddressStyles}>
+                Đang tải danh sách quán gần bạn...
+              </Typography>
+            )}
+            {placesError && (
+              <Typography as="p" sx={styles.mapLocationAddressStyles}>
+                {placesError}
+              </Typography>
+            )}
+            {!placesError && !isLoadingPlaces && locations.length === 0 && (
+              <Typography as="p" sx={styles.mapLocationAddressStyles}>
+                Chưa tìm thấy quán phù hợp cho món này.
+              </Typography>
+            )}
+            {locations.map((location) => (
+              <LocationRow
+                key={location.id}
+                location={location}
+                isActive={location.id === selectedLocation?.id}
+                onSelect={() => setSelectedLocationId(location.id)}
+              />
+            ))}
           </Box>
         </Box>
-      )}
-    </AnimatePresence>
+      ) : null}
+    </Drawer>
   );
 }

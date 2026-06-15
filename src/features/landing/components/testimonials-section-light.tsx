@@ -21,7 +21,7 @@ const testimonials = [
     role: "Nhân viên văn phòng · Sơn Trà",
     avatar: "👩‍💼",
     content:
-      "Mình bị dị ứng hải sản. Chỉ cần điền vào hồ sơ một lần, hệ thống tự lọc món phù hợp mà không cần nhắc lại.",
+      "Mình bị dị ứng giáp xác. Chỉ cần điền vào hồ sơ một lần, hệ thống tự lọc món phù hợp mà không cần nhắc lại.",
     rating: 5,
   },
   {
@@ -29,7 +29,7 @@ const testimonials = [
     role: "Nội trợ · Cẩm Lệ, Đà Nẵng",
     avatar: "🍳",
     content:
-      "Chồng bị tiểu đường nên tôi hay phải cân nhắc từng bữa. App gợi ý món ít đường, ít muối rất phù hợp cho gia đình tôi.",
+      "Chồng bị cao huyết áp nên tôi hay phải cân nhắc từng bữa. App gợi ý món thanh đạm, ít muối rất phù hợp cho gia đình tôi.",
     rating: 5,
   },
   {

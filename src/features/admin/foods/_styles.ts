@@ -10,24 +10,24 @@ import type { AdminFoodStats } from ".";
 
 const light = {
   cardBg: "#FFFFFF",
-  cardBorder: "rgba(0,0,0,0.055)",
-  cardShadow: "0 2px 12px rgba(0,0,0,0.07)",
-  text: "#1C1917",
-  textSub: "#78716C",
-  textMuted: "#A8A29E",
+  cardBorder: "#E5E7EB",
+  cardShadow: "0 12px 28px rgba(15, 23, 42, 0.06)",
+  text: "#1F2937",
+  textSub: "#4B5563",
+  textMuted: "#6B7280",
   green: "#15803D",
-  orange: "#C2410C",
+  orange: "#EA580C",
 } as const;
 
 const dark = {
-  cardBg: "#1E1B18",
-  cardBorder: "rgba(255,247,237,0.07)",
-  cardShadow: "0 4px 24px rgba(0,0,0,0.4)",
-  text: "#F5EFE8",
-  textSub: "rgba(245,239,232,0.55)",
-  textMuted: "rgba(245,239,232,0.35)",
-  green: "#84CC16",
-  orange: "#F97316",
+  cardBg: "#1C1917",
+  cardBorder: "rgba(255,247,237,0.12)",
+  cardShadow: "0 18px 42px rgba(0,0,0,0.46)",
+  text: "#FFF7ED",
+  textSub: "rgba(255,247,237,0.62)",
+  textMuted: "rgba(255,247,237,0.42)",
+  green: "#86EFAC",
+  orange: "#FF9A1F",
 } as const;
 
 // ─── Stats bar ──────────────────────────────────────────────────────────────
@@ -107,26 +107,26 @@ export const filterPillStyles = (isActive: boolean) => (theme: Theme) => ({
   py: 0.75,
   borderRadius: 999,
   border: "1px solid",
-  borderColor: isActive ? "rgba(249, 115, 22, 0.5)" : "rgba(0,0,0,0.1)",
-  background: isActive ? "#F97316" : "transparent",
+  borderColor: isActive ? "#FDBA74" : light.cardBorder,
+  background: isActive ? "#EA580C" : "transparent",
   color: isActive ? "#FFFFFF" : light.textSub,
   fontSize: 13,
   fontWeight: 850,
   cursor: "pointer",
   transition: "all 130ms ease",
   "&:hover": {
-    borderColor: "rgba(249, 115, 22, 0.5)",
-    background: isActive ? "#EA580C" : "rgba(249, 115, 22, 0.08)",
-    color: isActive ? "#FFFFFF" : "#C2410C",
+    borderColor: "#FDBA74",
+    background: isActive ? "#C2410C" : "#FFF7ED",
+    color: isActive ? "#FFFFFF" : light.orange,
   },
   ".dark &": {
-    borderColor: isActive ? "rgba(249, 115, 22, 0.6)" : dark.cardBorder,
-    background: isActive ? "#F97316" : "transparent",
+    borderColor: isActive ? "rgba(255, 154, 31, 0.48)" : dark.cardBorder,
+    background: isActive ? "#FF7A00" : "transparent",
     color: isActive ? "#FFFFFF" : dark.textSub,
     "&:hover": {
-      borderColor: "rgba(249, 115, 22, 0.5)",
-      background: isActive ? "#EA580C" : "rgba(249, 115, 22, 0.1)",
-      color: isActive ? "#FFFFFF" : "#FDBA74",
+      borderColor: "rgba(255, 154, 31, 0.42)",
+      background: isActive ? "#FF7A00" : "rgba(255, 154, 31, 0.1)",
+      color: isActive ? "#FFFFFF" : dark.orange,
     },
   },
 });
@@ -158,17 +158,17 @@ export const iconActionButtonStyles = (theme: Theme) => ({
   color: light.textSub,
   flexShrink: 0,
   "&:hover": {
-    borderColor: "rgba(249, 115, 22, 0.4)",
-    backgroundColor: "rgba(249, 115, 22, 0.08)",
-    color: "#C2410C",
+    borderColor: "#FDBA74",
+    backgroundColor: "#FFF7ED",
+    color: light.orange,
   },
   ".dark &": {
     borderColor: dark.cardBorder,
     color: dark.textSub,
     "&:hover": {
-      borderColor: "rgba(249, 115, 22, 0.35)",
-      backgroundColor: "rgba(249, 115, 22, 0.1)",
-      color: "#FDBA74",
+      borderColor: "rgba(255, 154, 31, 0.34)",
+      backgroundColor: "rgba(255, 154, 31, 0.1)",
+      color: dark.orange,
     },
   },
 });
@@ -275,17 +275,21 @@ export const headerActionStyles = (theme: Theme) => ({
 export const createButtonStyles = (theme: Theme) => ({
   minHeight: 38,
   borderRadius: 999,
-  background: "#F97316",
+  background: "#EA580C",
   color: "#FFFFFF",
   fontWeight: 900,
   px: 1.45,
-  boxShadow: "0 4px 14px rgba(249, 115, 22, 0.3)",
+  boxShadow: "0 10px 24px rgba(234, 88, 12, 0.18)",
   "&:hover": {
-    background: "#EA580C",
-    boxShadow: "0 6px 18px rgba(249, 115, 22, 0.4)",
+    background: "#C2410C",
+    boxShadow: "0 14px 30px rgba(234, 88, 12, 0.24)",
   },
   ".dark &": {
-    boxShadow: "0 4px 14px rgba(249, 115, 22, 0.2)",
+    background: "#FF7A00",
+    boxShadow: "0 12px 28px rgba(255, 122, 0, 0.18)",
+    "&:hover": {
+      background: "#FF9A1F",
+    },
   },
 });
 
@@ -311,7 +315,7 @@ export const fieldStyles = (theme: Theme) => ({
       borderColor: "rgba(249, 115, 22, 0.4)",
     },
     "&.Mui-focused fieldset": {
-      borderColor: "#F97316",
+      borderColor: light.orange,
     },
   },
   "& .MuiInputLabel-root": {
@@ -368,7 +372,7 @@ export const tableStyles = (theme: Theme) => ({
   "& th": {
     borderBottom: `1px solid ${light.cardBorder}`,
     color: light.textSub,
-    backgroundColor: "rgba(249,115,22,0.04)",
+    backgroundColor: "#F9FAFB",
     fontSize: 12,
     fontWeight: 900,
     letterSpacing: "0.04em",
@@ -383,7 +387,7 @@ export const tableStyles = (theme: Theme) => ({
     "& th": {
       borderBottomColor: dark.cardBorder,
       color: dark.textSub,
-      backgroundColor: "rgba(249,115,22,0.05)",
+      backgroundColor: "rgba(255,247,237,0.035)",
     },
     "& td": {
       borderBottomColor: dark.cardBorder,
@@ -401,8 +405,8 @@ export const foodCellStyles = (theme: Theme) => ({
 });
 
 export const imageStyles = (theme: Theme) => ({
-  width: 58,
-  height: 58,
+  width: 100,
+  height: 100,
   flexShrink: 0,
   borderRadius: 3,
   objectFit: "cover",
@@ -488,7 +492,7 @@ export const statusChipStyles = (isReady: boolean) => (theme: Theme) => ({
   backgroundColor: isReady
     ? "rgba(34, 197, 94, 0.08)"
     : "rgba(249, 115, 22, 0.09)",
-  color: isReady ? "#15803D" : "#C2410C",
+  color: isReady ? "#15803D" : light.orange,
   fontSize: 12,
   fontWeight: 900,
   px: 1,
@@ -500,7 +504,7 @@ export const statusChipStyles = (isReady: boolean) => (theme: Theme) => ({
     backgroundColor: isReady
       ? "rgba(132, 204, 22, 0.1)"
       : "rgba(249, 115, 22, 0.1)",
-    color: isReady ? dark.green : "#FDBA74",
+      color: isReady ? dark.green : dark.orange,
   },
 });
 
@@ -545,10 +549,12 @@ export const diningContextChipStyles = (ctx?: string | null) => () => {
 // ─── Action buttons ──────────────────────────────────────────────────────────
 
 export const actionStackStyles = (theme: Theme) => ({
+  alignItems: "center",
   display: "flex",
-  flexWrap: "wrap",
+  flexWrap: "nowrap",
   justifyContent: "flex-end",
   gap: 0.75,
+  minWidth: "max-content",
 });
 
 export const smallActionButtonStyles = (theme: Theme) => ({
@@ -561,17 +567,17 @@ export const smallActionButtonStyles = (theme: Theme) => ({
   fontSize: 12,
   fontWeight: 850,
   "&:hover": {
-    borderColor: "rgba(249, 115, 22, 0.4)",
-    backgroundColor: "rgba(249, 115, 22, 0.08)",
-    color: "#C2410C",
+    borderColor: "#FDBA74",
+    backgroundColor: "#FFF7ED",
+    color: light.orange,
   },
   ".dark &": {
     borderColor: dark.cardBorder,
     color: dark.textSub,
     "&:hover": {
-      borderColor: "rgba(249, 115, 22, 0.3)",
-      backgroundColor: "rgba(249, 115, 22, 0.1)",
-      color: "#FDBA74",
+      borderColor: "rgba(255, 154, 31, 0.34)",
+      backgroundColor: "rgba(255, 154, 31, 0.1)",
+      color: dark.orange,
     },
   },
 });
@@ -599,17 +605,17 @@ export const deleteActionButtonStyles = (theme: Theme) => ({
 
 export const messageStyles = (theme: Theme) => ({
   borderRadius: 3,
-  border: "1px solid rgba(249, 115, 22, 0.2)",
-  backgroundColor: "rgba(249, 115, 22, 0.07)",
-  color: "#9A3412",
+  border: "1px solid #FDBA74",
+  backgroundColor: "#FFF7ED",
+  color: light.orange,
   px: 1.25,
   py: 1,
   fontSize: 13,
   fontWeight: 800,
   ".dark &": {
-    borderColor: "rgba(249, 115, 22, 0.18)",
-    backgroundColor: "rgba(249, 115, 22, 0.1)",
-    color: "#FDBA74",
+    borderColor: "rgba(255, 154, 31, 0.28)",
+    backgroundColor: "rgba(255, 154, 31, 0.1)",
+    color: dark.orange,
   },
 });
 

@@ -44,8 +44,8 @@ import type {
   AdminFoodRecommendationFeedbackItem,
 } from ".";
 
-const feedbackColors = ["#84CC16", "#FB7185"];
-const foodFeedbackColors = ["#84CC16", "#FBBF24", "#FB7185"];
+const feedbackColors = ["#22C55E", "#F43F5E"];
+const foodFeedbackColors = ["#22C55E", "#F59E0B", "#F43F5E"];
 
 type FoodReviewGroup = {
   averageRating: number | null;
@@ -173,7 +173,7 @@ export default function Admin() {
 
   const isDark = resolvedTheme === "dark";
   const centerFill = isDark ? "#FFF7ED" : "#111827";
-  const centerSubFill = isDark ? "rgba(255, 247, 237, 0.55)" : "#78716C";
+  const centerSubFill = isDark ? "rgba(255, 247, 237, 0.62)" : "#4B5563";
   const activeAiFeedbackCopy = aiFeedbackPanelCopy[selectedAiFeedback ?? "all"];
   const activeFeedbackCopy = foodFeedbackPanelCopy[selectedFoodFeedbackVerdict];
   const handleSelectAiFeedback = useCallback(
@@ -556,7 +556,7 @@ export default function Admin() {
                         <Bar
                           dataKey="count"
                           radius={[0, 12, 12, 0]}
-                          fill="#F97316"
+                          fill="#EA580C"
                           barSize={16}
                         />
                       </BarChart>
@@ -699,10 +699,10 @@ export default function Admin() {
                 <Box sx={styles.panelHeaderStyles}>
                   <Box>
                     <Typography as="h2" sx={styles.panelTitleStyles}>
-                      Health conditions nổi bật
+                      Nhãn sức khỏe demo nổi bật
                     </Typography>
                     <Typography as="p" sx={styles.panelSubtitleStyles}>
-                      Tín hiệu hồ sơ sức khỏe thường gặp trong user profile.
+                      Tín hiệu từ 6 bệnh lý/dị ứng đang dùng trong demo.
                     </Typography>
                   </Box>
                 </Box>

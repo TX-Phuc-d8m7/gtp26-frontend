@@ -9,7 +9,11 @@ import { useRouter } from "next/navigation";
 import { motion, useReducedMotion } from "framer-motion";
 import { useStreamContext } from "@/features/chat/providers/stream-provider";
 import { useThreads } from "@/features/chat/providers/thread-provider";
-import { isLoggedIn } from "@/features/auth/_api";
+import {
+  AUTH_SESSION_EXPIRED_EVENT,
+  isLoggedIn,
+  type AuthSessionExpiredReason,
+} from "@/features/auth/_api";
 import {
   addFavorite,
   fetchFavorites,
@@ -31,6 +35,8 @@ import {
   Paperclip,
   Pencil,
   RefreshCcw,
+  ShieldAlert,
+  Soup,
   Sparkles,
   ThumbsDown,
   ThumbsUp,
@@ -65,27 +71,37 @@ import { styles } from ".";
 
 const EMPTY_STATE_PROMPTS: EmptyStatePrompt[] = [
   {
-    title: "Bữa tối nhanh",
-    meta: "15 phút · ít dầu mỡ",
-    prompt: "Gợi ý món tối nhanh, ít dầu mỡ",
-    Icon: Clock3,
+    title: "Dị ứng giáp xác",
+    meta: "không giáp xác · giàu đạm",
+    prompt: "Tôi bị ngứa khi ăn tôm cua, tối nay nên ăn món gì giàu đạm nhưng tránh giáp xác?",
+    Icon: ShieldAlert,
   },
   {
-    title: "Nhẹ bụng hơn",
-    meta: "dịu vị · dễ tiêu",
-    prompt: "Món phù hợp khi bị đau dạ dày",
+    title: "Viêm loét dạ dày",
+    meta: "mềm · ấm bụng",
+    prompt: "Tôi bị viêm loét dạ dày, bữa sáng nên ăn gì mềm, ấm bụng và dễ tiêu?",
+    Icon: Soup,
+  },
+  {
+    title: "Kiểm soát cân nặng",
+    meta: "ít dầu · no lâu",
+    prompt: "Tôi bị béo phì, bữa trưa nên ăn món gì ít dầu mỡ, giàu đạm và no lâu?",
     Icon: Leaf,
-  },
-  {
-    title: "Đậm chất Đà Nẵng",
-    meta: "địa phương · nhiều đạm",
-    prompt: "Tìm món nhiều đạm nhưng không quá ngấy",
-    Icon: MapPinned,
   },
 ];
 
 function escapeRegExp(value: string): string {
   return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function stripLeadingNoticeFromContent(content: string, notice?: string | null) {
+  const trimmedNotice = notice?.trim();
+  if (!trimmedNotice) return content;
+
+  const trimmedContent = content.trimStart();
+  if (!trimmedContent.startsWith(trimmedNotice)) return content;
+
+  return trimmedContent.slice(trimmedNotice.length).replace(/^\s+/, "");
 }
 
 function LocalMessageActions({
@@ -352,6 +368,36 @@ export default function Thread() {
   const lastError = useRef<string | undefined>(undefined);
 
   useEffect(() => {
+    const handleAuthSessionExpired = (event: Event) => {
+      const detail = (event as CustomEvent<{
+        message?: string;
+        reason?: AuthSessionExpiredReason;
+      }>).detail;
+      const message =
+        detail?.reason === "disabled"
+          ? (detail.message ?? "Tài khoản đã bị vô hiệu hóa.")
+          : (detail?.message ??
+            "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.");
+
+      toast.error(message);
+      void setThreadId(null);
+      router.replace("/login");
+    };
+
+    window.addEventListener(
+      AUTH_SESSION_EXPIRED_EVENT,
+      handleAuthSessionExpired,
+    );
+
+    return () => {
+      window.removeEventListener(
+        AUTH_SESSION_EXPIRED_EVENT,
+        handleAuthSessionExpired,
+      );
+    };
+  }, [router, setThreadId]);
+
+  useEffect(() => {
     if (!stream.error) {
       lastError.current = undefined;
       return;
@@ -363,12 +409,8 @@ export default function Thread() {
       }
 
       lastError.current = message;
-      toast.error("An error occurred. Please try again.", {
-        description: (
-          <p>
-            <strong>Error:</strong> <code>{message}</code>
-          </p>
-        ),
+      toast.error("Có lỗi xảy ra. Vui lòng thử lại.", {
+        description: message,
         richColors: true,
         closeButton: true,
       });
@@ -466,6 +508,9 @@ export default function Thread() {
         signal: controller.signal,
       });
       setFirstTokenReceived(true);
+    } catch {
+      // sendMessage đã tự rollback optimistic message và toast.error()
+      // catch ở đây chỉ để ngăn Unhandled Promise Rejection
     } finally {
       if (backendAbortController.current === controller) {
         backendAbortController.current = null;
@@ -489,6 +534,9 @@ export default function Thread() {
         signal: controller.signal,
       });
       setFirstTokenReceived(true);
+    } catch {
+      // sendMessage đã tự toast.error() và rollback
+      // catch ở đây chỉ để ngăn Unhandled Promise Rejection
     } finally {
       if (backendAbortController.current === controller) {
         backendAbortController.current = null;
@@ -746,18 +794,18 @@ export default function Thread() {
               <Box sx={styles.emptyHeroPanelStyles}>
                 <Typography as="span" sx={styles.emptyEyebrowStyles}>
                   <Sparkles size={16} />
-                  Food assistant cho món Đà Nẵng
+                  Trợ lý gợi ý món ăn Đà Nẵng
                 </Typography>
                 <Typography as="h1" sx={styles.emptyTitleStyles}>
                   Hôm nay bạn ăn gì?
                 </Typography>
                 <Typography as="p" sx={styles.emptyDescriptionStyles}>
-                  Nói khẩu vị, nguyên liệu, sức khỏe hoặc ngân sách. Mình sẽ gợi
+                  Nói khẩu vị, nguyên liệu hoặc sức khoẻ. Mình sẽ gợi
                   ý món phù hợp và giữ câu trả lời ngắn gọn như một người bạn
                   rành đồ ăn địa phương.
                 </Typography>
                 <Box sx={styles.emptySignalRowStyles}>
-                  {["Khẩu vị", "Ngân sách", "Sức khỏe", "Địa điểm"].map(
+                  {["Sức khỏe", "Sở thích", "Địa điểm"].map(
                     (signal) => (
                       <Typography
                         key={signal}
@@ -818,6 +866,17 @@ export default function Thread() {
                   <Box sx={styles.messageContentStyles}>
                     {localMessages.map((message) => {
                       const isEditingMessage = editingMessageId === message.id;
+                      const warningText =
+                        message.role === "assistant"
+                          ? message.aiInsight?.warning_message?.trim()
+                          : undefined;
+                      const displayContent =
+                        message.role === "assistant"
+                          ? stripLeadingNoticeFromContent(
+                              message.content,
+                              warningText,
+                            )
+                          : message.content;
 
                       return message.role === "human" ? (
                         <Box
@@ -967,28 +1026,42 @@ export default function Thread() {
                               const disclaimerText =
                                 message.disclaimer?.trim() ||
                                 DEFAULT_ASSISTANT_DISCLAIMER;
-
                               return (
-                                <Box sx={styles.disclaimerNoticeStyles}>
-                                  <Box sx={styles.disclaimerIconStyles}>
-                                    <CircleAlert size={24} />
+                                <>
+                                  <Box sx={styles.disclaimerNoticeStyles}>
+                                    <Box sx={styles.disclaimerIconStyles}>
+                                      <CircleAlert size={24} />
+                                    </Box>
+                                    <Typography
+                                      as="p"
+                                      sx={styles.disclaimerTextStyles}
+                                    >
+                                      {disclaimerText}
+                                    </Typography>
                                   </Box>
-                                  <Typography
-                                    as="p"
-                                    sx={styles.disclaimerTextStyles}
-                                  >
-                                    {disclaimerText}
-                                  </Typography>
-                                </Box>
+                                  {warningText && (
+                                    <Box sx={styles.warningNoticeStyles}>
+                                      <Box sx={styles.warningIconStyles}>
+                                        <CircleAlert size={24} />
+                                      </Box>
+                                      <Typography
+                                        as="p"
+                                        sx={styles.warningTextStyles}
+                                      >
+                                        {warningText}
+                                      </Typography>
+                                    </Box>
+                                  )}
+                                </>
                               );
                             })()}
                             <Box sx={styles.localAssistantBubbleStyles}>
                               <Typography
                                 as="p"
-                                sx={{ whiteSpace: "pre-wrap" }}
+                                sx={styles.assistantMessageTextStyles}
                               >
                                 {renderHighlightedText(
-                                  message.content,
+                                  displayContent,
                                   message.foods,
                                 )}
                               </Typography>
@@ -1031,7 +1104,7 @@ export default function Thread() {
                               )}
                             </Box>
                             <LocalMessageActions
-                              content={message.content}
+                              content={displayContent}
                               feedback={message.feedback}
                               isAiMessage
                               isLoading={isLoading}

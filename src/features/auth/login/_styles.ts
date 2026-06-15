@@ -4,6 +4,9 @@
  */
 import type { CSSProperties } from "react";
 import { Theme } from "@mui/material/styles";
+import authFoodBackground from "../../../app/gtp26-background.png";
+
+const authFoodBackgroundImage = `url('${authFoodBackground.src}')`;
 
 const inputBaseStyles = (theme: Theme) => ({
   display: "flex",
@@ -36,7 +39,8 @@ export const pageShellStyles = (theme: Theme) => ({
   alignItems: "center",
   justifyContent: "center",
   overflow: "hidden",
-  backgroundColor: "color-mix(in srgb, var(--background) 50%, transparent)",
+  isolation: "isolate",
+  backgroundColor: "var(--background)",
   padding: {
     xs: "1rem",
     sm: "2rem",
@@ -47,8 +51,35 @@ export const pageBackgroundStyles = (theme: Theme) => ({
   position: "absolute",
   inset: 0,
   zIndex: -1,
-  background:
-    "radial-gradient(ellipse at top, color-mix(in srgb, var(--primary) 20%, transparent), var(--background), var(--background))",
+  overflow: "hidden",
+  backgroundImage: [
+    "radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.38) 0%, rgba(255, 255, 255, 0.24) 34%, rgba(255, 247, 237, 0.1) 68%, rgba(255, 237, 213, 0.03) 100%)",
+    "linear-gradient(115deg, rgba(255, 251, 247, 0.22) 0%, rgba(255, 247, 237, 0.14) 42%, rgba(255, 255, 255, 0.06) 100%)",
+    authFoodBackgroundImage,
+  ].join(", "),
+  backgroundPosition: "center, center, center",
+  backgroundRepeat: "no-repeat",
+  backgroundSize: "100% 100%, 100% 100%, cover",
+  filter: "saturate(1.12) contrast(1.04)",
+  "&::before": {
+    content: '""',
+    position: "absolute",
+    inset: 0,
+    background:
+      "radial-gradient(circle at 50% 48%, rgba(255, 255, 255, 0.18) 0%, rgba(255, 255, 255, 0.08) 26%, rgba(255, 255, 255, 0) 55%), radial-gradient(circle at 18% 80%, rgba(234, 88, 12, 0.04), rgba(234, 88, 12, 0) 30%)",
+  },
+  ".dark &": {
+    backgroundImage: [
+      "radial-gradient(circle at 50% 50%, rgba(12, 10, 9, 0.78) 0%, rgba(12, 10, 9, 0.82) 36%, rgba(12, 10, 9, 0.64) 72%, rgba(12, 10, 9, 0.48) 100%)",
+      "linear-gradient(115deg, rgba(12, 10, 9, 0.94) 0%, rgba(28, 25, 23, 0.84) 46%, rgba(67, 20, 7, 0.46) 100%)",
+      authFoodBackgroundImage,
+    ].join(", "),
+    filter: "saturate(0.92) brightness(0.82)",
+    "&::before": {
+      background:
+        "radial-gradient(circle at 50% 48%, rgba(12, 10, 9, 0.7) 0%, rgba(12, 10, 9, 0.44) 30%, rgba(12, 10, 9, 0) 58%), radial-gradient(circle at 82% 18%, rgba(249, 115, 22, 0.18), rgba(249, 115, 22, 0) 32%)",
+    },
+  },
 });
 
 export const containerStyles = (theme: Theme) => ({

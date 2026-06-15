@@ -24,9 +24,10 @@ import type { LucideIcon } from "lucide-react";
 
 import { styles, useProfile } from ".";
 import {
+  DEMO_HEALTH_RISK_OPTIONS,
   DISH_TYPE_OPTIONS,
   FAVORITE_INGREDIENT_OPTIONS,
-  HEALTH_RISK_OPTIONS,
+  getHealthRiskDisplayLabel,
   TASTE_PREFERENCE_OPTIONS,
 } from "@/features/profile/_interface";
 import type {
@@ -39,7 +40,10 @@ import { Button } from "@/shared/components/ui/button/index";
 import { Form } from "@/shared/components/ui/form/index";
 import { Input } from "@/shared/components/ui/input/index";
 import { Label } from "@/shared/components/ui/label/index";
-import { MultiSelectPills } from "@/shared/components/ui/multi-select-pills/index";
+import {
+  MultiSelectPills,
+  type MultiSelectPillOption,
+} from "@/shared/components/ui/multi-select-pills/index";
 import { Typography } from "@/shared/components/ui/typography/index";
 
 const PROFILE_FORM_ID = "profile-form";
@@ -81,7 +85,10 @@ export default function Profile() {
     profileValues.dishTypes.length;
   const insightItems = [
     profileValues.healthRisks.length
-      ? `Lưu ý ${profileValues.healthRisks.slice(0, 2).join(", ")}`
+      ? `Lưu ý ${profileValues.healthRisks
+          .slice(0, 2)
+          .map(getHealthRiskDisplayLabel)
+          .join(", ")}`
       : null,
     profileValues.favorites.length
       ? `Thích ${profileValues.favorites.slice(0, 2).join(", ")}`
@@ -327,6 +334,11 @@ export default function Profile() {
                         {...register("currentPassword")}
                       />
                     </Box>
+                    {errors.currentPassword && (
+                      <Typography sx={styles.errorTextStyles}>
+                        {errors.currentPassword.message}
+                      </Typography>
+                    )}
                   </Box>
 
                   <Box sx={styles.fullWidthFieldStyles}>
@@ -347,6 +359,36 @@ export default function Profile() {
                         {...register("password")}
                       />
                     </Box>
+                    {errors.password && (
+                      <Typography sx={styles.errorTextStyles}>
+                        {errors.password.message}
+                      </Typography>
+                    )}
+                  </Box>
+
+                  <Box sx={styles.fullWidthFieldStyles}>
+                    <Label sx={styles.passwordLabelStyles}>
+                      <Typography as="span">Xác nhận mật khẩu mới</Typography>
+                      <Typography as="span" sx={styles.optionalTextStyles}>
+                        Nhập lại mật khẩu mới
+                      </Typography>
+                    </Label>
+                    <Box sx={styles.inputWrapperStyles}>
+                      <Box sx={styles.inputIconWrapperStyles}>
+                        <Box component={Lock} sx={styles.inputIconStyles} />
+                      </Box>
+                      <Input
+                        type="password"
+                        placeholder="Nhập lại mật khẩu mới"
+                        sx={styles.passwordInputStyles}
+                        {...register("confirmPassword")}
+                      />
+                    </Box>
+                    {errors.confirmPassword && (
+                      <Typography sx={styles.errorTextStyles}>
+                        {errors.confirmPassword.message}
+                      </Typography>
+                    )}
                   </Box>
                 </Box>
               </Box>
@@ -375,8 +417,8 @@ export default function Profile() {
                     control={control}
                     name="healthRisks"
                     label="Bệnh lý và dị ứng"
-                    description="Các bệnh lý nền hoặc dị ứng cần được đưa vào bộ lọc an toàn."
-                    options={HEALTH_RISK_OPTIONS}
+                    description="Demo hiện tập trung vào 3 dị ứng và 3 bệnh lý chính để AI lọc món an toàn."
+                    options={DEMO_HEALTH_RISK_OPTIONS}
                     variant="danger"
                     Icon={HeartPulse}
                   />
@@ -469,7 +511,7 @@ function PreferenceField({
   name: Path<ProfileFormData>;
   label: string;
   description: string;
-  options: string[];
+  options: Array<string | MultiSelectPillOption>;
   variant: ProfilePreferenceVariant;
   Icon: LucideIcon;
 }) {

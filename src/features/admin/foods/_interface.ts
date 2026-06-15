@@ -69,6 +69,27 @@ export interface AdminFoodStats {
 
 export type AdminFoodFormMode = "create" | "edit";
 
+/** Một hàng trong danh sách nguyên liệu có cấu trúc */
+export interface RawIngredientRow {
+  name: string;
+  quantity: string;
+  unit: string;
+}
+
+/** Các đơn vị nguyên liệu phổ biến trong ẩm thực Việt */
+export const RAW_INGREDIENT_UNITS = [
+  "",
+  "g", "kg",
+  "ml", "l",
+  "muỗng cà phê", "muỗng canh",
+  "chén",
+  "củ", "quả", "trái",
+  "lá", "nhánh",
+  "miếng", "bó",
+  "hộp", "gói", "túi",
+  "ít", "vừa đủ",
+] as const;
+
 export type AdminFoodFormField =
   | "name"
   | "description"
@@ -198,8 +219,10 @@ export interface AdminFoodFormState {
   name: string;
   description: string;
   img_url: string;
-  core_ingredients: string;
-  raw_ingredients: string;
+  /** Auto-derived từ raw_ingredients — không nhập trực tiếp */
+  core_ingredients: string[];
+  /** Danh sách có cấu trúc: tên + số lượng + đơn vị */
+  raw_ingredients: RawIngredientRow[];
   raw_instructions: string;
   soft_tags: string[];
   taste_profile: string[];

@@ -32,21 +32,21 @@ export const difficultyConfig: Record<
   DifficultyLevel,
   { label: string; color: string; bg: string }
 > = {
-  easy: { label: "Dễ", color: "#1d7f3a", bg: "rgba(29, 127, 58, 0.1)" },
+  easy: { label: "Dễ", color: "#166534", bg: "#F0FDF4" },
   medium: {
     label: "Trung bình",
-    color: "#FF6B35",
-    bg: "rgba(255, 107, 53, 0.1)",
+    color: "#C2410C",
+    bg: "#FFF7ED",
   },
-  hard: { label: "Khó", color: "#d32f2f", bg: "rgba(211, 47, 47, 0.1)" },
+  hard: { label: "Khó", color: "#B91C1C", bg: "#FEF2F2" },
 };
 
 const tagColors: Record<string, { bg: string; color: string }> = {
-  vegetarian: { bg: "rgba(29, 127, 58, 0.15)", color: "#1d7f3a" },
-  "low-carb": { bg: "rgba(255, 107, 53, 0.15)", color: "#FF6B35" },
-  quick: { bg: "rgba(59, 130, 246, 0.15)", color: "#3b82f6" },
-  "high-protein": { bg: "rgba(217, 119, 6, 0.15)", color: "#d97706" },
-  healthy: { bg: "rgba(34, 197, 94, 0.15)", color: "#22c55e" },
+  vegetarian: { bg: "#F0FDF4", color: "#166534" },
+  "low-carb": { bg: "#FFF7ED", color: "#C2410C" },
+  quick: { bg: "#EFF6FF", color: "#2563EB" },
+  "high-protein": { bg: "#FFFBEB", color: "#92400E" },
+  healthy: { bg: "#F0FDF4", color: "#15803D" },
 };
 
 const nutritionChipTone: Record<
@@ -61,24 +61,24 @@ const nutritionChipTone: Record<
   }
 > = {
   protein: {
-    lightBorder: "rgba(217, 119, 6, 0.24)",
-    lightBg: "rgba(255, 251, 235, 0.72)",
+    lightBorder: "#FCD34D",
+    lightBg: "#FFFBEB",
     lightColor: "#92400E",
     darkBorder: "rgba(251, 191, 36, 0.28)",
     darkBg: "rgba(251, 191, 36, 0.12)",
     darkColor: "#FDE68A",
   },
   carbs: {
-    lightBorder: "rgba(100, 116, 139, 0.24)",
-    lightBg: "rgba(248, 250, 252, 0.76)",
+    lightBorder: "#CBD5E1",
+    lightBg: "#F8FAFC",
     lightColor: "#475569",
     darkBorder: "rgba(148, 163, 184, 0.24)",
     darkBg: "rgba(148, 163, 184, 0.1)",
     darkColor: "#CBD5E1",
   },
   fat: {
-    lightBorder: "rgba(244, 63, 94, 0.22)",
-    lightBg: "rgba(255, 241, 242, 0.72)",
+    lightBorder: "#FDA4AF",
+    lightBg: "#FFF1F2",
     lightColor: "#BE123C",
     darkBorder: "rgba(251, 113, 133, 0.24)",
     darkBg: "rgba(251, 113, 133, 0.1)",
@@ -92,13 +92,9 @@ export const getRootSx = (): SxProps<Theme> => ({
   mb: 2,
   overflow: "hidden",
   borderRadius: pxToRem(24),
-  border: "1px solid rgba(15, 23, 42, 0.16)",
-  background:
-    "linear-gradient(135deg, rgba(255,255,255,0.78), rgba(255,247,237,0.48))",
-  boxShadow:
-    "0 18px 42px rgba(15, 23, 42, 0.1), inset 0 1px 0 rgba(255,255,255,0.86)",
-  backdropFilter: "blur(22px) saturate(1.16)",
-  WebkitBackdropFilter: "blur(22px) saturate(1.16)",
+  border: "1px solid #D1D5DB",
+  background: "#FFFFFF",
+  boxShadow: "0 10px 24px rgba(15, 23, 42, 0.07)",
   transition:
     "border-color 180ms ease, box-shadow 180ms ease, background 180ms ease",
   "&::before": {
@@ -107,13 +103,11 @@ export const getRootSx = (): SxProps<Theme> => ({
     inset: 0,
     zIndex: -1,
     pointerEvents: "none",
-    background:
-      "radial-gradient(circle at 14% 8%, rgba(255,255,255,0.76), transparent 28%), radial-gradient(circle at 88% 14%, rgba(249,115,22,0.12), transparent 32%)",
+    display: "none",
   },
   "&:hover": {
-    borderColor: "rgba(234, 88, 12, 0.34)",
-    boxShadow:
-      "0 24px 58px rgba(15, 23, 42, 0.14), inset 0 1px 0 rgba(255,255,255,0.9)",
+    borderColor: "#CBD5E1",
+    boxShadow: "0 14px 32px rgba(15, 23, 42, 0.09)",
   },
   ".dark &": {
     borderColor: dark.border,
@@ -124,6 +118,7 @@ export const getRootSx = (): SxProps<Theme> => ({
     backdropFilter: "blur(34px) saturate(1.35)",
     WebkitBackdropFilter: "blur(34px) saturate(1.35)",
     "&::before": {
+      display: "block",
       background:
         "radial-gradient(circle at 12% 4%, rgba(250,250,250,0.12), transparent 28%), radial-gradient(circle at 86% 10%, rgba(251,146,60,0.18), transparent 34%), linear-gradient(135deg, rgba(255,255,255,0.06), rgba(255,255,255,0.015))",
     },
@@ -188,14 +183,12 @@ export const rankBadgeSx: SxProps<Theme> = {
   alignItems: "center",
   justifyContent: "center",
   borderRadius: "999px",
-  backgroundColor: "rgba(255, 255, 255, 0.9)",
+  backgroundColor: "#FFFFFF",
   color: colors.base.brand[600],
   fontSize: pxToRem(18),
   fontWeight: fontWeights.extrabold,
   boxShadow:
     "0 10px 28px rgba(234,88,12,0.18), inset 0 1px 0 rgba(255,255,255,0.9)",
-  backdropFilter: "blur(12px)",
-  WebkitBackdropFilter: "blur(12px)",
   ".dark &": {
     border: "1px solid rgba(251, 146, 60, 0.26)",
     backgroundColor: "rgba(9,9,11,0.58)",
@@ -243,7 +236,7 @@ export const heroScoreSx: SxProps<Theme> = {
   flexShrink: 0,
   border: "1px solid rgba(255, 255, 255, 0.44)",
   borderRadius: "999px",
-  backgroundColor: "rgba(255,255,255,0.88)",
+  backgroundColor: "#FFFFFF",
   px: 1.5,
   py: 0.75,
   color: colors.base.brand[600],
@@ -251,8 +244,6 @@ export const heroScoreSx: SxProps<Theme> = {
   fontWeight: fontWeights.extrabold,
   boxShadow:
     "0 12px 30px rgba(15,23,42,0.16), inset 0 1px 0 rgba(255,255,255,0.9)",
-  backdropFilter: "blur(14px) saturate(1.15)",
-  WebkitBackdropFilter: "blur(14px) saturate(1.15)",
   ".dark &": {
     borderColor: "rgba(251, 146, 60, 0.26)",
     backgroundColor: "rgba(9,9,11,0.58)",
@@ -268,8 +259,7 @@ export const bodySx: SxProps<Theme> = {
   flexDirection: "column",
   justifyContent: "space-between",
   p: { xs: 2, sm: 3 },
-  background:
-    "linear-gradient(135deg, rgba(255,255,255,0.42), rgba(255,247,237,0.24))",
+  background: "#FFFFFF",
   ".dark &": {
     background:
       "radial-gradient(circle at 100% 0%, rgba(251,146,60,0.1), transparent 30%), linear-gradient(135deg, rgba(24,24,27,0.5), rgba(9,9,11,0.2))",
@@ -430,8 +420,6 @@ export const getNutritionChipSx = (tone: NutritionTone): SxProps<Theme> => {
     backgroundColor: config.lightBg,
     color: config.lightColor,
     fontWeight: fontWeights.bold,
-    backdropFilter: "blur(12px)",
-    WebkitBackdropFilter: "blur(12px)",
     "& .MuiChip-label": {
       color: config.lightColor,
     },
@@ -462,8 +450,8 @@ export const tagWrapSx: SxProps<Theme> = {
 
 export const getTagChipSx = (tag: string): SxProps<Theme> => {
   const config = tagColors[tag] || {
-    bg: "rgba(107, 114, 128, 0.1)",
-    color: "#6b7280",
+    bg: "#F3F4F6",
+    color: "#4B5563",
   };
 
   return {
@@ -483,15 +471,11 @@ export const getTagChipSx = (tag: string): SxProps<Theme> => {
 
 export const reasonCardSx: SxProps<Theme> = {
   mb: 2,
-  border: "1px solid rgba(14, 165, 233, 0.2)",
+  border: "1px solid #BAE6FD",
   borderRadius: effects.borderRadius.md,
-  background:
-    "linear-gradient(135deg, rgba(240,249,255,0.76), rgba(255,255,255,0.58))",
+  background: "#F0F9FF",
   p: 2,
-  boxShadow:
-    "inset 0 1px 0 rgba(255,255,255,0.72), 0 12px 28px rgba(14,165,233,0.08)",
-  backdropFilter: "blur(16px) saturate(1.12)",
-  WebkitBackdropFilter: "blur(16px) saturate(1.12)",
+  boxShadow: "0 6px 16px rgba(14, 165, 233, 0.06)",
   ".dark &": {
     borderColor: "rgba(56, 189, 248, 0.24)",
     background:
@@ -548,22 +532,16 @@ export const actionsGridSx: SxProps<Theme> = {
 };
 
 const actionBaseHoverSx = {
-  background:
-    "linear-gradient(135deg, rgba(255,255,255,0.86), rgba(255,237,213,0.72))",
-  boxShadow:
-    "0 18px 38px rgba(15, 23, 42, 0.1), inset 0 1px 0 rgba(255,255,255,0.95)",
+  background: "#F9FAFB",
+  boxShadow: "0 8px 18px rgba(15, 23, 42, 0.07)",
 };
 
 const actionBaseSx = {
   width: "100%",
   borderRadius: "999px",
-  borderColor: "rgba(15, 23, 42, 0.18)",
-  background:
-    "linear-gradient(135deg, rgba(255,255,255,0.72), rgba(255,247,237,0.5))",
-  boxShadow:
-    "0 14px 32px rgba(15, 23, 42, 0.08), inset 0 1px 0 rgba(255,255,255,0.85)",
-  backdropFilter: "blur(16px) saturate(1.18)",
-  WebkitBackdropFilter: "blur(16px) saturate(1.18)",
+  borderColor: "#D1D5DB",
+  background: "#FFFFFF",
+  boxShadow: "0 4px 10px rgba(15, 23, 42, 0.05)",
   textTransform: "none",
   fontWeight: fontWeights.extrabold,
   "&:hover": actionBaseHoverSx,
@@ -623,9 +601,8 @@ export const getActionButtonSx = (
     actionType === "favorite"
       ? {
           color: "#BE123C",
-          borderColor: "rgba(244, 63, 94, 0.3)",
-          background:
-            "linear-gradient(135deg, rgba(255,241,242,0.86), rgba(255,255,255,0.7))",
+          borderColor: "#FDA4AF",
+          background: "#FFF1F2",
           ".dark &": {
             borderColor: "rgba(251, 113, 133, 0.34)",
             background:
@@ -635,9 +612,8 @@ export const getActionButtonSx = (
         }
       : {
           color: "#15803D",
-          borderColor: "rgba(22, 163, 74, 0.28)",
-          background:
-            "linear-gradient(135deg, rgba(240,253,244,0.82), rgba(255,255,255,0.68))",
+          borderColor: "#86EFAC",
+          background: "#F0FDF4",
           ".dark &": {
             borderColor: "rgba(163, 230, 53, 0.34)",
             background:

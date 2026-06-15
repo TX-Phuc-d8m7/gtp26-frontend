@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   title: "Hôm nay bạn ăn gì ?",
   description: "Da Nang Food Agent",
   icons: {
-    icon: "/favicon2.svg",
+    icon: "/icon.png",
   },
 };
 
@@ -22,8 +22,8 @@ export default function RootLayout({
       <body>
         <ThemeProvider
           attribute="class"
-          defaultTheme="dark"
-          enableSystem
+          defaultTheme="light"
+          enableSystem={false}
           disableTransitionOnChange
         >
           <NuqsAdapter>

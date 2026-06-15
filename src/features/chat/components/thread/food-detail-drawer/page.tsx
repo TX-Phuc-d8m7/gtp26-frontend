@@ -4,6 +4,8 @@
  */
 import { useEffect, useMemo, useState } from "react";
 import { Box, Chip, Drawer } from "@mui/material";
+
+import { fetchFoodDetail } from "@/features/foods/search/_api";
 import {
   ChefHat,
   Clock3,
@@ -70,10 +72,26 @@ export default function FoodDetailDrawer({
 }: FoodDetailDrawerProps) {
   const isMobile = useMediaQuery("(max-width: 767px)");
   const [imageFailed, setImageFailed] = useState(false);
+  const [rawIngredients, setRawIngredients] = useState<string[]>([]);
+  const [rawInstructions, setRawInstructions] = useState<string | null>(null);
 
   useEffect(() => {
     setImageFailed(false);
-  }, [food?.id]);
+    // Reset khi đổi món
+    setRawIngredients(food?.raw_ingredients ?? []);
+    setRawInstructions(food?.raw_instructions ?? null);
+
+    if (!food?.id) return;
+    // Nếu dữ liệu đã có (truyền từ ngoài vào) thì không cần fetch thêm
+    if (food.raw_ingredients?.length || food.raw_instructions) return;
+
+    fetchFoodDetail(food.id)
+      .then((detail) => {
+        setRawIngredients(detail.raw_ingredients ?? []);
+        setRawInstructions(detail.raw_instructions ?? null);
+      })
+      .catch(() => { /* fail silently — section ẩn */ });
+  }, [food?.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const preferredImageSrc =
     resolveFoodImageUrl(food?.img_url) ??
@@ -81,7 +99,6 @@ export default function FoodDetailDrawer({
     FALLBACK_FOOD_IMAGE;
   const imageSrc = imageFailed ? FALLBACK_FOOD_IMAGE : preferredImageSrc;
   const shouldShowImage = Boolean(imageSrc);
-  const score = Math.round(Math.max(0, Math.min(100, food?.matchScore ?? 0)));
   const allTags = useMemo(
     () =>
       uniqueItems([
@@ -143,9 +160,6 @@ export default function FoodDetailDrawer({
               )}
               <Box sx={styles.heroOverlayStyles} />
               <Box sx={styles.heroContentStyles}>
-                <Typography as="span" sx={styles.scorePillStyles}>
-                  {score}% phù hợp
-                </Typography>
                 <Typography as="h2" sx={styles.titleStyles}>
                   {food.name}
                 </Typography>
@@ -204,6 +218,63 @@ export default function FoodDetailDrawer({
               items={food.core_ingredients}
             />
             <FoodDetailSection title="Đặc điểm món" items={allTags} />
+
+            {/* Định lượng nguyên liệu */}
+            {rawIngredients.length > 0 ? (
+              <Box sx={styles.sectionCardStyles}>
+                <Typography as="h3" sx={styles.sectionTitleStyles}>
+                  Định lượng nguyên liệu
+                </Typography>
+                <Box sx={{ display: "flex", flexDirection: "column", gap: "0.3rem" }}>
+                  {rawIngredients.map((line, i) => (
+                    <Typography key={i} as="p" sx={[styles.descriptionStyles, { fontSize: "0.875rem" }]}>
+                      • {line}
+                    </Typography>
+                  ))}
+                </Box>
+              </Box>
+            ) : null}
+
+            {/* Hướng dẫn nấu */}
+            {rawInstructions ? (
+              <Box sx={styles.sectionCardStyles}>
+                <Typography as="h3" sx={styles.sectionTitleStyles}>
+                  Hướng dẫn nấu
+                </Typography>
+                <Box sx={{ display: "flex", flexDirection: "column", gap: "0.75rem", mt: 0.5 }}>
+                  {rawInstructions
+                    .split("\n")
+                    .map((s) => s.trim())
+                    .filter(Boolean)
+                    .map((step, idx) => (
+                      <Box key={idx} sx={{ display: "flex", gap: "0.65rem", alignItems: "flex-start" }}>
+                        <Box
+                          component="span"
+                          sx={{
+                            flexShrink: 0,
+                            display: "inline-flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            width: 22,
+                            height: 22,
+                            borderRadius: "50%",
+                            fontSize: 11,
+                            fontWeight: 800,
+                            mt: "2px",
+                            background: "linear-gradient(135deg, #FF8A1F 0%, #D9480F 100%)",
+                            color: "#fff",
+                          }}
+                        >
+                          {idx + 1}
+                        </Box>
+                        <Typography as="p" sx={[styles.descriptionStyles, { flex: 1, fontSize: "0.875rem" }]}>
+                          {step}
+                        </Typography>
+                      </Box>
+                    ))}
+                </Box>
+              </Box>
+            ) : null}
           </Box>
 
           <Box sx={styles.actionBarStyles}>

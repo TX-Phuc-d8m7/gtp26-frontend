@@ -19,6 +19,8 @@ import {
   isLoggedIn,
 } from "@/features/auth/_api";
 import {
+  INGREDIENT_DISPLAY_TO_VALUE,
+  INGREDIENT_VALUE_TO_DISPLAY,
   MEDICAL_CONDITION_OPTIONS,
   PROFILE_ALLERGY_OPTIONS,
   profileSchema,
@@ -34,7 +36,14 @@ function mergeHealthRisks(
   allergies: string[],
   medicalConditions: string[],
 ): string[] {
-  return [...medicalConditions, ...allergies];
+  const supportedHealthRiskSet = new Set([
+    ...MEDICAL_CONDITION_OPTIONS,
+    ...PROFILE_ALLERGY_OPTIONS,
+  ]);
+
+  return [...medicalConditions, ...allergies].filter((risk) =>
+    supportedHealthRiskSet.has(risk),
+  );
 }
 
 function splitHealthRisks(healthRisks: string[]): {
@@ -64,6 +73,7 @@ const EMPTY_DEFAULTS: ProfileFormData = {
   email: "",
   currentPassword: "",
   password: "",
+  confirmPassword: "",
   healthRisks: [],
   dishTypes: [],
   favorites: [],
@@ -114,7 +124,9 @@ export function useProfile() {
           password: "",
           healthRisks,
           dishTypes: healthProfile?.dish_preferences ?? [],
-          favorites: healthProfile?.preferred_ingredients ?? [],
+          favorites: (healthProfile?.preferred_ingredients ?? []).map(
+            (v) => INGREDIENT_VALUE_TO_DISPLAY[v] ?? v,
+          ),
           tastePreferences: healthProfile?.taste_profile ?? [],
         });
       } catch {
@@ -178,7 +190,9 @@ export function useProfile() {
       await apiUpsertHealthProfile({
         health_conditions: medicalConditions,
         allergies,
-        preferred_ingredients: data.favorites,
+        preferred_ingredients: data.favorites.map(
+          (v) => INGREDIENT_DISPLAY_TO_VALUE[v] ?? v,
+        ),
         taste_profile: data.tastePreferences,
         dish_preferences: data.dishTypes,
         notes: "",
@@ -198,7 +212,7 @@ export function useProfile() {
       }
     } else {
       // Reset dirty state, xóa password fields sau khi lưu thành công
-      form.reset({ ...form.getValues(), currentPassword: "", password: "" });
+      form.reset({ ...form.getValues(), currentPassword: "", password: "", confirmPassword: "" });
       toast.success("Cập nhật thông tin thành công!");
     }
   };

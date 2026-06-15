@@ -9,29 +9,29 @@ import type { AdminKpiCard, AdminKpiCardTrend } from ".";
 // ─── Design tokens ──────────────────────────────────────────────────────────
 
 const light = {
-  pageBg: "#F5E0CC",           // Warm peach — signature background
+  pageBg: "#F9FAFB",
   cardBg: "#FFFFFF",
-  cardBorder: "rgba(0,0,0,0.055)",
-  cardShadow: "0 2px 12px rgba(0,0,0,0.07)",
-  itemBg: "rgba(249,115,22,0.05)",
-  itemBorder: "rgba(249,115,22,0.12)",
-  text: "#1C1917",
-  textSub: "#78716C",
-  textMuted: "#A8A29E",
-  accent: "#F97316",
+  cardBorder: "#E5E7EB",
+  cardShadow: "0 12px 28px rgba(15, 23, 42, 0.06)",
+  itemBg: "#FFF7ED",
+  itemBorder: "#FED7AA",
+  text: "#1F2937",
+  textSub: "#4B5563",
+  textMuted: "#6B7280",
+  accent: "#EA580C",
 } as const;
 
 const dark = {
-  pageBg: "#141210",            // Very dark warm
-  cardBg: "#1E1B18",
-  cardBorder: "rgba(255,247,237,0.07)",
-  cardShadow: "0 4px 24px rgba(0,0,0,0.4)",
+  pageBg: "#0C0A09",
+  cardBg: "#1C1917",
+  cardBorder: "rgba(255,247,237,0.12)",
+  cardShadow: "0 18px 42px rgba(0,0,0,0.46)",
   itemBg: "rgba(255,247,237,0.04)",
-  itemBorder: "rgba(255,247,237,0.08)",
-  text: "#F5EFE8",
-  textSub: "rgba(245,239,232,0.55)",
-  textMuted: "rgba(245,239,232,0.35)",
-  accent: "#F97316",
+  itemBorder: "rgba(255,247,237,0.1)",
+  text: "#FFF7ED",
+  textSub: "rgba(255,247,237,0.62)",
+  textMuted: "rgba(255,247,237,0.42)",
+  accent: "#FF9A1F",
 } as const;
 
 // ─── Tone map for KPI cards ─────────────────────────────────────────────────
@@ -42,8 +42,8 @@ const toneMap: Record<
 > = {
   orange: {
     accent: "#EA580C",
-    bg: "rgba(249, 115, 22, 0.09)",
-    darkBg: "rgba(249, 115, 22, 0.14)",
+    bg: "#FFF7ED",
+    darkBg: "rgba(255, 154, 31, 0.12)",
   },
   green: {
     accent: "#16A34A",
@@ -56,8 +56,8 @@ const toneMap: Record<
     darkBg: "rgba(56, 189, 248, 0.1)",
   },
   neutral: {
-    accent: "#57534E",
-    bg: "rgba(87, 83, 78, 0.07)",
+    accent: "#4B5563",
+    bg: "#F9FAFB",
     darkBg: "rgba(255, 247, 237, 0.07)",
   },
 };
@@ -152,9 +152,9 @@ const trendPalette: Record<
     darkBg: "rgba(220, 38, 38, 0.14)",
   },
   neutral: {
-    color: "#78716C",
-    bg: "rgba(87, 83, 78, 0.08)",
-    darkColor: "rgba(255, 247, 237, 0.62)",
+    color: light.textSub,
+    bg: "#F3F4F6",
+    darkColor: dark.textSub,
     darkBg: "rgba(255, 247, 237, 0.08)",
   },
 };
@@ -288,7 +288,7 @@ export const topItemStyles = (theme: Theme) => ({
   alignItems: "center",
   borderRadius: 3,
   border: `1px solid ${light.cardBorder}`,
-  backgroundColor: "rgba(249,115,22,0.04)",
+  backgroundColor: "#FFFFFF",
   px: 1.25,
   py: 1,
   ".dark &": {
@@ -306,14 +306,14 @@ export const foodFeedbackFilterItemStyles =
       "border-color 180ms ease, background-color 180ms ease, box-shadow 180ms ease, transform 180ms ease",
     ...(isActive
       ? {
-          borderColor: "rgba(249,115,22,0.45)",
-          backgroundColor: "rgba(249,115,22,0.1)",
-          boxShadow: "0 10px 28px rgba(249,115,22,0.12)",
+          borderColor: "#FDBA74",
+          backgroundColor: light.itemBg,
+          boxShadow: "0 10px 24px rgba(234,88,12,0.1)",
         }
       : {}),
     "&:hover": {
-      borderColor: "rgba(249,115,22,0.32)",
-      backgroundColor: "rgba(249,115,22,0.08)",
+      borderColor: "#FDBA74",
+      backgroundColor: "#FFF7ED",
       transform: "translateY(-1px)",
     },
     "&:focus-visible": {
@@ -321,11 +321,11 @@ export const foodFeedbackFilterItemStyles =
       boxShadow: "0 0 0 3px rgba(249,115,22,0.18)",
     },
     ".dark &": {
-      borderColor: isActive ? "rgba(251,146,60,0.42)" : dark.cardBorder,
-      backgroundColor: isActive ? "rgba(251,146,60,0.14)" : dark.itemBg,
+      borderColor: isActive ? "rgba(255,154,31,0.42)" : dark.cardBorder,
+      backgroundColor: isActive ? "rgba(255,154,31,0.12)" : dark.itemBg,
       boxShadow: isActive ? "0 14px 34px rgba(0,0,0,0.34)" : "none",
       "&:hover": {
-        borderColor: "rgba(251,146,60,0.38)",
+        borderColor: "rgba(255,154,31,0.36)",
         backgroundColor: "rgba(255,247,237,0.065)",
       },
     },
@@ -347,15 +347,15 @@ export const topItemNameStyles = (theme: Theme) => ({
 
 export const countBadgeStyles = (theme: Theme) => ({
   borderRadius: 999,
-  backgroundColor: "rgba(249, 115, 22, 0.1)",
-  color: "#C2410C",
+  backgroundColor: "#FFF7ED",
+  color: "#EA580C",
   fontSize: 12,
   fontWeight: 900,
   px: 1,
   py: 0.35,
   ".dark &": {
-    backgroundColor: "rgba(249, 115, 22, 0.16)",
-    color: "#FDBA74",
+    backgroundColor: "rgba(255, 154, 31, 0.14)",
+    color: "#FF9A1F",
   },
 });
 
@@ -364,7 +364,7 @@ export const countBadgeStyles = (theme: Theme) => ({
 export const feedbackItemStyles = (theme: Theme) => ({
   borderRadius: 3,
   border: `1px solid ${light.cardBorder}`,
-  backgroundColor: "rgba(249,115,22,0.03)",
+  backgroundColor: "#FFFFFF",
   p: 1.25,
   ".dark &": {
     borderColor: dark.cardBorder,
@@ -454,7 +454,7 @@ export const reviewCardStyles = (theme: Theme) => ({
   width: "100%",
   border: `1px solid ${light.cardBorder}`,
   borderRadius: 3,
-  backgroundColor: "rgba(249,115,22,0.04)",
+  backgroundColor: "#FFFFFF",
   color: light.text,
   cursor: "pointer",
   display: "grid",
@@ -464,8 +464,8 @@ export const reviewCardStyles = (theme: Theme) => ({
   transition:
     "border-color 180ms ease, background-color 180ms ease, transform 180ms ease",
   "&:hover": {
-    borderColor: "rgba(249,115,22,0.28)",
-    backgroundColor: "rgba(249,115,22,0.08)",
+    borderColor: "#FDBA74",
+    backgroundColor: "#FFF7ED",
     transform: "translateY(-1px)",
   },
   ".dark &": {
@@ -571,7 +571,7 @@ export const reviewDrawerSummaryStyles = (theme: Theme) => ({
   "& > *": {
     border: `1px solid ${light.cardBorder}`,
     borderRadius: 3,
-    backgroundColor: "rgba(249,115,22,0.04)",
+    backgroundColor: "#FFF7ED",
     p: 1.25,
   },
   ".dark & > *": {
@@ -586,13 +586,13 @@ export const reviewReasonWrapStyles = (theme: Theme) => ({
   gap: 0.75,
   "& .MuiChip-root": {
     borderRadius: 999,
-    backgroundColor: "rgba(249,115,22,0.08)",
-    color: "#C2410C",
+    backgroundColor: "#FFF7ED",
+    color: "#EA580C",
     fontWeight: 850,
   },
   ".dark & .MuiChip-root": {
-    backgroundColor: "rgba(249,115,22,0.13)",
-    color: "#FDBA74",
+    backgroundColor: "rgba(255,154,31,0.12)",
+    color: "#FF9A1F",
   },
 });
 
@@ -645,21 +645,21 @@ export const chartBoxStyles = (theme: Theme) => ({
 
 export const actionButtonStyles = (theme: Theme) => ({
   borderRadius: 999,
-  border: "1px solid rgba(249, 115, 22, 0.3)",
-  backgroundColor: "rgba(249, 115, 22, 0.08)",
-  color: "#C2410C",
+  border: "1px solid #FDBA74",
+  backgroundColor: "#FFF7ED",
+  color: "#EA580C",
   px: 1.4,
   py: 0.7,
   fontWeight: 850,
   "&:hover": {
-    backgroundColor: "rgba(249, 115, 22, 0.14)",
+    backgroundColor: "#FFEDD5",
   },
   ".dark &": {
-    borderColor: "rgba(249, 115, 22, 0.25)",
-    backgroundColor: "rgba(249, 115, 22, 0.1)",
-    color: "#FDBA74",
+    borderColor: "rgba(255, 154, 31, 0.28)",
+    backgroundColor: "rgba(255, 154, 31, 0.1)",
+    color: "#FF9A1F",
     "&:hover": {
-      backgroundColor: "rgba(249, 115, 22, 0.18)",
+      backgroundColor: "rgba(255, 154, 31, 0.16)",
     },
   },
 });

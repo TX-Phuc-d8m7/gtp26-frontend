@@ -156,7 +156,10 @@ export default function LeafletPlaceMap({
               position={[location.lat, location.lng]}
               icon={createPlaceIcon(index, isActive)}
               eventHandlers={{
-                click: () => onSelectLocation(location.id),
+                click: (event) => {
+                  event.originalEvent.stopPropagation();
+                  onSelectLocation(location.id);
+                },
               }}
             >
               <Popup>
