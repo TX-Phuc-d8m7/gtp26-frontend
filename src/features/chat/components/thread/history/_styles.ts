@@ -16,6 +16,9 @@ import {
   historyListStyles,
   historyNewChatButtonStyles,
   historyRenameInputStyles,
+  historySearchClearButtonStyles,
+  historySearchInputStyles,
+  historySearchShellStyles,
   historyShellStyles,
   historyTitleStyles,
 } from "../../../_styles";
@@ -34,6 +37,9 @@ export const styles = {
   historyListStyles,
   historyNewChatButtonStyles,
   historyRenameInputStyles,
+  historySearchClearButtonStyles,
+  historySearchInputStyles,
+  historySearchShellStyles,
   historyShellStyles,
   historyTitleStyles,
 } as const;

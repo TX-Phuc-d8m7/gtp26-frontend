@@ -37,6 +37,7 @@ import { Button } from "@/shared/components/ui/button/index";
 import { Typography } from "@/shared/components/ui/typography/index";
 
 import { AdminShell } from "./_components/admin-shell";
+import { DEFAULT_FOOD_FEEDBACK_VERDICT } from "./_use-admin";
 import { styles, useAdmin } from ".";
 import type {
   AdminAiFeedbackVerdict,
@@ -151,7 +152,7 @@ export default function Admin() {
   const [selectedAiFeedback, setSelectedAiFeedback] =
     useState<AdminAiFeedbackVerdict | null>(null);
   const [selectedFoodFeedbackVerdict, setSelectedFoodFeedbackVerdict] =
-    useState<AdminFoodFeedbackVerdict>("dislike");
+    useState<AdminFoodFeedbackVerdict>(DEFAULT_FOOD_FEEDBACK_VERDICT);
   const [selectedReviewGroup, setSelectedReviewGroup] =
     useState<FoodReviewGroup | null>(null);
   const {
@@ -250,7 +251,7 @@ export default function Admin() {
             sx={styles.actionButtonStyles}
             onClick={() => {
               setSelectedAiFeedback(null);
-              setSelectedFoodFeedbackVerdict("dislike");
+              setSelectedFoodFeedbackVerdict(DEFAULT_FOOD_FEEDBACK_VERDICT);
               setSelectedReviewGroup(null);
               void loadAdminData();
             }}

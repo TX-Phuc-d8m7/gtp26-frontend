@@ -24,6 +24,8 @@ import type {
   AdminTopItem,
 } from ".";
 
+export const DEFAULT_FOOD_FEEDBACK_VERDICT: AdminFoodFeedbackVerdict = "like";
+
 function formatNumber(value: number) {
   return new Intl.NumberFormat("vi-VN").format(value);
 }
@@ -111,7 +113,7 @@ export function useAdmin() {
         fetchAdminDashboardStats(8),
         fetchAdminAiFeedback({ limit: 100, offset: 0 }),
         fetchAdminFoodRecommendationFeedback({
-          verdict: "dislike",
+          verdict: DEFAULT_FOOD_FEEDBACK_VERDICT,
           limit: 100,
           offset: 0,
         }),

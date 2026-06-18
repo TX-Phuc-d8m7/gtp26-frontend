@@ -1802,6 +1802,96 @@ export const historyNewChatButtonStyles = {
   },
 };
 
+export const historySearchShellStyles = (theme: Theme) => ({
+  display: "flex",
+  width: "100%",
+  alignItems: "center",
+  gap: 0.85,
+  border: `1px solid ${lightWarm.border}`,
+  borderRadius: "14px",
+  px: 1.15,
+  py: 0.85,
+  color: "#6B7280",
+  backgroundColor: lightWarm.surfaceSoft,
+  boxShadow: "0 1px 2px rgba(15, 23, 42, 0.03)",
+  transition:
+    "border-color 160ms ease, background-color 160ms ease, box-shadow 160ms ease",
+  "&:focus-within": {
+    borderColor: colors.base.brand[500],
+    backgroundColor: lightWarm.surface,
+    boxShadow: `0 0 0 3px ${alpha(colors.base.brand[500], 0.12)}`,
+  },
+  ".dark &": {
+    color: darkFoodChat.muted,
+    borderColor: darkFoodChat.borderSoft,
+    backgroundColor: alpha(darkFoodChat.surfaceSoft, 0.5),
+    boxShadow: `inset 0 1px 0 ${alpha("#FFF7ED", 0.06)}`,
+    "&:focus-within": {
+      borderColor: alpha(darkFoodChat.orange, 0.52),
+      backgroundColor: alpha(darkFoodChat.surfaceSoft, 0.68),
+      boxShadow: `0 0 0 3px ${alpha(darkFoodChat.orange, 0.14)}`,
+    },
+  },
+});
+
+export const historySearchInputStyles = {
+  width: "100%",
+  minWidth: 0,
+  minHeight: "auto",
+  height: 22,
+  border: 0,
+  borderRadius: 0,
+  p: 0,
+  color: "var(--foreground)",
+  backgroundColor: "transparent",
+  fontFamily: "inherit",
+  fontSize: "0.82rem",
+  fontWeight: 650,
+  outline: 0,
+  boxShadow: "none",
+  transition: "none",
+  "&::placeholder": {
+    color: "var(--muted-foreground)",
+    opacity: 0.82,
+  },
+  "&:focus-visible": {
+    borderColor: "transparent",
+    boxShadow: "none",
+  },
+  ".dark &": {
+    color: darkFoodChat.text,
+    "&::placeholder": {
+      color: darkFoodChat.muted,
+      opacity: 0.76,
+    },
+  },
+};
+
+export const historySearchClearButtonStyles = (theme: Theme) => ({
+  display: "grid",
+  width: 22,
+  height: 22,
+  flexShrink: 0,
+  placeItems: "center",
+  border: 0,
+  borderRadius: "999px",
+  color: "#6B7280",
+  backgroundColor: "transparent",
+  cursor: "pointer",
+  transition: "background-color 140ms ease, color 140ms ease",
+  "&:hover": {
+    color: colors.base.brand[700],
+    backgroundColor: "#FFEDD5",
+  },
+  ".dark &": {
+    color: darkFoodChat.muted,
+    "&:hover": {
+      color: darkFoodChat.orange,
+      backgroundColor: alpha(colors.base.brand[500], 0.18),
+    },
+  },
+});
+
 export const historyListStyles = {
   display: "flex",
   width: "100%",
@@ -2263,6 +2353,9 @@ export const styles = {
   historyHeaderStyles,
   historyTitleStyles,
   historyNewChatButtonStyles,
+  historySearchShellStyles,
+  historySearchInputStyles,
+  historySearchClearButtonStyles,
   historyListStyles,
   historyItemButtonStyles,
   historyItemContentStyles,

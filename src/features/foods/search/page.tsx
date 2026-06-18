@@ -183,6 +183,7 @@ export default function FoodSearchUI(props: FoodSearchUIProps = {}) {
     hasEverLoaded,
     error,
     total,
+    allFoodTotal,
     hasMore,
     clearSearch,
     clearFilters,
@@ -354,6 +355,7 @@ export default function FoodSearchUI(props: FoodSearchUIProps = {}) {
 
           <CategoryBrowser
             categories={foodCategories}
+            allFoodTotal={allFoodTotal || total}
             isLoading={isCategoryLoading}
             selectedCategory={selectedCategory}
             onSelectCategory={toggleCategory}
@@ -505,11 +507,13 @@ export default function FoodSearchUI(props: FoodSearchUIProps = {}) {
 
 function CategoryBrowser({
   categories,
+  allFoodTotal,
   isLoading,
   selectedCategory,
   onSelectCategory,
 }: {
   categories: ApiFoodCategory[];
+  allFoodTotal: number;
   isLoading: boolean;
   selectedCategory: string | null;
   onSelectCategory: (categoryKey: string | null) => void;
@@ -539,11 +543,6 @@ function CategoryBrowser({
 
   if (categories.length === 0) return null;
 
-  const totalCount = categories.reduce(
-    (sum, category) => sum + category.count,
-    0,
-  );
-
   return (
     <Box sx={styles.categorySectionStyles}>
       <Box sx={styles.categoryHeaderStyles}>
@@ -563,7 +562,7 @@ function CategoryBrowser({
         >
           <Typography sx={styles.categoryPillLabelStyles}>Tất cả</Typography>
           <Typography sx={styles.categoryPillCountStyles}>
-            {totalCount} món
+            {allFoodTotal.toLocaleString("vi-VN")} món
           </Typography>
         </Box>
 
@@ -581,7 +580,7 @@ function CategoryBrowser({
                 {category.label}
               </Typography>
               <Typography sx={styles.categoryPillCountStyles}>
-                {category.count} món
+                {category.count.toLocaleString("vi-VN")} món
               </Typography>
             </Box>
           );
