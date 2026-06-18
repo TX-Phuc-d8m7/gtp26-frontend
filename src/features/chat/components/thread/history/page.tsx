@@ -18,6 +18,7 @@ import {
   PanelRightOpen,
   Pencil,
   Plus,
+  Search,
   Trash2,
   X,
 } from "lucide-react";
@@ -36,15 +37,23 @@ import { Typography } from "@/shared/components/ui/typography/index";
 import { formatUpdatedAt, styles, useHistory } from ".";
 import type { ThreadListProps } from ".";
 
-function ThreadHistoryEmpty() {
+function ThreadHistoryEmpty({
+  isSearchingThreads = false,
+}: {
+  isSearchingThreads?: boolean;
+}) {
   return (
     <Box sx={styles.historyEmptyStyles}>
       <MessageSquareText size={20} />
       <Typography as="span" sx={{ fontWeight: 700 }}>
-        Chưa có cuộc trò chuyện
+        {isSearchingThreads
+          ? "Không tìm thấy đoạn chat"
+          : "Chưa có cuộc trò chuyện"}
       </Typography>
       <Typography as="span" sx={{ fontSize: "0.76rem", lineHeight: 1.5 }}>
-        Gửi câu hỏi đầu tiên để bắt đầu lưu lịch sử gợi ý món ăn.
+        {isSearchingThreads
+          ? "Thử nhập tiêu đề khác hoặc xoá nội dung tìm kiếm."
+          : "Gửi câu hỏi đầu tiên để bắt đầu lưu lịch sử gợi ý món ăn."}
       </Typography>
     </Box>
   );
@@ -68,6 +77,7 @@ function ThreadList({
   threadId,
   editingId,
   draftTitle,
+  isSearchingThreads,
   setDraftTitle,
   isRenameControlEvent,
   startRename,
@@ -77,7 +87,7 @@ function ThreadList({
   onThreadSelect,
 }: ThreadListProps) {
   if (!threads.length) {
-    return <ThreadHistoryEmpty />;
+    return <ThreadHistoryEmpty isSearchingThreads={isSearchingThreads} />;
   }
 
   return (
@@ -188,9 +198,42 @@ function ThreadList({
   );
 }
 
+function ThreadSearchField({
+  value,
+  onChange,
+}: {
+  value: string;
+  onChange: (value: string) => void;
+}) {
+  return (
+    <Box sx={styles.historySearchShellStyles}>
+      <Search size={16} />
+      <Input
+        value={value}
+        onChange={(event) => onChange(event.target.value)}
+        placeholder="Tìm theo tiêu đề..."
+        sx={styles.historySearchInputStyles}
+        aria-label="Tìm kiếm cuộc trò chuyện theo tiêu đề"
+      />
+      {value.trim() ? (
+        <Box
+          component="button"
+          type="button"
+          onClick={() => onChange("")}
+          sx={styles.historySearchClearButtonStyles}
+          aria-label="Xóa nội dung tìm kiếm"
+        >
+          <X size={14} />
+        </Box>
+      ) : null}
+    </Box>
+  );
+}
+
 export default function ThreadHistory() {
   const {
     threads,
+    totalThreads,
     threadsLoading,
     threadId,
     chatHistoryOpen,
@@ -198,6 +241,9 @@ export default function ThreadHistory() {
     editingId,
     draftTitle,
     deleteConfirmId,
+    threadSearchQuery,
+    setThreadSearchQuery,
+    isSearchingThreads,
     setDraftTitle,
     isRenameControlEvent,
     startRename,
@@ -218,6 +264,7 @@ export default function ThreadHistory() {
     threadId,
     editingId,
     draftTitle,
+    isSearchingThreads,
     setDraftTitle,
     isRenameControlEvent,
     startRename,
@@ -276,6 +323,13 @@ export default function ThreadHistory() {
             Đoạn chat mới
           </Box>
 
+          {totalThreads > 0 ? (
+            <ThreadSearchField
+              value={threadSearchQuery}
+              onChange={setThreadSearchQuery}
+            />
+          ) : null}
+
           {threadsLoading ? (
             <ThreadHistoryLoading />
           ) : (
@@ -308,6 +362,13 @@ export default function ThreadHistory() {
               <Plus size={16} />
               Đoạn chat mới
             </Box>
+
+            {totalThreads > 0 ? (
+              <ThreadSearchField
+                value={threadSearchQuery}
+                onChange={setThreadSearchQuery}
+              />
+            ) : null}
 
             {threadsLoading ? (
               <ThreadHistoryLoading />

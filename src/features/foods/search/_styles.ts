@@ -1048,7 +1048,7 @@ export const categorySectionStyles = (theme: Theme) => ({
     md: 1.5,
   },
   position: "relative",
-  zIndex: 2,
+  zIndex: 40,
 });
 
 export const categoryHeaderStyles = (theme: Theme) => ({
@@ -1079,11 +1079,16 @@ export const categoryMetaStyles = (theme: Theme) => ({
 });
 
 export const categoryRailStyles = (theme: Theme) => ({
+  position: "relative",
+  zIndex: 1,
   display: "flex",
   gap: 1,
   overflowX: "auto",
   overflowY: "hidden",
-  pb: 0.4,
+  pt: 0.75,
+  pb: 1,
+  mt: -0.75,
+  mb: -0.6,
   mx: -0.25,
   px: 0.25,
   scrollSnapType: "x proximity",
@@ -1095,6 +1100,8 @@ export const categoryRailStyles = (theme: Theme) => ({
 
 export const categoryPillStyles = (isSelected: boolean) => (theme: Theme) => ({
   appearance: "none",
+  position: "relative",
+  zIndex: isSelected ? 2 : 1,
   display: "inline-flex",
   flexShrink: 0,
   flexDirection: "column",
@@ -1125,6 +1132,7 @@ export const categoryPillStyles = (isSelected: boolean) => (theme: Theme) => ({
   backdropFilter: "blur(16px) saturate(1.12)",
   WebkitBackdropFilter: "blur(16px) saturate(1.12)",
   "&:hover": {
+    zIndex: 6,
     transform: "translateY(-1px)",
     borderColor: isSelected ? "#D9480F" : lightWarm.borderStrong,
     background: isSelected

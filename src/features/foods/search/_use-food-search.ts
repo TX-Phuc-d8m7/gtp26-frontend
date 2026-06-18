@@ -94,6 +94,7 @@ export function useFoodSearch({ onClose }: FoodSearchUIProps = {}) {
   // ---- Food list state ----
   const [foods, setFoods] = useState<ApiFood[]>([]);
   const [total, setTotal] = useState(0);
+  const [allFoodTotal, setAllFoodTotal] = useState(0);
   const [isLoading, setIsLoading] = useState(true); // true on mount → AppLoading ngay lập tức
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [hasEverLoaded, setHasEverLoaded] = useState(false);
@@ -145,6 +146,29 @@ export function useFoodSearch({ onClose }: FoodSearchUIProps = {}) {
       .then((data) => setFoodCategories(data.categories))
       .catch(() => setFoodCategories([]))
       .finally(() => setIsCategoryLoading(false));
+  }, []);
+
+  useEffect(() => {
+    const controller = new AbortController();
+
+    fetchFoods(
+      {
+        sort_by: "name",
+        limit: 1,
+        offset: 0,
+      },
+      controller.signal,
+    )
+      .then((result) => {
+        if (!controller.signal.aborted) {
+          setAllFoodTotal(result.total);
+        }
+      })
+      .catch(() => {
+        /* silent — category browser can still use current list total as fallback */
+      });
+
+    return () => controller.abort();
   }, []);
 
   // ---------------------------------------------------------------------------
@@ -215,6 +239,9 @@ export function useFoodSearch({ onClose }: FoodSearchUIProps = {}) {
         if (!controller.signal.aborted) {
           setFoods(result.items);
           setTotal(result.total);
+          if (!q.trim() && tags.length === 0 && !category) {
+            setAllFoodTotal(result.total);
+          }
           setHasEverLoaded(true);
         }
       } catch (err) {
@@ -607,6 +634,7 @@ export function useFoodSearch({ onClose }: FoodSearchUIProps = {}) {
     hasEverLoaded,
     error,
     total,
+    allFoodTotal,
     hasMore,
     clearSearch,
     clearFilters,

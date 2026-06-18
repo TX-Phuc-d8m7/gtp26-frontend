@@ -4,7 +4,7 @@
  */
 "use client";
 
-import { type FormEvent, useEffect, useState } from "react";
+import { type FormEvent, useEffect, useMemo, useState } from "react";
 import { parseAsBoolean, useQueryState } from "nuqs";
 
 import type { ChatThread } from "@/features/chat/_interface";
@@ -29,6 +29,16 @@ export function formatUpdatedAt(value: string): string {
   }).format(date);
 }
 
+function normalizeSearchText(value: string): string {
+  return value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/đ/g, "d")
+    .replace(/Đ/g, "D")
+    .toLowerCase()
+    .trim();
+}
+
 export function useHistory() {
   const isLargeScreen = useMediaQuery("(min-width: 1024px)");
   const [chatHistoryOpen, setChatHistoryOpen] = useQueryState(
@@ -42,6 +52,16 @@ export function useHistory() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [draftTitle, setDraftTitle] = useState("");
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
+  const [threadSearchQuery, setThreadSearchQuery] = useState("");
+
+  const filteredThreads = useMemo(() => {
+    const query = normalizeSearchText(threadSearchQuery);
+    if (!query) return threads;
+
+    return threads.filter((thread) =>
+      normalizeSearchText(thread.title).includes(query),
+    );
+  }, [threadSearchQuery, threads]);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -119,7 +139,8 @@ export function useHistory() {
     !!target.closest("form, input, textarea, button");
 
   return {
-    threads,
+    threads: filteredThreads,
+    totalThreads: threads.length,
     threadsLoading,
     threadId,
     chatHistoryOpen,
@@ -127,6 +148,9 @@ export function useHistory() {
     editingId,
     draftTitle,
     deleteConfirmId,
+    threadSearchQuery,
+    setThreadSearchQuery,
+    isSearchingThreads: Boolean(threadSearchQuery.trim()),
     setDraftTitle,
     isRenameControlEvent,
     startRename,

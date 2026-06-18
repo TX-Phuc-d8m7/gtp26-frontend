@@ -303,7 +303,7 @@ export default function FoodDetailDrawer({
                 }}
               >
                 <MessageSquareText size={16} />
-                {recommendationFeedback ? "Đã đánh giá" : "Đánh giá"}
+                {recommendationFeedback ? "Đã đánh giá" : "Đánh giá gợi ý"}
               </Button>
             ) : null}
             {onOpenLocations && food.dining_context === "restaurant" ? (

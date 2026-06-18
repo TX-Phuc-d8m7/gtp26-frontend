@@ -13,6 +13,7 @@ export type ThreadListProps = {
   threadId: string | null;
   editingId: string | null;
   draftTitle: string;
+  isSearchingThreads: boolean;
   setDraftTitle: (value: string) => void;
   isRenameControlEvent: (target: EventTarget | null) => boolean;
   startRename: (thread: ChatThread) => void;
